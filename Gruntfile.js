@@ -72,7 +72,10 @@ module.exports = function(grunt) {
     // plugins
     require('load-grunt-tasks')(grunt);
 
-    // Default task(s).
-    grunt.registerTask('default', ['bower', 'concat:build', 'uglify', 'concat:lib', 'concat:libDebug'/*, 'qunit'*/]);
-    grunt.registerTask('release', ['default', 'copy:release', 'copy:releaseMin']);
+    grunt.registerTask('build', ['concat:build', 'concat:libDebug']);
+    grunt.registerTask('rebuild', ['bower', 'build', 'uglify', 'concat:lib']);
+    grunt.registerTask('test', ['rebuild', 'qunit']);
+    grunt.registerTask('release', ['test', 'copy:release', 'copy:releaseMin']);
+    
+    grunt.registerTask('default', 'build');
 };
