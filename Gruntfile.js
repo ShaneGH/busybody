@@ -11,6 +11,8 @@ module.exports = function(grunt) {
         }
     };
     
+    var src = ['tools/begin.js', 'src/utils/obj.js', 'src/disposable.js', 'src/observableBase.js', 'src/**/*.js', 'tools/end.js'];
+    
     // Project configuration.
     grunt.initConfig({
         pkg: pkg,
@@ -20,7 +22,7 @@ module.exports = function(grunt) {
                 separator: '\n\n'
             },
             build: {
-                src: ['tools/begin.js', 'src/**/*.js', 'tools/end.js'],
+                src: src,
                 dest: debugFile
             },
             lib: {
@@ -45,7 +47,7 @@ module.exports = function(grunt) {
         },
         
         watch: {
-            files: ['<%= concat.dist.src %>'],
+            files: src,
             tasks: ['default']
         },
         
