@@ -1,6 +1,5 @@
 
 //"use strict"; - cannot use strict right now. any functions defined in strict mode are not accesable via arguments.callee.caller, which is used by _super
-var obsjs = {};
     
 var enumerateArr = function(enumerate, action, context) {
     ///<summary>Enumerate through an array or object</summary>
@@ -108,11 +107,11 @@ Class("obsjs.utils.obj", function () {
         
         var tmp;
         for (var i = 0; i < propertyName.length; i++) {
-            propertyName[i] = wipeout.utils.obj.trim(propertyName[i]);
+            propertyName[i] = obsjs.utils.obj.trim(propertyName[i]);
             var match = propertyName[i].match(arrayMatch);
             if (match && match.length) {
-                if (tmp = wipeout.utils.obj.trim(propertyName[i].replace(arrayMatch, ""))) {
-                    propertyName[i] = wipeout.utils.obj.trim(propertyName[i].replace(arrayMatch, ""));
+                if (tmp = obsjs.utils.obj.trim(propertyName[i].replace(arrayMatch, ""))) {
+                    propertyName[i] = obsjs.utils.obj.trim(propertyName[i].replace(arrayMatch, ""));
                 } else {
                     propertyName.splice(i, 1);
                     i--;
@@ -186,7 +185,6 @@ Class("obsjs.utils.obj", function () {
     };
     
     var obj = function obj() { };
-    obj.extend = extend;
     obj.parseBool = parseBool;
     obj.trimToLower = trimToLower;
     obj.trim = trim;
