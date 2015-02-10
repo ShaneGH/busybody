@@ -1,5 +1,31 @@
 Class("obsjs.array", function () {
     
+    function dictionary () {
+        this.__keyArray = [], this.__valueArray = [];        
+    }
+    
+    dictionary.prototype.add = function (key, value) {
+        var i = this.__keyArray.indexOf(key);
+        i === -1 ? (this.__keyArray.push(key), this.__valueArray.push(value)) : this.__valueArray[i] = value;
+
+        return value;
+    };
+    
+    dictionary.prototype.remove = function (key) {
+        var i = this.__keyArray.indexOf(key);
+        if (i !== -1) {
+            this.__keyArray.splice(i, 0);
+            this.__valueArray.splice(i, 0);
+            return true;
+        }            
+
+        return false;
+    };
+    
+    dictionary.prototype.value = function (key) {
+        return this.__valueArray[this.__keyArray.indexOf(key)];
+    };
+    
     var array = objjs.object.extend.call(Array, function array (initialValues) {
         
         Array.call(this);
@@ -9,7 +35,7 @@ Class("obsjs.array", function () {
                 throw "The initial values must be an array";
         
         this.$disposables = [];
-        this.$boundArrays = [];
+        this.$boundArrays = new dictionary();
         this.$callbacks = [];
         this.$changeBatch = [];
         this.$length = initialValues ? initialValues.length : 0;    
@@ -177,10 +203,39 @@ Class("obsjs.array", function () {
     };
     
     array.prototype.bind = function(anotherArray) {
-        if (!(anotherArray instanceof wipeout.obs.array && anotherArray.__woBag.watched.boundArrays.value(this)))
+        if (this.$boundArrays.value(anotherArray)) return;        
+        
+        if (!(anotherArray instanceof obsjs.array && anotherArray.$boundArrays.value(this)))
             array.copyAll(this, anotherArray);
         
-        return this.__woBag.watched.bindArray(anotherArray);
+        this.$boundArrays.add(anotherArray, []);
+        
+        //TODO: copied from observe
+        var cb = new obsjs.callbacks.boundArrayCallback(this, anotherArray);
+        this.$callbacks.push(cb);
+
+        this.onNextArrayChange(function (change) {
+            cb.activatingChange = change;
+        });
+        
+        var dispose = {
+            dispose: ((function (allowPendingChanges) {
+
+                if (!dispose) return;
+                dispose = null;
+                
+                if (allowPendingChanges)
+                    this.onNextArrayChange(function (change) {
+                        cb.deactivatingChange = change;
+                    });
+                else
+                    cb.activated = false;
+            }).bind(this))
+        };
+        
+        this.$disposables.push(dispose);
+        
+        return dispose;
     };
     
     array.prototype.dispose = function() {

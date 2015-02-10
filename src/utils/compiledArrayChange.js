@@ -1,6 +1,7 @@
 // name is subject to change
 
 Class("obsjs.utils.compiledArrayChange", function () {
+    
     function compiledArrayChange(changes, beginAt, endAt) {
         this.beginAt = beginAt;
         this.endAt = endAt;
@@ -96,6 +97,7 @@ Class("obsjs.utils.compiledArrayChange", function () {
             
             // begin to register changes after 
             if (i < this.endAt) {
+                
                 // this is the array after all changes
                 if (!this.finalArray)
                     this.finalArray = array.slice();
@@ -121,6 +123,12 @@ Class("obsjs.utils.compiledArrayChange", function () {
                         this.removed.splice(tmp, 1);
                     }
                 }, this);
+                
+                this.changes.splice(0, 1, {
+                    index: current.index,
+                    added: array.slice(current.index, current.index + current.addedCount),
+                    removed: current.removed
+                });
             }
             
             args = current.removed.slice();

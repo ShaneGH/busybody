@@ -177,6 +177,21 @@ Class("obsjs.observableBase", function () {
         delete (this.$forObject || this)[property];
     };
     
+    observableBase._captureChanges = function (forObject, logic, callback, captureType) {
+                
+        captureType.Observe(forObject, callback);
+        logic();
+        captureType.unobserve(forObject, callback);
+    };
+    
+    observableBase.captureArrayChanges = function (forObject, logic, callback) {
+        return observableBase._captureChanges(forObject, logic, callback, Array);
+    };
+    
+    observableBase.captureChanges = function (forObject, logic, callback) {
+        return observableBase._captureChanges(forObject, logic, callback, Object);
+    };
+    
     observableBase.newObservable = function () {
         return observableBase.makeObservable({});
     };
