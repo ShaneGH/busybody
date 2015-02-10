@@ -1,6 +1,6 @@
 
 Class("obsjs.observableBase", function () {
-    
+        
     var observableBase = obsjs.disposable.extend(function observableBase(forObject) {
         ///<summary>An object whose properties can be subscribed to</summary>
 
@@ -28,6 +28,8 @@ Class("obsjs.observableBase", function () {
         });
         
         this.$changeBatch.length = 0;
+        
+        obsjs.utils.observeCycleHandler.instance.before(this.$forObject || this);
 
         var evaluateMultiple = [];
         enumerateObj(splitChanges, function (changes, name) {
@@ -36,6 +38,7 @@ Class("obsjs.observableBase", function () {
         }, this);
 
         enumerateArr(evaluateMultiple, function (c) { c(); });
+        obsjs.utils.observeCycleHandler.instance.after(this.$forObject || this);
     };
 
     observableBase.processChanges = function (callbacks, changes) {
@@ -68,7 +71,7 @@ Class("obsjs.observableBase", function () {
 
     //TODO: this is a temp implementation
     observableBase.prototype.observeArray = function (property, callback, context, evaluateOnEachChange) {
-        var obs = (this.forObject || this)[property].observe(callback, context, evaluateOnEachChange);
+        var obs = (this.$forObject || this)[property].observe(callback, context, evaluateOnEachChange);
         this.registerDisposable(obs);
         return obs;
     }
@@ -126,7 +129,7 @@ Class("obsjs.observableBase", function () {
     observableBase.prototype.computed = function (property, callback, watchVariables) {
         
         var computed = new obsjs.observeTypes.computed(callback, this, watchVariables);
-        computed.bind(this.forObject || this, property);
+        computed.bind(this.$forObject || this, property);
         this.registerDisposable(computed);
         return computed;        
     };
@@ -135,8 +138,6 @@ Class("obsjs.observableBase", function () {
         
         delete (this.$forObject || this)[property];
     };
-    
-    observableBase.prototype.
     
     observableBase.newObservable = function () {
         return observableBase.makeObservable({});
@@ -174,6 +175,23 @@ Class("obsjs.observableBase", function () {
         return false;
     };
 
+    observableBase.observeArray = function (object, property, callback, context, evaluateOnEachChange) {
+        observableBase.makeObservable(object);
+        return observableBase.tryObserveArray(object, property, callback, context, evaluateOnEachChange);
+    };
+    
+    observableBase.tryObserveArray = function (object, property, callback, context, evaluateOnEachChange) {
+                
+        var target = object instanceof observableBase ?
+            object :
+            (object.$observer instanceof observableBase ? object.$observer : null);
+        
+        if (target)
+            return target.observeArray(property, callback, context, evaluateOnEachChange);
+        
+        return false;
+    };
+
     observableBase.canObserve = function (object) {
         
         return object instanceof observableBase || (object && object.$observer instanceof observableBase);
@@ -188,13 +206,46 @@ Class("obsjs.observableBase", function () {
         if (target)
             return target.del(property);
     };
-
+    
     observableBase.dispose = function (object, property, callback, context, evaluateOnEachChange, evaluateIfValueHasNotChanged) {
         if (object instanceof observableBase)
             return object.dispose();
 
         if (object.$observer instanceof observableBase)
             return object.$observer.dispose();
+    };
+        
+    observableBase.afterObserveCycle = function(callback) {
+        return obsjs.utils.observeCycleHandler.instance.afterObserveCycle(callback);
+    };
+
+    observableBase.beforeObserveCycle = function(callback) {
+        return obsjs.utils.observeCycleHandler.instance.beforeObserveCycle(callback);
+    };
+
+    observableBase.afterNextObserveCycle = function (callback, waitForNextCycleToStart) {
+
+        if (obsjs.utils.observeCycleHandler.instance.length === 0 && !waitForNextCycleToStart) {
+            callback();
+            return;
+        }
+
+        var dispose = obsjs.utils.observeCycleHandler.instance.afterObserveCycle(function () {
+            dispose.dispose();
+            callback();
+        });
+
+        return dispose;
+    };
+
+    observableBase.beforeNextObserveCycle = function (callback) {
+
+        var dispose = obsjs.utils.observeCycleHandler.instance.beforeObserveCycle(function () {
+            dispose.dispose();
+            callback();
+        });
+
+        return dispose;
     };
     
     return observableBase;

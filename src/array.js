@@ -51,7 +51,7 @@ Class("obsjs.array", function () {
         
         // not interested in property changes
         for (var i = changes.length - 1; i >= 0; i--)
-            if (changes[i].name && changes[i].name !== "length" && isNaN(parseInt(changes.name)))
+            if (changes[i].name && changes[i].name !== "length" && isNaN(parseInt(changes[i].name)))
                 changes.splice(i, 1);
         
         return obsjs.observableBase.prototype.registerChangeBatch.call(this, changes);

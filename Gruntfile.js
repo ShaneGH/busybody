@@ -11,7 +11,7 @@ module.exports = function(grunt) {
         }
     };
     
-    var src = ['tools/begin.js', 'src/utils/obj.js', 'src/disposable.js', 'src/observableBase.js', 'src/**/*.js', 'tools/end.js'];
+    var src = ['tools/begin.js', 'src/utils/obj.js', 'src/disposable.js', 'src/observableBase.js', 'src/callbacks/changeCallback.js', 'src/**/*.js', 'tools/end.js'];
     
     // Project configuration.
     grunt.initConfig({

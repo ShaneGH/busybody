@@ -1,5 +1,5 @@
     
-if (useObjectObserve)
+var observable = useObjectObserve ?
     Class("obsjs.observable", function () {
         var observable = obsjs.observableBase.extend(function observable(forObject) {
             this._super(forObject);
@@ -40,8 +40,7 @@ if (useObjectObserve)
         };
 
         return observable;
-    });
-else
+    }) :
     Class("obsjs.observable", function () {
         var observable = observableBase.extend(function observable(forObject) {
             this._super(forObject);
