@@ -21,7 +21,7 @@ Class("obsjs.utils.compiledArrayChange", function () {
             addedIndexes = [],      // indexes of added items. Corresponds to this.added
             removedIndexes = [],    // indexes of removed items. Corresponds to this.removed
             moved = [];             // moved items
-                
+        
         // populate addedIndexes and movedTo
         var added = this.added.slice();
         enumerateArr(this.finalArray, function(item, i) {
@@ -76,15 +76,15 @@ Class("obsjs.utils.compiledArrayChange", function () {
         };
     };
     
-    compiledArrayChange.prototype.build = function (changes) {        
+    compiledArrayChange.prototype.build = function (changes) {  
         this.removed = [];
         this.added = [];
         if (!changes.length || this.beginAt === this.endAt) {
-            this.indexes = {added:[], removed:[], removed:[]};
+            this.indexes = {added:[], removed:[], moved:[]};
             return;
         }
         
-        var array = changes[0].object.slice(), current, args, tmp;
+        var array = changes[0].object.slice(), current, args, tmp, tmp2;
         for (var i = changes.length - 1; i >= this.beginAt; i--) {
             
             // operate on splices only
@@ -101,19 +101,25 @@ Class("obsjs.utils.compiledArrayChange", function () {
                     this.finalArray = array.slice();
                 
                 // add a removed or remmove from added items
+                tmp2 = 0;
                 enumerateArr(current.removed, function (removed) {
-                    if ((tmp = this.added.indexOf(removed)) === -1)
-                        this.removed.push(removed);
-                    else
+                    if ((tmp = this.added.indexOf(removed)) === -1) {
+                        this.removed.splice(tmp2, 0, removed);
+                        tmp2++;
+                    } else {
                         this.added.splice(tmp, 1);
+                    }
                 }, this);
 
                 // add an added or remmove from removed items
+                tmp2 = 0;
                 enumerateArr(array.slice(current.index, current.index + current.addedCount), function (added) {
-                    if ((tmp = this.removed.indexOf(added)) === -1)
-                        this.added.push(added);
-                    else
+                    if ((tmp = this.removed.indexOf(added)) === -1) {
+                        this.added.splice(tmp2, 0, added);
+                        tmp2++;
+                    } else {
                         this.removed.splice(tmp, 1);
+                    }
                 }, this);
             }
             

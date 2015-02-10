@@ -11,7 +11,7 @@ Class("obsjs.utils.observeCycleHandler", function () {
         
         this.observe("length", function (oldVal, newVal) {
             if (newVal === 0)
-                enumerateArr(this.$afterObserveCycles, ex);
+                enumerateArr(this.$afterObserveCycles.slice(), ex);
         }, this, false, true);
     });
 
@@ -20,7 +20,7 @@ Class("obsjs.utils.observeCycleHandler", function () {
         if (forObject === this) return;
         
         if (this.length === 0)
-            enumerateArr(this.$beforeObserveCycles, ex);
+            enumerateArr(this.$beforeObserveCycles.slice(), ex);
             
         this.length++;
     };
@@ -60,17 +60,4 @@ Class("obsjs.utils.observeCycleHandler", function () {
     observeCycleHandler.instance = new observeCycleHandler();
     
     return observeCycleHandler;
-
-
-
-var observeCycleHandler = {
-    length: 0,
-    before: function () {
-        if (observeCycleHandler.length === 0)
-            observeCycleHandler.length++;
-    },
-    after: function () {
-        observeCycleHandler.length--;
-    }
-};
 });

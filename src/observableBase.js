@@ -28,7 +28,6 @@ Class("obsjs.observableBase", function () {
         });
         
         this.$changeBatch.length = 0;
-        
         obsjs.utils.observeCycleHandler.instance.before(this.$forObject || this);
 
         var evaluateMultiple = [];

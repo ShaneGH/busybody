@@ -29,7 +29,7 @@ Class("obsjs.callbacks.arrayCallback", function () {
         }
         
         if (!result)
-            changes.push(result = new obsjs.utils.compiledArrayChange(changes, beginAt, endAt));
+            changes.compiled.push(result = new obsjs.utils.compiledArrayChange(changes, beginAt, endAt));
         
         this.callback.call(this.context, result.getRemoved(), result.getAdded(), result.getIndexes());
     };

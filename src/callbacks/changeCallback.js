@@ -51,7 +51,6 @@ Class("obsjs.callbacks.changeCallback", function () {
     };
 
     changeCallback.prototype.evaluateMultiple = function (changes) {
-        
         if (this.evaluateOnEachChange || !changes.length) return;
 
         if (this.activated === false) return changeCallback.dispose;
@@ -78,7 +77,7 @@ Class("obsjs.callbacks.changeCallback", function () {
             }
         }
                 
-        if (beginAt !== -1) {
+        if (beginAt !== -1 && beginAt < endAt) {
             this._evaluateMultiple(changes, beginAt, endAt);
         }
         

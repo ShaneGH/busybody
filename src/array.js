@@ -44,7 +44,10 @@ Class("obsjs.array", function () {
         var changeBatch = this.$changeBatch.slice();
         this.$changeBatch.length = 0;
 
+        //TODO: copy pasted from observableBase
+        obsjs.utils.observeCycleHandler.instance.before(this);
         enumerateArr(obsjs.observableBase.processChanges(this.$callbacks, changeBatch), function (c) { c(); });
+        obsjs.utils.observeCycleHandler.instance.after(this);
     };
     
     array.prototype.registerChangeBatch = function (changes) {
