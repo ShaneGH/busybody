@@ -70,9 +70,48 @@ Class("obsjs.observableBase", function () {
 
     //TODO: this is a temp implementation
     observableBase.prototype.observeArray = function (property, callback, context, evaluateOnEachChange) {
-        var obs = (this.$forObject || this)[property].observe(callback, context, evaluateOnEachChange);
-        this.registerDisposable(obs);
-        return obs;
+        var d2, d1 = this.observe(property, function (oldValue, newValue) {
+            
+            if (d2) {
+                this.disposeOf(d2);
+                d2 = null;
+            }
+            
+            var change = {
+                object: newValue || [],
+                index: 0,
+                addedCount: newValue instanceof Array ? newValue.length : 0,
+                removed: oldValue instanceof Array ? oldValue : [],
+                type: "splice"
+            };
+            
+            //TODO: duplication of logic
+            if (evaluateOnEachChange) {
+                callback.call(context, change);
+            } else {
+                var cec = new obsjs.utils.compiledArrayChange([change], 0, 1);
+                callback.call(context, cec.getRemoved(), cec.getAdded(), cec.getIndexes());
+            }
+            
+            if (newValue instanceof obsjs.array)
+                d2 = this.registerDisposable(newValue.observe(callback, context, evaluateOnEachChange));
+        }, this);
+        
+        var tmp;
+        if (tmp = obsjs.utils.obj.getObject(property, this.$forObject || this))
+            d2 = this.registerDisposable(tmp.observe(callback, context, evaluateOnEachChange));
+        
+        return new obsjs.disposable(function () {
+            if (d2) {
+                this.disposeOf(d2);
+                d2 = null;
+            }
+            
+            if (d1) {
+                d1.dispose();
+                d1 = null;
+            }
+        });
     }
 
     observableBase.prototype.observe = function (property, callback, context, evaluateOnEachChange, evaluateIfValueHasNotChanged) {

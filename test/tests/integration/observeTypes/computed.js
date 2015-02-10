@@ -159,7 +159,7 @@ testUtils.testWithUtils("integration test", "array", false, function(methods, cl
     return;
     // arrange
     var subject = new obsjs.observable();
-    var val1 = subject.val1 = new wipeout.obs.array([0,1,2]);
+    var val1 = subject.val1 = new obsjs.array([0,1,2]);
     var comp = subject.comp = [];
 
     new obsjs.observeTypes.computed(function() { 
@@ -179,10 +179,10 @@ testUtils.testWithUtils("integration test", "array", false, function(methods, cl
     assert();
     stop();
     
-    wipeout.obs.watched.afterNextObserveCycle(function() {
+    obsjs.observable.afterNextObserveCycle(function() {
         assert();
         val1.push(345);
-        wipeout.obs.watched.afterNextObserveCycle(function() {
+        obsjs.observable.afterNextObserveCycle(function() {
             assert();
             start();
         }, true);
@@ -195,7 +195,7 @@ testUtils.testWithUtils("integration test", "array total", false, function(metho
     return;
     // arrange
     var subject = new obsjs.observable();
-    subject.val1 = new wipeout.obs.array([0,1,2]);
+    subject.val1 = new obsjs.array([0,1,2]);
 
     new obsjs.observeTypes.computed(function() { 
         var tmp = 0;
@@ -218,13 +218,13 @@ testUtils.testWithUtils("integration test", "array total", false, function(metho
     stop();
     
     subject.val1.push(768);
-    wipeout.obs.watched.afterNextObserveCycle(function() {
-    wipeout.obs.watched.afterNextObserveCycle(function() {
+    obsjs.observable.afterNextObserveCycle(function() {
+    obsjs.observable.afterNextObserveCycle(function() {
         setTimeout(function() {
             assert();
             subject.val1.replace(0, 345);
-            wipeout.obs.watched.afterNextObserveCycle(function() {
-            wipeout.obs.watched.afterNextObserveCycle(function() {
+            obsjs.observable.afterNextObserveCycle(function() {
+            obsjs.observable.afterNextObserveCycle(function() {
                 assert();
                 start();
             }, true);
@@ -238,7 +238,7 @@ testUtils.testWithUtils("integration test", "array, changed to object", false, f
     return;
     // arrange
     var subject = new obsjs.observable();
-    var val1 = subject.val1 = new wipeout.obs.array([0,1,2]);
+    var val1 = subject.val1 = new obsjs.array([0,1,2]);
     var comp = subject.comp = [];
 
     new obsjs.observeTypes.computed(function() {            
@@ -247,13 +247,13 @@ testUtils.testWithUtils("integration test", "array, changed to object", false, f
 
     // act
     var val2 = subject.val1 = {};
-    wipeout.obs.watched.afterNextObserveCycle(function() {
-    wipeout.obs.watched.afterNextObserveCycle(function() {
-        wipeout.obs.watched.afterNextObserveCycle(function() {
+    obsjs.observable.afterNextObserveCycle(function() {
+    obsjs.observable.afterNextObserveCycle(function() {
+        obsjs.observable.afterNextObserveCycle(function() {
             strictEqual(subject.comp, val2);
             val1.length = 0;
             val1.push(33);
-            wipeout.obs.watched.afterNextObserveCycle(function() {
+            obsjs.observable.afterNextObserveCycle(function() {
                 strictEqual(subject.comp, val2);
                 strictEqual(subject.comp[0], undefined);
                 strictEqual(comp.length, 3);

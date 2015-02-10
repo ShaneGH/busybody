@@ -206,16 +206,24 @@ function testMe (moduleName, buildSubject) {
     });
 
     testUtils.testWithUtils("observeArray", "old array does not trigger change", false, function(methods, classes, subject, invoker) {
-        return;
         
         // arrange
         var subject = buildSubject();
         
-        var o = subject.aa = new obsjs.array([1,2,3]);
+        var o = subject.aa = new obsjs.array([11,22,33]);
         
-        obsjs.observable.observeArray(subject, "aa", function(oldV, newV) {
-            strictEqual(oldV, o);
-            strictEqual(newV, n);
+        var i = 0;
+        obsjs.observable.observeArray(subject, "aa", function(removed, added) {
+            
+            strictEqual(i, 0);
+            i++;
+            
+            strictEqual(removed.length, 2);
+            strictEqual(removed[0], 11);
+            strictEqual(removed[1], 33);
+            
+            strictEqual(added.length, 1);
+            strictEqual(added[0], 55);
             
             // strict equals will make sure "push" will not trigger a subscription
             obsjs.observable.afterNextObserveCycle(function () {
@@ -227,7 +235,7 @@ function testMe (moduleName, buildSubject) {
         });
 
         // act
-        var n = subject.aa = [];
+        var n = subject.aa = [22, 55];
         stop();
     });
 
