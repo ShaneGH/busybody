@@ -15,9 +15,7 @@ Class("obsjs.observableBase", function () {
         if (!this.$changeBatch.length)
             setTimeout(this.processChangeBatch.bind(this));
         
-        var args = changes.slice();
-        args.splice(0, 0, this.$changeBatch.length, 0);
-        this.$changeBatch.splice.apply(this.$changeBatch, args);
+        this.$changeBatch.push.apply(this.$changeBatch, changes);
     };
     
     observableBase.prototype.processChangeBatch = function () {
@@ -33,32 +31,47 @@ Class("obsjs.observableBase", function () {
 
         var evaluateMultiple = [];
         enumerateObj(splitChanges, function (changes, name) {
-            if (this.$callbacks[name]) {
-                var dispose = [];
-                enumerateArr(this.$callbacks[name], function (callback, i) {
-                    if (callback.evaluateOnEachChange) {
-                        for (var i = 0, ii = changes.length; i < ii; i++)
-                            if (callback.evaluateSingle(changes[i], changes[i + 1]))
-                                dispose.push(i);
-                    } else {
-                        evaluateMultiple.push(function () {
-                            if (callback.evaluateMultiple(changes))
-                                dispose.push(i);
-                        });
-                    }
-                });
-                
-                for (var i = dispose.length - 1; i >= 0; i--)
-                    this.$callbacks[name].splice(dispose[i], 1);
-            }                
+            if (this.$callbacks[name])
+                evaluateMultiple.push.apply(evaluateMultiple, observableBase.processChanges(this.$callbacks[name], changes));
         }, this);
 
         enumerateArr(evaluateMultiple, function (c) { c(); });
     };
 
+    observableBase.processChanges = function (callbacks, changes) {
+        var dispose = [];
+        var evaluateMultiple = [];
+        enumerateArr(callbacks, function (callback, i) {
+            if (callback.evaluateOnEachChange) {
+                for (var i = 0, ii = changes.length; i < ii; i++)
+                    if (callback.evaluateSingle(changes, i))
+                        dispose.push(i);
+            } else {
+                evaluateMultiple.push(function () {
+                    if (callback.evaluateMultiple(changes))
+                        dispose.push(i);
+                });
+            }
+        });
+
+        // reverse array so that removals before will not affect array enumeration
+        dispose.sort(function (a,b) { return a < b;  })
+        for (var i = 0, ii = dispose.length; i < ii; i++)
+            callbacks.splice(dispose[i], 1);
+        
+        return evaluateMultiple;
+    };
+    
     observableBase.prototype.onNextPropertyChange = function (property, callback) {
         throw "Abstract methods must be overridden";
     };
+
+    //TODO: this is a temp implementation
+    observableBase.prototype.observeArray = function (property, callback, context, evaluateOnEachChange) {
+        var obs = (this.forObject || this)[property].observe(callback, context, evaluateOnEachChange);
+        this.registerDisposable(obs);
+        return obs;
+    }
 
     observableBase.prototype.observe = function (property, callback, context, evaluateOnEachChange, evaluateIfValueHasNotChanged) {
         
@@ -69,10 +82,6 @@ Class("obsjs.observableBase", function () {
         }
         
         this._init(property);
-        
-        var cb = callback.bind(context);
-        cb.evaluateOnEachChange = evaluateOnEachChange;
-        cb.evaluateIfValueHasNotChanged = evaluateIfValueHasNotChanged;
 
         var cb = new obsjs.callbacks.propertyCallback(callback, context, evaluateOnEachChange, evaluateIfValueHasNotChanged);
         if (!this.$callbacks[property]) this.$callbacks[property] = [];
@@ -93,7 +102,7 @@ Class("obsjs.observableBase", function () {
                         cb.deactivatingChange = change;
                     });
                 else
-                    cb.deactivated = true;
+                    cb.activated = false;
             }).bind(this))
         };
         
@@ -114,10 +123,20 @@ Class("obsjs.observableBase", function () {
             delete this.$callbacks[i];
     };
     
+    observableBase.prototype.computed = function (property, callback, watchVariables) {
+        
+        var computed = new obsjs.observeTypes.computed(callback, this, watchVariables);
+        computed.bind(this.forObject || this, property);
+        this.registerDisposable(computed);
+        return computed;        
+    };
+    
     observableBase.prototype.del = function (property) {
         
         delete (this.$forObject || this)[property];
     };
+    
+    observableBase.prototype.
     
     observableBase.newObservable = function () {
         return observableBase.makeObservable({});
