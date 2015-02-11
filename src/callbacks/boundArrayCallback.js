@@ -1,7 +1,7 @@
 
 Class("obsjs.callbacks.boundArrayCallback", function () {
         
-    var boundArrayCallback = obsjs.callbacks.changeCallback.extend(function arrayCallback(fromArray, toArray) {
+    var boundArrayCallback = obsjs.callbacks.changeCallback.extend(function boundArrayCallback(fromArray, toArray) {
         
         this._super(false);
         
@@ -30,34 +30,44 @@ Class("obsjs.callbacks.boundArrayCallback", function () {
         if (!result)
             changes.compiled.push(result = new obsjs.utils.compiledArrayChange(changes, beginAt, endAt));
         
-        var execute = (function () {
-            var forbidden = [], fb;
-            if (this.toArray instanceof obsjs.array && (fb = this.toArray.$boundArrays.value(this.fromArray)))
-                enumerateArr(fb, function (fb) {
-                    forbidden.push.apply(forbidden, fb);
-                });
-                
-            enumerateArr(result.changes, function (change) {
-                if (forbidden.indexOf(change) !== -1) return;
-                
-                var args = change.added.slice();
-                args.splce(0, 0, change.index, change.removed.length);
-                this.toArray.splice.apply(this.toArray, args);
-            }, this);
-        }).bind(this);
-        
-        var vals;
+        var vals, executor = new bindArrays(this.fromArray, this.toArray);  
         if (this.toArray instanceof obsjs.array && (vals = this.toArray.$boundArrays.value(this.fromArray))) {
-            obsjs.observable.captureArrayChanges(this.toArray, execute, (function (changes) {
-                vals.push(changes);
-                setTimeout(function () {
-                    vals.remove(changes);
-                }, 100);
-            }).bind(this));
+            executor.executeAndCapture(result.changes, vals);
         } else {
-            execute();
+            executor.execute(result.changes);
         }
     };
+    
+    function bindArrays (fromArray, toArray) {
+        
+        this.fromArray = fromArray;
+        this.toArray = toArray;
+    }
+    
+    bindArrays.prototype.executeAndCapture = function (compiledChanges, addChangesTo) {
+        obsjs.observable.captureArrayChanges(this.toArray, (function () { this.execute(compiledChanges); }).bind(this), function (changes) {
+            addChangesTo.push(changes);
+            setTimeout(function () {
+                addChangesTo.splice(addChangesTo.indexOf(changes));
+            }, 100);
+        });
+    }
+    
+    bindArrays.prototype.execute = function (compiledChanges) {
+        var forbidden = [], fb;
+        if (this.toArray instanceof obsjs.array && (fb = this.fromArray.$boundArrays.value(this.toArray)))
+            enumerateArr(fb, function (fb) {
+                forbidden.push.apply(forbidden, fb);
+            });
+
+        enumerateArr(compiledChanges, function (change) {
+            if (forbidden.indexOf(change.change) !== -1) return;
+
+            var args = change.added.slice();
+            args.splice(0, 0, change.index, change.removed.length);
+            this.toArray.splice.apply(this.toArray, args);
+        }, this);
+    }
     
     return boundArrayCallback;
 });

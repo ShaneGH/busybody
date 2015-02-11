@@ -551,7 +551,6 @@ testUtils.testWithUtils("remove", null, false, function(methods, classes, subjec
 });
 
 testUtils.testWithUtils("bind", "length change", false, function(methods, classes, subject, invoker) {
-    return;
     //TODO: make this test ore complex,:
     //    test 2: with 2 way bindings
     
@@ -583,7 +582,7 @@ testUtils.testWithUtils("bind", "length change", false, function(methods, classe
 });
 
 testUtils.testWithUtils("bind", "2 splices", false, function(methods, classes, subject, invoker) {
-        return;
+    
     // arrange
     var subject = new obsjs.array([1,2,3,4,5,6,7,8,9]);
     var another = [];
@@ -613,21 +612,20 @@ testUtils.testWithUtils("bind", "2 splices", false, function(methods, classes, s
 });
 
 testUtils.testWithUtils("bind", "2 way, simple", false, function(methods, classes, subject, invoker) {
-    return;
     
     // arrange
     var subject = new obsjs.array([1,2,3]);
     var another = new obsjs.array();
-    subject.name = "subject";
-    another.name = "another";
+    subject.name = "changed";
+    another.name = "change target";
     
     var val = {};
     
-    setTimeout(function () {
+    obsjs.observable.afterNextObserveCycle(function () {
         strictEqual(subject.length, 2);
         assert();
         start();
-    }, 1000);
+    }, true);
 
     // act
     subject.bind(another);
@@ -646,7 +644,6 @@ testUtils.testWithUtils("bind", "2 way, simple", false, function(methods, classe
 });
 
 testUtils.testWithUtils("bind", "2 way bindings, complex", false, function(methods, classes, subject, invoker) {
-    return;
         
     //TODO: dispose test
     // arrange
@@ -687,7 +684,6 @@ testUtils.testWithUtils("bind", "2 way bindings, complex", false, function(metho
 });
 
 testUtils.testWithUtils("bind", "with adds on pending queue", false, function(methods, classes, subject, invoker) {
-    return;
     
     // arrange
     var subject = new obsjs.array();
@@ -701,7 +697,7 @@ testUtils.testWithUtils("bind", "with adds on pending queue", false, function(me
         strictEqual(subject.length, 3);
         assert();
         start();
-    });
+    }, true);
 
     // act
     subject.bind(another);
@@ -718,10 +714,14 @@ testUtils.testWithUtils("bind", "with adds on pending queue", false, function(me
     
     assert();
     stop();
+    
+    // ensure afterNextObserveCycle is fired
+    var t = new obsjs.observable();
+    t.observe("aa", function(){});
+    t.aa = "KJBKJ";
 });
 
 testUtils.testWithUtils("bind", "with moves on pending queue", false, function(methods, classes, subject, invoker) {
-    return;
     
     // arrange
     var subject = new obsjs.array(["aa","bb","cc"]);
@@ -733,7 +733,7 @@ testUtils.testWithUtils("bind", "with moves on pending queue", false, function(m
         strictEqual(subject.length, 3);
         assert();
         start();
-    });
+    }, true);
 
     // act
     subject.bind(another);
@@ -750,4 +750,9 @@ testUtils.testWithUtils("bind", "with moves on pending queue", false, function(m
     
     assert();
     stop();
+    
+    // ensure afterNextObserveCycle is fired
+    var t = new obsjs.observable();
+    t.observe("aa", function(){});
+    t.aa = "KJBKJ";
 });

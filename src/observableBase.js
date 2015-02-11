@@ -179,7 +179,7 @@ Class("obsjs.observableBase", function () {
     
     observableBase._captureChanges = function (forObject, logic, callback, captureType) {
                 
-        captureType.Observe(forObject, callback);
+        captureType.observe(forObject, callback);
         logic();
         captureType.unobserve(forObject, callback);
     };
@@ -217,6 +217,9 @@ Class("obsjs.observableBase", function () {
     };
 
     observableBase.tryObserve = function (object, property, callback, context, evaluateOnEachChange, evaluateIfValueHasNotChanged) {
+        
+        if (object instanceof obsjs.array && property instanceof Function)
+            return object.observe(arguments[1], arguments[2], arguments[3]);    // property names are misleading in this case
         
         var target = object instanceof observableBase ?
             object :

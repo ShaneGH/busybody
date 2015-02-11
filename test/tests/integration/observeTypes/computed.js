@@ -156,7 +156,7 @@ testUtils.testWithUtils("integration test", "complex change", false, function(me
 });
 
 testUtils.testWithUtils("integration test", "array", false, function(methods, classes, subject, invoker) {
-    return;
+    
     // arrange
     var subject = new obsjs.observable();
     var val1 = subject.val1 = new obsjs.array([0,1,2]);
@@ -192,7 +192,7 @@ testUtils.testWithUtils("integration test", "array", false, function(methods, cl
 });
 
 testUtils.testWithUtils("integration test", "array total", false, function(methods, classes, subject, invoker) {
-    return;
+    
     // arrange
     var subject = new obsjs.observable();
     subject.val1 = new obsjs.array([0,1,2]);
@@ -219,23 +219,23 @@ testUtils.testWithUtils("integration test", "array total", false, function(metho
     
     subject.val1.push(768);
     obsjs.observable.afterNextObserveCycle(function() {
-    obsjs.observable.afterNextObserveCycle(function() {
         setTimeout(function() {
             assert();
             subject.val1.replace(0, 345);
+            obsjs.observable.afterNextObserveCycle(function() {
             obsjs.observable.afterNextObserveCycle(function() {
             obsjs.observable.afterNextObserveCycle(function() {
                 assert();
                 start();
             }, true);
             }, true);
+            }, true);
         });
-    }, true);
     }, true);    
 });
 
 testUtils.testWithUtils("integration test", "array, changed to object", false, function(methods, classes, subject, invoker) {
-    return;
+    
     // arrange
     var subject = new obsjs.observable();
     var val1 = subject.val1 = new obsjs.array([0,1,2]);

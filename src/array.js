@@ -203,6 +203,8 @@ Class("obsjs.array", function () {
     };
     
     array.prototype.bind = function(anotherArray) {
+        this._init();
+        
         if (this.$boundArrays.value(anotherArray)) return;        
         
         if (!(anotherArray instanceof obsjs.array && anotherArray.$boundArrays.value(this)))
