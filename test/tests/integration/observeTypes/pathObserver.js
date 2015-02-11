@@ -1,4 +1,4 @@
-module("obsjs.observeTypes.pathObserver", {
+module("obsjs.observeTypes.pathObserver, integration", {
     setup: function() {
     },
     teardown: function() {

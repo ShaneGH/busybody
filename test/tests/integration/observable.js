@@ -332,5 +332,5 @@ function testMe (moduleName, buildSubject) {
     });
 }
 
-testMe("obsjs.observable", function() { return new obsjs.observable(); });
-testMe("obsjs.observable, do not use prototype", function() { return {}; });
+testMe("obsjs.observable, integration", function() { return new obsjs.observable(); });
+testMe("obsjs.observable, integration, do not use prototype", function() { return {}; });

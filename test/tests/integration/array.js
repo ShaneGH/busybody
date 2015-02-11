@@ -1,5 +1,5 @@
 
-module("obsjs.array", {
+module("obsjs.array, integration", {
     setup: function() {
     },
     teardown: function() {

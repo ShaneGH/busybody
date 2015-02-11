@@ -1,22 +1,32 @@
-module("wipeout.base.disposable", {
+module("obsjs.disposable, integration", {
     setup: function() {
     },
     teardown: function() {
     }
 });
 
-var disposable = wipeout.base.disposable;
+var disposable = obsjs.disposable;
 
 testUtils.testWithUtils("constructor", "and all functionality", false, function(methods, classes, subject, invoker) {
     // arrange
-    var called = 0;
-    var subject = new disposable(function(){ called++; });
+    var disposed1 = 0, disposed2 = 0, disposed3 = 0, disposed4 = 0;
+    var subject = new disposable(methods.customMethod(function () { disposed1++; }));
+    subject.registerDisposeCallback(methods.customMethod(function () { disposed2++; }));
+    subject.registerDisposable({dispose: methods.customMethod(function () { disposed3++; }) });
     
-    // act
-    subject.dispose();
-    subject.dispose();
+    var disp = subject.registerDisposeCallback(function () { disposed4++; });
     
     // assert
-    ok(!subject.disposeFunction);
-    strictEqual(called, 1);
+    subject.disposeOf(disp);
+    strictEqual(disposed1, 0);
+    strictEqual(disposed2, 0);
+    strictEqual(disposed3, 0);
+    strictEqual(disposed4, 1);
+    
+    // act, again
+    subject.dispose();
+    strictEqual(disposed1, 01);
+    strictEqual(disposed2, 01);
+    strictEqual(disposed3, 01);
+    strictEqual(disposed4, 1);
 });
