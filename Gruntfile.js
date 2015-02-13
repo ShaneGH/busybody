@@ -11,7 +11,19 @@ module.exports = function(grunt) {
         }
     };
     
-    var src = ['tools/begin.js', 'src/utils/obj.js', 'src/disposable.js', 'src/observableBase.js', 'src/callbacks/changeCallback.js', 'src/**/*.js', 'tools/end.js'];
+    var dependencies = [ 
+        'src/utils/obj.js', 
+        'src/disposable.js', 
+        'src/observableBase.js', 
+        'src/callbacks/changeCallback.js',
+        'src/arrayBase.js'];
+    
+    var src = [
+        'tools/begin.js', 
+        'src/**/*.js', 
+        'tools/end.js'];
+    
+    src.splice(1, 0, dependencies);
     
     // Project configuration.
     grunt.initConfig({

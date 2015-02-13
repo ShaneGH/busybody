@@ -2,28 +2,30 @@
 
 Class("obsjs.observeTypes.computed", function () {
     
+    var WITH = /\s*with\s*\(/g;
     var GET_ARGUMENT_NAMES = /([^\s,]+)/g;
     var STRIP_INLINE_COMMENTS = /\/\/.*$/mg;  
     var STRIP_BLOCK_COMMENTS = /\/\*[\s\S]*?\*\//mg;
-    var GET_ITEMS = "((\\s*\\.\\s*([\\w\\$]*))|(\\[\\s*\\d\\s*\\]))+";
-    
-    var previousValPlaceholder = {};
+    var GET_ITEMS = "((\\s*\\.\\s*([\\w\\$]*))|(\\[\\s*\\d\\s*\\]))+"; // ".propertyName" -or- "[2]"
     
     // monitor a function and change the value of a "watched" when it changes
-    var computed = obsjs.observable.extend(function computed(callback, context, watchVariables, callbackStringOverride) {
-                
+    var computed = obsjs.observable.extend(function computed(callback, context, watchVariables, callbackStringOverride, allowWith) {
+        
         this._super();
         
         this.arguments = [];
         
-        this.callback = computed.stripFunction(callbackStringOverride || callback);
+        this.callbackString = computed.stripFunction(callbackStringOverride || callback);
         this.callbackFunction = callback;
         this.context = context;
-        this.previousVal = previousValPlaceholder;
+        
+        if (!allowWith)
+            if (WITH.test(this.callbackString))
+                throw "You cannot use the \"with\" keyword in computed functions by default. To allow with, use the allowWith argument on the constructor, however, properties of the variable within the \"with\" statement cannot be monitored for change.";
                 
         // get all argument names
-        var args = this.callback.slice(
-            this.callback.indexOf('(') + 1, this.callback.indexOf(')')).match(GET_ARGUMENT_NAMES) || [], completeArg = {};
+        var args = this.callbackString.slice(
+            this.callbackString.indexOf('(') + 1, this.callbackString.indexOf(')')).match(GET_ARGUMENT_NAMES) || [], completeArg = {};
         
         // get all watch variables which are also arguments
         if (watchVariables && args.length) {            
@@ -59,7 +61,7 @@ Class("obsjs.observeTypes.computed", function () {
     };
     
     //TODO: this should be in utils
-    computed.createBindOrSetFunction = function (setterObject, setterProperty, parser) {
+    computed.createBindFunction = function (setterObject, setterProperty, parser) {
         var arrayDisposeCallback;
         var output = function (oldValue, newValue) {
             
@@ -93,7 +95,7 @@ Class("obsjs.observeTypes.computed", function () {
     computed.prototype.bind = function (object, property) {
         var arrayDisposeCallback;
         
-        var callback = computed.createBindOrSetFunction(object, property);
+        var callback = computed.createBindFunction(object, property);
         var obs = this.observe("val", callback);
         callback(null, this.val);
         
@@ -145,11 +147,11 @@ Class("obsjs.observeTypes.computed", function () {
     
     computed.prototype.watchVariable = function(variableName, variable) {
                 
-        var match, found = [], regex = new RegExp(variableName + GET_ITEMS, "g"), matches = this.callback.match(regex);
+        var match, found = [], regex = new RegExp(variableName + GET_ITEMS, "g"), matches = this.callbackString.match(regex);
         
         // find all instances of the variableName
         var tmp1 = [], tmp2;
-        while ((match = regex.exec(this.callback)) !== null) {
+        while ((match = regex.exec(this.callbackString)) !== null) {
             if (tmp1.indexOf(tmp2 = trim(match[0])) === -1) {
                 tmp1.push(tmp2);
                 found.push({
@@ -164,14 +166,14 @@ Class("obsjs.observeTypes.computed", function () {
             if (item.index > 0) {
                 // determine whether the instance is part of a bigger variable name
                 // do not need to check trailing char as this is filtered by the regex
-                if (this.callback[item.index - 1].search(/[\w\$]/) !== -1)  //TODO test (another char before and after)
+                if (this.callbackString[item.index - 1].search(/[\w\$]/) !== -1)  //TODO test (another char before and after)
                     return;
 
                 // determine whether the instance is a property rather than a variable
                 for (var j = item.index - 1; j >= 0; j--) { // TODO: test
-                    if (this.callback[j] === ".")
+                    if (this.callbackString[j] === ".")
                         return;
-                    else if (this.callback[j].search(/\s/) !== 0)
+                    else if (this.callbackString[j].search(/\s/) !== 0)
                         break;
                 }
             }

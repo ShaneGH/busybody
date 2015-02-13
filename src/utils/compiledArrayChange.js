@@ -124,12 +124,12 @@ Class("obsjs.utils.compiledArrayChange", function () {
                     }
                 }, this);
                 
-                this.changes[i] = {
+                this.changes.splice(0, 0, {
                     index: current.index,
                     added: array.slice(current.index, current.index + current.addedCount),
                     removed: current.removed,
                     change: changes[i]
-                };
+                });
             }
             
             args = current.removed.slice();

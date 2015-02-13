@@ -42,7 +42,7 @@ var observable = useObjectObserve ?
         return observable;
     }) :
     Class("obsjs.observable", function () {
-        var observable = observableBase.extend(function observable(forObject) {
+        var observable = obsjs.observableBase.extend(function observable(forObject) {
             this._super(forObject);
 
             this.$observed = {};
@@ -72,22 +72,24 @@ var observable = useObjectObserve ?
 
             this.$observed[forProperty] = (this.$forObject || this)[forProperty];
 
+            function getObserver(forObject) { return forObject.$observer || forObject; }
             Object.defineProperty(this.$forObject || this, forProperty, {
                 get: function() {
-                    return this.$observed[forProperty];
+                    return getObserver(this).$observed[forProperty];
                 },
                 set: function (value) {
 
+                    var obs = getObserver(this);
                     var change = {
                         name: forProperty,
                         object: this,
-                        oldValue: this.$observed[forProperty],
+                        oldValue: obs.$observed[forProperty],
                         type: "update"  //TODO, add?
                     };
-                    this.$observed[forProperty] = value;
-                    if (this.$onNextPropertyChanges[forProperty]) {
-                        var callbacks = this.$onNextPropertyChanges[forProperty];
-                        delete this.$onNextPropertyChanges[forProperty];
+                    obs.$observed[forProperty] = value;
+                    if (obs.$onNextPropertyChanges[forProperty]) {
+                        var callbacks = obs.$onNextPropertyChanges[forProperty];
+                        delete obs.$onNextPropertyChanges[forProperty];
                         setTimeout(function () {
                             enumerateArr(callbacks, function (a) {
                                 a(change);
@@ -95,9 +97,9 @@ var observable = useObjectObserve ?
                         });
                     }
 
-                    this.initializeChangeCycle();
+                    obs.initializeChangeCycle();
 
-                    this.__changeToken.push(change);
+                    obs.__changeToken.push(change);
                 },
                 enumerable: true,
                 configurable: true //TODO: !this.usePrototypeAndWoBag

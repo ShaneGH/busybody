@@ -68,7 +68,6 @@ Class("obsjs.observableBase", function () {
         throw "Abstract methods must be overridden";
     };
 
-    //TODO: this is a temp implementation
     observableBase.prototype.observeArray = function (property, callback, context, evaluateOnEachChange) {
         var d2, d1 = this.observe(property, function (oldValue, newValue) {
             
@@ -185,7 +184,14 @@ Class("obsjs.observableBase", function () {
     };
     
     observableBase.captureArrayChanges = function (forObject, logic, callback) {
-        return observableBase._captureChanges(forObject, logic, callback, Array);
+        return observableBase._captureChanges(forObject, logic, function (changes) {
+            changes = changes.slice();
+            for (var i = changes.length - 1; i >= 0; i--)
+                if (!obsjs.arrayBase.isValidArrayChange(changes[i]))
+                    changes.splice(i, 1);
+                    
+            return callback(changes);
+        }, Array);
     };
     
     observableBase.captureChanges = function (forObject, logic, callback) {

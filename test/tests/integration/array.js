@@ -639,6 +639,7 @@ testUtils.testWithUtils("bind", "2 way, simple", false, function(methods, classe
     }
     
     assert();
+    debugger;
     subject.splice(0, 1);
     stop();
 });

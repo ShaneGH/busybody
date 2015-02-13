@@ -8,12 +8,12 @@
         
         /*
         if (!useObjectObserve)
-            this.__woBag.watched.registerChange({
+            this.registerChangeBatch([{
                 name: index.toString(),
                 object: this,
                 oldValue: this[index],
                 type: "update"
-            });
+            }]);
         
         return this.alteringLength(function() {
             if (this.length <= index)
@@ -30,13 +30,13 @@
 
         if (!useObjectObserve)
             if (this.length)
-                this.__woBag.watched.registerChange({
+                this.registerChangeBatch([{
                     addedCount: 0,
                     index: this.length - 1,
                     object: this,
                     removed: [this[this.length - 1]],
                     type: "splice"
-                });
+                }]);
 
         return this.alteringLength(function() {
             return Array.prototype.pop.call(this);
@@ -47,13 +47,13 @@
 
         if (!useObjectObserve)
             if (this.length)
-                this.__woBag.watched.registerChange({
+                this.registerChangeBatch([{
                     addedCount: 0,
                     index: 0,
                     object: this,
                     removed: [this[0]],
                     type: "splice"
-                });
+                }]);
 
         return this.alteringLength(function() {
             return Array.prototype.shift.call(this);
@@ -70,13 +70,13 @@
     array.prototype.push = function(item) {
 
         if (!useObjectObserve)
-            this.__woBag.watched.registerChange({
+            this.registerChangeBatch([{
                 addedCount: 1,
                 index: this.length,
                 object: this,
                 removed: [],
                 type: "splice"
-            });
+            }]);
 
         return this.alteringLength(function() {
             return Array.prototype.push.call(this, item);
@@ -95,12 +95,12 @@
                 if (i === half)
                     continue;
             
-                this.__woBag.watched.registerChange({
+                this.registerChangeBatch([{
                     name: i.toString(),
                     object: this,
                     oldValue: this[i],
                     type: "update"
-                });
+                }]);
             }
         }
         
@@ -117,13 +117,13 @@
                 i++)
                 removed.push(this[i]);
 
-            this.__woBag.watched.registerChange({
+            this.registerChangeBatch([{
                 addedCount: arguments.length - 2,
                 index: index,
                 object: this,
                 removed: removed,
                 type: "splice"
-            });
+            }]);
         }
 
         var args = arguments;

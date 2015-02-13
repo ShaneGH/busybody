@@ -44,20 +44,31 @@ Class("obsjs.callbacks.boundArrayCallback", function () {
         this.toArray = toArray;
     }
     
+    var getId = (function () {
+        var i = 0;
+        return function () {
+            return "id-" + (++i);
+        };
+    }());
+    
     bindArrays.prototype.executeAndCapture = function (compiledChanges, addChangesTo) {
         obsjs.observable.captureArrayChanges(this.toArray, (function () { this.execute(compiledChanges); }).bind(this), function (changes) {
-            addChangesTo.push(changes);
+            var id = getId();
+            addChangesTo[id] = changes;
+            
+            // cleanup
             setTimeout(function () {
-                addChangesTo.splice(addChangesTo.indexOf(changes));
+                delete addChangesTo[id];
             }, 100);
         });
     }
     
     bindArrays.prototype.execute = function (compiledChanges) {
-        var forbidden = [], fb;
-        if (this.toArray instanceof obsjs.array && (fb = this.fromArray.$boundArrays.value(this.toArray)))
-            enumerateArr(fb, function (fb) {
-                forbidden.push.apply(forbidden, fb);
+        
+        var forbidden = [], vals;
+        if (this.toArray instanceof obsjs.array && (vals = this.fromArray.$boundArrays.value(this.toArray)))
+            enumerateObj(vals, function (val) {
+                forbidden.push.apply(forbidden, val);
             });
 
         enumerateArr(compiledChanges, function (change) {
