@@ -10,35 +10,35 @@ Class("obsjs.callbacks.changeCallback", function () {
     changeCallback.dispose = {};
     
     changeCallback.prototype.activate = function (activatingChange) {
-        if (this.activated || this.activatingChange)
+        if (this._activated || this._activatingChange)
             throw "This callback has been activated";
         
-        this.activatingChange = activatingChange;
+        this._activatingChange = activatingChange;
     };
     
     changeCallback.prototype.deactivate = function (deactivatingChange) {
-        if (this.deactivatingChange)
+        if (this._deactivatingChange)
             throw "This callback has a deactivate pending";
         
         if (arguments.length)
-            this.deactivatingChange = deactivatingChange;
+            this._deactivatingChange = deactivatingChange;
         else 
-            this.activated = false;
+            this._activated = false;
     };
 
     changeCallback.prototype.evaluateSingle = function (changes, changeIndex) {
         
         if (!this.evaluateOnEachChange) return;
 
-        if (this.activated === false || this.deactivatingChange === changes[changeIndex]) {            
-            this.activated = false;
+        if (this._activated === false || this._deactivatingChange === changes[changeIndex]) {            
+            this._activated = false;
             return changeCallback.dispose;
         }
 
         if (!this.hasOwnProperty("activated")) {
-            if (this.activatingChange === changes[changeIndex]) {
-                this.activated = true;
-                delete this.activatingChange;
+            if (this._activatingChange === changes[changeIndex]) {
+                this._activated = true;
+                delete this._activatingChange;
             } else
                 return;
         }
@@ -53,27 +53,27 @@ Class("obsjs.callbacks.changeCallback", function () {
     changeCallback.prototype.evaluateMultiple = function (changes) {
         if (this.evaluateOnEachChange || !changes.length) return;
 
-        if (this.activated === false) return changeCallback.dispose;
+        if (this._activated === false) return changeCallback.dispose;
         
         var beginAt = 0, endAt = changes.length, output = undefined;
         if (!this.hasOwnProperty("activated")) {
-            beginAt = changes.indexOf(this.activatingChange);
+            beginAt = changes.indexOf(this._activatingChange);
             if (beginAt !== -1) {            
-                this.activated = true;
-                delete this.activatingChange;
+                this._activated = true;
+                delete this._activatingChange;
             }
             
             // if == -1 case later on
         }
 
-        if (this.deactivatingChange) {
-            endAt = changes.indexOf(this.deactivatingChange);
+        if (this._deactivatingChange) {
+            endAt = changes.indexOf(this._deactivatingChange);
             if (endAt === -1) {
                 endAt = changes.length;                
             } else {
                 output = changeCallback.dispose;
-                this.activated = false;
-                delete this.deactivatingChange;
+                this._activated = false;
+                delete this._deactivatingChange;
             }
         }
                 
