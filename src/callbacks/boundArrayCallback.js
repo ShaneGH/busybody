@@ -1,7 +1,7 @@
 
 Class("obsjs.callbacks.boundArrayCallback", function () {
         
-    var boundArrayCallback = obsjs.callbacks.changeCallback.extend(function boundArrayCallback(fromArray, toArray) {
+    var boundArrayCallback = obsjs.callbacks.arrayCallbackBase.extend(function boundArrayCallback(fromArray, toArray) {
         
         this._super(false);
         
@@ -15,22 +15,7 @@ Class("obsjs.callbacks.boundArrayCallback", function () {
         return this._evaluateMultiple(changes, index, index + 1);
     };
 
-    boundArrayCallback.prototype._evaluateMultiple = function (changes, beginAt, endAt) {
-                
-        if (!changes.compiled)
-            changes.compiled = [];
-        
-        var result;
-        for (var i = 0, ii = changes.compiled.length; i < ii; i++) {
-            if (changes.compiled[i].areEqual(beginAt, endAt)) {
-                result = changes.compiled[i];
-                break;
-            }
-        }
-        
-        if (!result)
-            changes.compiled.push(result = new obsjs.utils.compiledArrayChange(changes, beginAt, endAt));
-        
+    boundArrayCallback.prototype._evaluateArrayMultiple = function (result) {
         var vals, executor = new bindArrays(this.fromArray, this.toArray);  
         if (this.toArray instanceof obsjs.array && (vals = this.toArray.$boundArrays.value(this.fromArray))) {
             executor.executeAndCapture(result.changes, vals);
