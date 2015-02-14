@@ -61,24 +61,24 @@ Class("obsjs.observeTypes.computed", function () {
     };
     
     //TODO: this should be in utils
-    computed.createBindFunction = function (setterObject, setterProperty, parser) {
+    computed.createBindFunction = function (bindToObject, bindToProperty, parser) {
         var arrayDisposeCallback;
         var output = function (oldValue, newValue) {
             
             if (parser) newValue = parser(newValue);
             
-            var existingVal = obsjs.utils.obj.getObject(setterProperty, setterObject);
+            var existingVal = obsjs.utils.obj.getObject(bindToProperty, bindToObject);
             if (newValue === existingVal)
                 return;
             
             output.dispose();
 
             if (!computed.isArray(newValue) || !computed.isArray(existingVal)) {
-                obsjs.utils.obj.setObject(setterProperty, setterObject, newValue);
+                obsjs.utils.obj.setObject(bindToProperty, bindToObject, newValue);
             } else if (newValue instanceof obsjs.array) {                                        
                 arrayDisposeCallback = newValue.bind(existingVal);
             } else {
-                obsjs.array.copyAll(setterObject[setterProperty]);
+                obsjs.array.copyAll(newValue, bindToObject[bindToProperty]);
             }
         };
         
@@ -147,7 +147,9 @@ Class("obsjs.observeTypes.computed", function () {
     
     computed.prototype.watchVariable = function(variableName, variable) {
                 
-        var match, found = [], regex = new RegExp(variableName + GET_ITEMS, "g"), matches = this.callbackString.match(regex);
+        var match, 
+            found = [], 
+            regex = new RegExp(variableName + GET_ITEMS, "g");
         
         // find all instances of the variableName
         var tmp1 = [], tmp2;
@@ -211,6 +213,7 @@ Class("obsjs.observeTypes.computed", function () {
         }).bind(this));
     };
     
+    //TODO: document and expose better
     var nonArrayTypes = [];
     computed.isArray = function (array) {
         if (array instanceof Array) {            

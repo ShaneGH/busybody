@@ -6,8 +6,6 @@ module("obsjs.observeTypes.computed", {
 });
 
 var computed = obsjs.observeTypes.computed;
-
-//TODO: move to unit tests
 testUtils.testWithUtils("stripFunction", "block comments", true, function(methods, classes, subject, invoker) {
     // arrange
     
@@ -135,49 +133,135 @@ testUtils.testWithUtils("constructor", "has un allowed argument", false, functio
     });    
 });
 
-function a() {
-        
-        this._super();
-        
-        this.arguments = [];
-        
-        this.callbackString = computed.stripFunction(callbackStringOverride || callback);
-        this.callbackFunction = callback;
-        this.context = context;
-        
-        if (!allowWith)
-            if (WITH.test(this.callbackString))
-                throw "You cannot use the \"with\" keyword in computed functions by default. To allow with, use the allowWith argument on the constructor, however, properties of the variable within the \"with\" statement cannot be monitored for change.";
-                
-        // get all argument names
-        var args = this.callbackString.slice(
-            this.callbackString.indexOf('(') + 1, this.callbackString.indexOf(')')).match(GET_ARGUMENT_NAMES) || [], completeArg = {};
-        
-        // get all watch variables which are also arguments
-        if (watchVariables && args.length) {            
-            var tmp;
-            for (var i in watchVariables) {
-                // if variable is an argument, add it to args
-                if ((tmp = args.indexOf(i)) !== -1) {
-                    this.arguments[tmp] = watchVariables[i];
-                    args[tmp] = completeArg;
-                }
-            }
-        }
-        
-        // checking that all args have been set
-        enumerateArr(args, function(arg) {
-            if (arg !== completeArg)
-                throw "Argument \"" + arg + "\" must be added as a watch variable.";
-        });
-        
-        this.execute();
-        
-        // watch each watch variable
-        this.watchVariable("this", context);
-        if (watchVariables) {
-            for (var i in watchVariables) {                
-                this.watchVariable(i, watchVariables[i]);
-            }
-        }
-}
+testUtils.testWithUtils("execute", null, false, function(methods, classes, subject, invoker) {
+    // arrange
+    var ensure = methods.method(), result = {};
+    subject.callbackFunction = function () {
+        ensure();
+        strictEqual(arguments[0], subject.arguments[0]);
+        strictEqual(arguments[1], subject.arguments[1]);
+        strictEqual(this, subject.context);
+        return result;
+    };
+    subject.arguments = [{},{}];
+    subject.context = {};
+    
+    // act
+    invoker();
+    
+    // assert
+    strictEqual(subject.val, result);
+});
+
+testUtils.testWithUtils("createBindFunction", "bind objects with parser", true, function(methods, classes, subject, invoker) {
+    // arrange
+    var obj = {}, prop = "prop", newVal = {}, parsedNewVal = {};
+    subject = invoker(obj, prop, methods.method([newVal], parsedNewVal));
+    
+    // act
+    subject(null, newVal);
+    
+    // assert
+    strictEqual(obj[prop], parsedNewVal);
+});
+
+testUtils.testWithUtils("createBindFunction", "bind arrays", true, function(methods, classes, subject, invoker) {
+    // arrange
+    var obj = {prop: []}, prop = "prop", newVal = [{},{},{}];
+    subject = invoker(obj, prop);
+    
+    // act
+    subject(null, newVal);
+    
+    // assert
+    notStrictEqual(obj[prop], newVal);
+    deepEqual(obj[prop], newVal);
+});
+
+testUtils.testWithUtils("createBindFunction", "bind observable arrays", true, function(methods, classes, subject, invoker) {
+    // arrange
+    var obj = {prop: new obsjs.array()}, prop = "prop", newVal = new obsjs.array([{},{},{}]);
+    newVal.bind = methods.method([obj[prop]]);
+    
+    subject = invoker(obj, prop);
+    
+    // act
+    subject(null, newVal);
+    
+    // assert
+});
+
+testUtils.testWithUtils("createBindFunction", "dispose", true, function(methods, classes, subject, invoker) {
+    // arrange
+    var obj = {prop: new obsjs.array()}, prop = "prop", newVal = new obsjs.array([{},{},{}]);
+    newVal.bind = methods.method([obj[prop]], {dispose: methods.method([], null, "dispose was not called") });
+    
+    subject = invoker(obj, prop);
+    
+    // act
+    subject(null, newVal)
+    subject.dispose();
+    
+    // assert
+});
+
+testUtils.testWithUtils("bind", "bind and dispose", false, function(methods, classes, subject, invoker) {
+    // arrange
+    subject.val = {};
+    var obj = {}, prop = {}, cb = methods.method([null, subject.val]), disp = { dispose: methods.method() };
+    cb.dispose = methods.method();
+    classes.mock("obsjs.observeTypes.computed.createBindFunction", function (o, p) {
+        methods.method([obj, prop])(o, p);
+        return cb;
+    }, 1);
+    
+    subject.observe = methods.method(["val", cb], disp);
+    
+    // act
+    invoker(obj, prop).dispose();
+    
+    // assert
+});
+
+testUtils.testWithUtils("onValueChanged", null, false, function(methods, classes, subject, invoker) {
+    // arrange
+    subject.val = {}, output = {}, callback = methods.method([undefined, subject.val]);
+    subject.observe = methods.method(["val", callback], output);
+    
+    // act
+    var op = invoker(callback, true);
+    
+    // assert
+    strictEqual(output, op);
+});
+
+testUtils.testWithUtils("onValueChanged", null, false, function(methods, classes, subject, invoker) {
+    // arrange
+    ok("too complex for unit testing, fully tested in integration testing");
+});
+
+testUtils.testWithUtils("throttleExecution", null, false, function(methods, classes, subject, invoker) {
+    // arrange
+    var i = 0;
+    subject.execute = function () { strictEqual(i, 0); i++; start(); };
+    
+    // act
+    invoker();
+    invoker();
+    stop();
+    
+    // assert
+});
+
+testUtils.testWithUtils("isArray and nonArrayType", null, true, function(methods, classes, subject, invoker) {
+    // arrange
+    var array = objjs.object.extend.call(Array, function(){});
+    var nonArray = objjs.object.extend.call(Array, function(){});
+    computed.nonArrayType(nonArray);
+    
+    // act
+    // assert
+    ok(computed.isArray([]));
+    ok(computed.isArray(new array()));
+    ok(!computed.isArray(new nonArray()));
+});
