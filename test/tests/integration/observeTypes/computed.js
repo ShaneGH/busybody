@@ -161,20 +161,24 @@ testUtils.testWithUtils("integration test", "array total", false, function(metho
     stop();
     
     subject.val1.push(768);
-    obsjs.observable.afterNextObserveCycle(function() {
-        setTimeout(function() {
+    
+    function ex1() {
+        obsjs.observable.afterNextObserveCycle(function () { 
             assert();
             subject.val1.replace(0, 345);
             obsjs.observable.afterNextObserveCycle(function() {
-            obsjs.observable.afterNextObserveCycle(function() {
-            obsjs.observable.afterNextObserveCycle(function() {
-                assert();
-                start();
+                obsjs.observable.afterNextObserveCycle(function() {
+                    assert();
+                    start();
+                }, true);
             }, true);
-            }, true);
-            }, true);
-        });
-    }, true);    
+        }, true);
+    }
+    
+    if (obsjs.useObjectObserve)
+        ex1();
+    else
+        obsjs.observable.afterNextObserveCycle(ex1, true);    
 });
 
 testUtils.testWithUtils("integration test", "array, changed to object", false, function(methods, classes, subject, invoker) {

@@ -67,6 +67,10 @@ Class("obsjs.observableBase", function () {
     observableBase.prototype.onNextPropertyChange = function (property, callback) {
         throw "Abstract methods must be overridden";
     };
+    
+    observableBase.prototype.captureChanges = function (logic, callback) {
+        throw "Abstract methods must be overridden";
+    };
 
     observableBase.prototype.observeArray = function (property, callback, context, evaluateOnEachChange) {
         var d2, d1 = this.observe(property, function (oldValue, newValue) {
@@ -184,18 +188,19 @@ Class("obsjs.observableBase", function () {
     };
     
     observableBase.captureArrayChanges = function (forObject, logic, callback) {
-        return observableBase._captureChanges(forObject, logic, function (changes) {
-            changes = changes.slice();
-            for (var i = changes.length - 1; i >= 0; i--)
-                if (!obsjs.arrayBase.isValidArrayChange(changes[i]))
-                    changes.splice(i, 1);
-                    
-            return callback(changes);
-        }, Array);
+        if (!(forObject instanceof obsjs.array))
+            throw "Only obsjs.array objects can have changes captured";
+        
+        return forObject.captureArrayChanges(logic, callback);
     };
     
     observableBase.captureChanges = function (forObject, logic, callback) {
-        return observableBase._captureChanges(forObject, logic, callback, Object);
+        observableBase.makeObservable(forObject);
+        var target = object instanceof observableBase ?
+            object :
+            object.$observer;
+        
+        return target.captureChanges(logic, callback);
     };
     
     observableBase.newObservable = function () {

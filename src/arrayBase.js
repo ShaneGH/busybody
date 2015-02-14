@@ -56,6 +56,10 @@ Class("obsjs.arrayBase", function () {
     arrayBase.isValidArrayChange = function (change) {
         return change.type === "splice" || !isNaN(parseInt(change.name));
     };
+    
+    arrayBase.prototype.captureChanges = function (logic, callback) {
+        throw "Abstract methods must be overridden";
+    };
          
     arrayBase.prototype.onNextArrayChange = function (callback) {
         

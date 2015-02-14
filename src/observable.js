@@ -23,6 +23,15 @@ var observable = useObjectObserve ?
             Object.observe(this.$forObject || this, cb);
         };
 
+        observable.prototype.captureChanges = function (logic, callback) {
+
+            // make unique callback
+            var cb = function () { callback.apply(this, arguments) };
+            Object.observe(this.$forObject || this, cb);
+            logic();
+            Object.unobserve(this.$forObject || this, cb);
+        };
+
         observable.prototype._init = function () {
             if (this.__subscribeCallback) return;
 
@@ -47,11 +56,21 @@ var observable = useObjectObserve ?
 
             this.$observed = {};
             this.$onNextPropertyChanges = {};
+            this.$captureCallbacks = [];
         });
 
         observable.prototype.onNextPropertyChange = function (property, callback) {
 
             (this.$onNextPropertyChanges[property] || (this.$onNextPropertyChanges[property] = [])).push(callback);
+        };
+
+        observable.prototype.captureChanges = function (logic, callback) {
+
+            // make unique callback
+            var cb = function () { callback.apply(this, arguments) };
+            this.$captureCallbacks.push(cb);
+            logic();
+            this.$captureCallbacks.splice(this.$captureCallbacks.indexOf(cb), 1);
         };
 
         observable.prototype.initializeChangeCycle = function () {
@@ -66,12 +85,13 @@ var observable = useObjectObserve ?
         }
 
         observable.prototype._init = function (forProperty) {
-            //TODO: all of this
 
             if (this.$observed.hasOwnProperty(forProperty)) return;
 
-            this.$observed[forProperty] = (this.$forObject || this)[forProperty];
+            if ((this.$forObject || this).hasOwnProperty(forProperty))
+                this.$observed[forProperty] = (this.$forObject || this)[forProperty];
 
+            //TODO: observe array length tests
             function getObserver(forObject) { return forObject.$observer || forObject; }
             Object.defineProperty(this.$forObject || this, forProperty, {
                 get: function() {
@@ -81,10 +101,10 @@ var observable = useObjectObserve ?
 
                     var obs = getObserver(this);
                     var change = {
+                        type: obs.$observed.hasOwnProperty(forProperty) ? "update" : "add",
                         name: forProperty,
                         object: this,
-                        oldValue: obs.$observed[forProperty],
-                        type: "update"  //TODO, add?
+                        oldValue: obs.$observed[forProperty]
                     };
                     obs.$observed[forProperty] = value;
                     if (obs.$onNextPropertyChanges[forProperty]) {

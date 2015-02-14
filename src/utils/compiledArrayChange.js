@@ -77,6 +77,8 @@ Class("obsjs.utils.compiledArrayChange", function () {
         };
     };
     
+    //TODO: build based on shifts and adds
+    
     compiledArrayChange.prototype.build = function (changes) {  
         this.removed = [];
         this.added = [];

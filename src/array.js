@@ -22,6 +22,22 @@ Class("obsjs.array", function () {
 
         Array.observe(this, cb);
     };
+    
+    array.prototype.captureArrayChanges = function (logic, callback) {
+        
+        var cb = function (changes) {
+            changes = changes.slice();
+            for (var i = changes.length - 1; i >= 0; i--)
+                if (!obsjs.arrayBase.isValidArrayChange(changes[i]))
+                    changes.splice(i, 1);
+
+            callback(changes);
+        };
+        
+        Array.observe(this, cb);
+        logic();
+        Array.unobserve(this, cb);
+    };
 
     array.prototype._init = function () {
         //TODO: dispose
@@ -49,10 +65,30 @@ Class("obsjs.array", function () {
         this._super.apply(this, arguments);
         
         this.$onNextArrayChanges = [];
+        this.$captureCallbacks = [];
     });    
+    var i = 0;
+    function id() {
+        return "id-" + (++i);
+    }
+    
+    array.prototype.captureArrayChanges = function (logic, callback) {
+        
+        var cb = function (changes) {
+            changes = changes.slice();
+            for (var i = changes.length - 1; i >= 0; i--)
+                if (!obsjs.arrayBase.isValidArrayChange(changes[i]))
+                    changes.splice(i, 1);
+
+            callback(changes);
+        };
+        
+        this.$captureCallbacks.push(cb);
+        logic();
+        this.$captureCallbacks.splice(this.$captureCallbacks.indexOf(cb), 1);
+    };
     
     array.prototype.registerChangeBatch = function (changes) {
-        
         for (var i = 0, ii = changes.length; i < ii; i++) {
             if (obsjs.arrayBase.isValidArrayChange(changes[i])) {
                 enumerateArr(this.$onNextArrayChanges.splice(0, this.$onNextArrayChanges.length), function (cb) {
@@ -62,6 +98,12 @@ Class("obsjs.array", function () {
                 break;
             }
         }
+        
+        enumerateArr(this.$captureCallbacks, function (cb) {
+            cb(changes);
+        });
+        
+        enumerateArr(changes, function (ch) { ch.xxx = id(); });
         
         return this._super(changes);
     };

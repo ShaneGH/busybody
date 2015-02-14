@@ -50,7 +50,6 @@ Class("obsjs.callbacks.boundArrayCallback", function () {
     }
     
     bindArrays.prototype.execute = function (compiledChanges) {
-        
         var forbidden = [], vals;
         if (this.toArray instanceof obsjs.array && (vals = this.fromArray.$boundArrays.value(this.toArray)))
             enumerateObj(vals, function (val) {
