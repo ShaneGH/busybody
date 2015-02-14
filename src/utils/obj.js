@@ -1,5 +1,3 @@
-
-//"use strict"; - cannot use strict right now. any functions defined in strict mode are not accesable via arguments.callee.caller, which is used by _super
     
 var enumerateArr = function(enumerate, action, context) {
     ///<summary>Enumerate through an array or object</summary>
@@ -77,26 +75,6 @@ var trim = function(string) {
     return string ? string.replace(_trimString, '') : string;
 };
 
-var trimToLower = function(string) {
-    ///<summary>Trims a string and converts it to lower case</summary>
-    ///<param name="string" type="String">The string to trim</param>
-    ///<returns type="String">The trimmed string</returns>
-    
-    return string ? trim(string).toLowerCase() : string;
-};
-
-var parseBool = function(input) {
-    ///<summary>Parses a String into a Boolean</summary>
-    ///<param name="input" type="String">The string to parse</param>
-    ///<returns type="Boolean">The parsed boolean</returns>
-    
-    if(input == null) return false;
-        
-    input = trimToLower(input);
-    
-    return !!(input && input !== "false" && input !== "0");
-};
-
 Class("obsjs.utils.obj", function () {
         
     //TODO: merge with path watch
@@ -171,22 +149,9 @@ Class("obsjs.utils.obj", function () {
             context = _getObject(propertyName.splice(0, propertyName.length -1), context);
         
         context[propertyName[0]] = value;
-    };    
-    
-    var compareArrays = function (array1, array2) {
-        if (array1.length !== array2.length)
-            return false;
-        
-        for (var i = 0, ii = array1.length; i < ii; i++)
-            if (array1[i] !== array2[i])
-                return false;
-        
-        return true;
     };
     
     var obj = function obj() { };
-    obj.parseBool = parseBool;
-    obj.trimToLower = trimToLower;
     obj.trim = trim;
     obj.enumerateArr = enumerateArr;
     obj.enumerateObj = enumerateObj;
@@ -194,7 +159,6 @@ Class("obsjs.utils.obj", function () {
     obj.setObject = setObject;
     obj.splitPropertyName = splitPropertyName;
     obj.joinPropertyName = joinPropertyName;
-    obj.compareArrays = compareArrays;
     
     return obj;
 });

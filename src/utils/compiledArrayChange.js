@@ -82,7 +82,7 @@ Class("obsjs.utils.compiledArrayChange", function () {
     compiledArrayChange.prototype.build = function (changes) {  
         this.removed = [];
         this.added = [];
-        if (!changes.length || this.beginAt === this.endAt) {
+        if (!changes.length || this.beginAt >= this.endAt) {
             this.indexes = {added:[], removed:[], moved:[]};
             return;
         }
