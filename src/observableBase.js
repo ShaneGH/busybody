@@ -128,7 +128,7 @@ Class("obsjs.observableBase", function () {
         this.$callbacks[property].push(cb);
 
         this.onNextPropertyChange(property, function (change) {
-            cb.activatingChange = change;
+            cb.activate(change);
         });
         
         var dispose = {

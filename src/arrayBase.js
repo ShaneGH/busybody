@@ -143,7 +143,7 @@ Class("obsjs.arrayBase", function () {
         this.$callbacks.push(cb);
 
         this.onNextArrayChange(function (change) {
-            cb.activatingChange = change;
+            cb.activate(change);
         });
         
         var dispose = {
@@ -210,7 +210,7 @@ Class("obsjs.arrayBase", function () {
         this.$callbacks.push(cb);
 
         this.onNextArrayChange(function (change) {
-            cb.activatingChange = change;
+            cb.activate(change);
         });
         
         var dispose = {
