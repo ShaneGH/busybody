@@ -159,54 +159,110 @@ testUtils.testWithUtils("evaluateSingle", "activate", false, function(methods, c
     invoker(ch, index);
 });
 
-function aa() {
-        
-    var changeCallback = objjs.object.extend(function changeCallback(evaluateOnEachChange) {
-        this._super();
-        
-        this.evaluateOnEachChange = evaluateOnEachChange;
-    });
+testUtils.testWithUtils("evaluateMultiple", "has been activated", false, function(methods, classes, subject, invoker) {
     
-    // remove this callback flag
-    changeCallback.dispose = {};
+    // arrange
+    var ch = [0, 1, 345];
+    subject.evaluateOnEachChange = false;
+    subject._activated = true;
+    subject._evaluateMultiple = methods.method([ch, 0, 3]);
     
-    changeCallback.prototype.evaluateMultiple = function (changes) {
-        if (this.evaluateOnEachChange || !changes.length) return;
+    // act
+    // assert
+    invoker(ch);
+});
 
-        if (this._activated === false) return changeCallback.dispose;
-        
-        var beginAt = 0, endAt = changes.length, output = undefined;
-        if (!this.hasOwnProperty("_activated")) {
-            beginAt = changes.indexOf(this._activatingChange);
-            if (beginAt !== -1) {            
-                this._activated = true;
-                delete this._activatingChange;
-            }
-            
-            // if == -1 case later on
-        }
+testUtils.testWithUtils("evaluateMultiple", "with deactivating change", false, function(methods, classes, subject, invoker) {
+    
+    // arrange
+    var ch = [0, 1, 345];
+    subject.evaluateOnEachChange = false;
+    subject._activated = true;
+    subject._deactivatingChange = 345;
+    subject._evaluateMultiple = methods.method([ch, 0, 2]);
+    
+    // act
+    invoker(ch);
+    
+    // assert
+    strictEqual(subject._activated, false);
+    strictEqual(subject._deactivatingChange, undefined);
+});
 
-        if (this._deactivatingChange) {
-            endAt = changes.indexOf(this._deactivatingChange);
-            if (endAt === -1) {
-                endAt = changes.length;                
-            } else {
-                output = changeCallback.dispose;
-                this._activated = false;
-                delete this._deactivatingChange;
-            }
-        }
-                
-        if (beginAt !== -1 && beginAt < endAt) {
-            this._evaluateMultiple(changes, beginAt, endAt);
-        }
-        
-        return output;
-    };
+testUtils.testWithUtils("evaluateMultiple", "with activating change", false, function(methods, classes, subject, invoker) {
     
-    changeCallback.prototype._evaluateMultiple = function (changes) {
-        throw "Abstract methods must be implemented";
-    };
+    // arrange
+    var ch = [0, 1, 345];
+    subject.evaluateOnEachChange = false;
+    subject._activatingChange = 1;
+    subject._evaluateMultiple = methods.method([ch, 1, 3]);
     
-    return changeCallback;
-}
+    // act
+    invoker(ch);
+    
+    // assert
+    strictEqual(subject._activated, true);
+    strictEqual(subject._activatingChange, undefined);
+});
+
+testUtils.testWithUtils("evaluateMultiple", "with activating and deactivating changes", false, function(methods, classes, subject, invoker) {
+    
+    // arrange
+    var ch = [0, 1, 345];
+    subject.evaluateOnEachChange = false;
+    subject._activatingChange = 1;
+    subject._deactivatingChange = 345;
+    subject._evaluateMultiple = methods.method([ch, 1, 2]);
+    
+    // act
+    invoker(ch);
+    
+    // assert
+    strictEqual(subject._activated, false);
+    strictEqual(subject._activatingChange, undefined);
+    strictEqual(subject._deactivatingChange, undefined);
+});
+
+testUtils.testWithUtils("evaluateMultiple", "with activating change after deactivating change", false, function(methods, classes, subject, invoker) {
+    
+    // arrange
+    var ch = [0, 1, 345];
+    subject.evaluateOnEachChange = false;
+    subject._activatingChange = 345;
+    subject._deactivatingChange = 1;
+    
+    // act
+    invoker(ch);
+    
+    // assert
+    strictEqual(subject._activated, false);
+    strictEqual(subject._activatingChange, undefined);
+    strictEqual(subject._deactivatingChange, undefined);
+});
+
+testUtils.testWithUtils("evaluateMultiple", "not activated", false, function(methods, classes, subject, invoker) {
+    
+    // arrange
+    var ch = [0, 1, 345];
+    subject.evaluateOnEachChange = false;
+    
+    // act
+    invoker(ch);
+    
+    // assert
+    ok(true);
+});
+
+testUtils.testWithUtils("evaluateMultiple", "deactivated", false, function(methods, classes, subject, invoker) {
+    
+    // arrange
+    var ch = [0, 1, 345];
+    subject.evaluateOnEachChange = false;
+    subject._activated = false;
+    
+    // act
+    invoker(ch);
+    
+    // assert
+    ok(true);
+});
