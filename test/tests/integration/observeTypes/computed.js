@@ -1,5 +1,6 @@
 module("obsjs.observeTypes.computed, integration", {
     setup: function() {
+        obsjs.utils.observeCycleHandler.instance.clear();
     },
     teardown: function() {
     }
@@ -162,23 +163,18 @@ testUtils.testWithUtils("integration test", "array total", false, function(metho
     
     subject.val1.push(768);
     
-    function ex1() {
-        obsjs.observable.afterNextObserveCycle(function () { 
+    var disp = subject.observe("comp", function () {
+        disp.dispose();
+        assert();
+        subject.val1.replace(0, 345);
+        
+        disp = subject.observe("comp", function () {
+            disp.dispose();
+        
             assert();
-            subject.val1.replace(0, 345);
-            obsjs.observable.afterNextObserveCycle(function() {
-                obsjs.observable.afterNextObserveCycle(function() {
-                    assert();
-                    start();
-                }, true);
-            }, true);
-        }, true);
-    }
-    
-    if (obsjs.useObjectObserve)
-        ex1();
-    else
-        obsjs.observable.afterNextObserveCycle(ex1, true);    
+            start();
+        });
+    });
 });
 
 testUtils.testWithUtils("integration test", "array, changed to object", false, function(methods, classes, subject, invoker) {
@@ -194,21 +190,20 @@ testUtils.testWithUtils("integration test", "array, changed to object", false, f
 
     // act
     var val2 = subject.val1 = {};
-    obsjs.observable.afterNextObserveCycle(function() {
-    obsjs.observable.afterNextObserveCycle(function() {
-        obsjs.observable.afterNextObserveCycle(function() {
+    var disp = subject.observe("comp", function () {
+        disp.dispose();
+        strictEqual(subject.comp, val2);
+        
+        setTimeout(function () {
             strictEqual(subject.comp, val2);
-            val1.length = 0;
-            val1.push(33);
-            obsjs.observable.afterNextObserveCycle(function() {
-                strictEqual(subject.comp, val2);
-                strictEqual(subject.comp[0], undefined);
-                strictEqual(comp.length, 3);
-                start();
-            });
-        }, true);
-    }, true);
-    }, true);
+            strictEqual(subject.comp[0], undefined);
+            strictEqual(comp.length, 3);
+            start();
+        }, 50);
+        
+        val1.length = 0;
+        val1.push(33);
+    });
     
     stop();
 });

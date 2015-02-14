@@ -24,9 +24,13 @@ Class("obsjs.utils.observeCycleHandler", function () {
             
         this.length++;
     };
+    
+    observeCycleHandler.prototype.clear = function () {
+        if (this.length > 0) this.length = 0;
+    };
 
     observeCycleHandler.prototype.after = function (forObject) {
-        if (forObject === this) return;
+        if (forObject === this || this.length <= 0) return;
         
         this.length--;
     };

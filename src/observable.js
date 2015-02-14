@@ -73,17 +73,6 @@ var observable = useObjectObserve ?
             this.$captureCallbacks.splice(this.$captureCallbacks.indexOf(cb), 1);
         };
 
-        observable.prototype.initializeChangeCycle = function () {
-            if (this.__changeToken) return;
-
-            this.__changeToken = [];
-            setTimeout((function () {
-                var ct = this.__changeToken;
-                delete this.__changeToken;
-                this.registerChangeBatch(ct);
-            }).bind(this));
-        }
-
         observable.prototype._init = function (forProperty) {
 
             if (this.$observed.hasOwnProperty(forProperty)) return;
@@ -117,13 +106,29 @@ var observable = useObjectObserve ?
                         });
                     }
 
-                    obs.initializeChangeCycle();
+                    obs.addChange(change);
 
-                    obs.__changeToken.push(change);
                 },
                 enumerable: true,
                 configurable: true //TODO: !this.usePrototypeAndWoBag
             });
+        };
+        
+        observable.prototype.addChange = function (change) {
+            
+            if (!this.__changeToken) {
+                this.__changeToken = [];
+                setTimeout((function () {
+                    var ct = this.__changeToken;
+                    delete this.__changeToken;                    
+                    this.registerChangeBatch(ct);
+                }).bind(this));
+            }
+            
+            this.__changeToken.push(change);
+            enumerateArr(this.$captureCallbacks, function (cb) {
+                cb([change]);
+            });          
         };
     
         observable.prototype.del = function (property) {

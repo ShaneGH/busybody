@@ -8,6 +8,52 @@ function testMe (moduleName, buildSubject) {
         }
     });
     
+    testUtils.testWithUtils("captureChanges", null, false, function(methods, classes, subject, invoker) {
+        
+        // arrange
+        var subject = buildSubject();
+        obsjs.observable.observe(subject, "aaa", function(){});
+        obsjs.observable.observe(subject, "bbb", function(){});
+        obsjs.observable.observe(subject, "ccc", function(){});
+        obsjs.observable.observe(subject, "ddd", function(){});
+        
+        stop(obsjs.useObjectObserve ? 1 : 3);
+        
+        var changes = [], i = 0;
+        obsjs.observable.captureChanges(subject, function () {
+            subject.aaa = "bbb";
+            subject.bbb = "ccc";
+            subject.ccc = "ddd";
+        }, function (ch) {
+            if (obsjs.useObjectObserve) {
+                strictEqual(ch.length, 3);
+                
+                strictEqual(ch[0].name, "aaa");
+                strictEqual(ch[1].name, "bbb");
+                strictEqual(ch[2].name, "ccc");            
+            } else {
+                strictEqual(ch.length, 1);
+                
+                if (i === 0) {
+                    strictEqual(ch[0].name, "aaa");
+                } else if (i === 1) {
+                    strictEqual(ch[0].name, "bbb");
+                } else if (i === 2) {
+                    strictEqual(ch[0].name, "ccc"); 
+                } else {
+                    ok(false);
+                }
+                
+                i++;
+            }
+            
+            start();
+        });
+        
+        subject.ddd = "fff";
+    });
+
+    
     testUtils.testWithUtils("observe", "multiple changes, 1 registration", false, function(methods, classes, subject, invoker) {
         
         // arrange

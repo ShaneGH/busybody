@@ -196,9 +196,9 @@ Class("obsjs.observableBase", function () {
     
     observableBase.captureChanges = function (forObject, logic, callback) {
         observableBase.makeObservable(forObject);
-        var target = object instanceof observableBase ?
-            object :
-            object.$observer;
+        var target = forObject instanceof observableBase ?
+            forObject :
+            forObject.$observer;
         
         return target.captureChanges(logic, callback);
     };
