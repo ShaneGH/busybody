@@ -7,6 +7,7 @@ Class("obsjs.callbacks.changeCallback", function () {
         this.evaluateOnEachChange = evaluateOnEachChange;
     });
     
+    // remove this callback flag
     changeCallback.dispose = {};
     
     changeCallback.prototype.activate = function (activatingChange) {
