@@ -35,7 +35,7 @@ Class("obsjs.callbacks.changeCallback", function () {
             return changeCallback.dispose;
         }
 
-        if (!this.hasOwnProperty("activated")) {
+        if (!this.hasOwnProperty("_activated")) {
             if (this._activatingChange === changes[changeIndex]) {
                 this._activated = true;
                 delete this._activatingChange;
@@ -56,7 +56,7 @@ Class("obsjs.callbacks.changeCallback", function () {
         if (this._activated === false) return changeCallback.dispose;
         
         var beginAt = 0, endAt = changes.length, output = undefined;
-        if (!this.hasOwnProperty("activated")) {
+        if (!this.hasOwnProperty("_activated")) {
             beginAt = changes.indexOf(this._activatingChange);
             if (beginAt !== -1) {            
                 this._activated = true;
