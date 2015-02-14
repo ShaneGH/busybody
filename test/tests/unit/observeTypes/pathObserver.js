@@ -32,26 +32,3 @@ testUtils.testWithUtils("execute", null, false, function(methods, classes, subje
     // assert
     strictEqual(op, 22);
 });
-
-
-function dd () {
-    //TODO test
-    pathObserver.prototype.onValueChanged = function (callback, evaluateImmediately) {
-        var obs = this.observe("val", callback); 
-        this.registerDisposable(obs);
-        if (evaluateImmediately) callback(undefined, this.val);
-        return obs;
-    };
-    
-    pathObserver.prototype.execute = function () {
-        
-        var current = this.forObject;
-        
-        // get item at index "begin"
-        for (i = 0, ii = this.path.length; current != null && i < ii; i++) {
-            current = current[this.path[i]];
-        }
-        
-        return current;
-    };
-}
