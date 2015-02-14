@@ -31,13 +31,13 @@ Class("obsjs.callbacks.changeCallback", function () {
         
         if (!this.evaluateOnEachChange) return;
 
-        if (this._activated === false || this._deactivatingChange === changes[changeIndex]) {            
+        if (this._activated === false || (this.hasOwnProperty("_deactivatingChange") && this._deactivatingChange === changes[changeIndex])) {
             this._activated = false;
             return changeCallback.dispose;
         }
 
         if (!this.hasOwnProperty("_activated")) {
-            if (this._activatingChange === changes[changeIndex]) {
+            if (this.hasOwnProperty("_activatingChange") && this._activatingChange === changes[changeIndex]) {
                 this._activated = true;
                 delete this._activatingChange;
             } else
