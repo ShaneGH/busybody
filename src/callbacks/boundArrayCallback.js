@@ -42,7 +42,7 @@ Class("obsjs.callbacks.boundArrayCallback", function () {
             var id = getId();
             addChangesTo[id] = changes;
             
-            // cleanup
+            // cleanup: will only be needed for a couple of observe cycles
             setTimeout(function () {
                 delete addChangesTo[id];
             }, 100);

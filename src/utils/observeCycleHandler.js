@@ -1,5 +1,5 @@
 // name is subject to change
-
+//TODO: before/after observe cycle for specific object
 Class("obsjs.utils.observeCycleHandler", function () {
         
     var observeCycleHandler = obsjs.observable.extend(function observeCycleHandler () {
