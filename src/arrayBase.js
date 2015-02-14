@@ -154,10 +154,10 @@ Class("obsjs.arrayBase", function () {
                 
                 if (allowPendingChanges)
                     this.onNextArrayChange(function (change) {
-                        cb.deactivatingChange = change;
+                        cb.deactivate(change);
                     });
                 else
-                    cb.activated = false;
+                    cb.deactivate();
             }).bind(this))
         };
         
@@ -221,10 +221,10 @@ Class("obsjs.arrayBase", function () {
                 
                 if (allowPendingChanges)
                     this.onNextArrayChange(function (change) {
-                        cb.deactivatingChange = change;
+                        cb.deactivate(change);
                     });
                 else
-                    cb.activated = false;
+                    cb.deactivate();
             }).bind(this))
         };
         

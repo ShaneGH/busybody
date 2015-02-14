@@ -139,10 +139,10 @@ Class("obsjs.observableBase", function () {
                 
                 if (allowPendingChanges)
                     this.onNextPropertyChange(property, function (change) {
-                        cb.deactivatingChange = change;
+                        cb.deactivate(change);
                     });
                 else
-                    cb.activated = false;
+                    cb.deactivate();
             }).bind(this))
         };
         
