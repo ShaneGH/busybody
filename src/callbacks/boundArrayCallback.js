@@ -11,6 +11,7 @@ Class("obsjs.callbacks.boundArrayCallback", function () {
 
     boundArrayCallback.prototype._evaluateSingle = function (changes, index) {
 
+        // cannot evaluate single
         return this._evaluateMultiple(changes, index, index + 1);
     };
 

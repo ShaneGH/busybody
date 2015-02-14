@@ -6,6 +6,34 @@ module("obsjs.observeTypes.computed", {
 });
 
 var computed = obsjs.observeTypes.computed;
+
+testUtils.testWithUtils("testForWith", "ok, with variable name", true, function(methods, classes, subject, invoker) {
+    // arrange
+    // act
+    // assert
+    ok(!invoker((function () {
+        myVar.with;
+    }).toString()));
+});
+
+testUtils.testWithUtils("testForWith", "ok, with partial variable name", true, function(methods, classes, subject, invoker) {
+    // arrange
+    // act
+    // assert
+    ok(!invoker((function () {
+        myVar.sandwith;        
+    }).toString()));
+});
+
+testUtils.testWithUtils("testForWith", "not ok", true, function(methods, classes, subject, invoker) {
+    // arrange
+    // act
+    // assert
+    ok(invoker((function () {
+        with (myVar) {}
+    }).toString()));
+});
+
 testUtils.testWithUtils("stripFunction", "block comments", true, function(methods, classes, subject, invoker) {
     // arrange
     

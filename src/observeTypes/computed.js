@@ -19,9 +19,8 @@ Class("obsjs.observeTypes.computed", function () {
         this.callbackFunction = callback;
         this.context = context;
         
-        if (!allowWith)
-            if (WITH.test(this.callbackString))
-                throw "You cannot use the \"with\" keyword in computed functions by default. To allow with, use the allowWith argument on the constructor, however, properties of the variable within the \"with\" statement cannot be monitored for change.";
+        if (!allowWith && computed.testForWith(this.callbackString))
+                throw "You cannot use the \"with\" keyword in computed functions by default. To allow \"with\", use the allowWith argument on the constructor, however, properties of the variable within the \"with\" statement cannot be monitored for change.";
                 
         // get all argument names
         var args = this.callbackString.slice(
@@ -55,6 +54,18 @@ Class("obsjs.observeTypes.computed", function () {
             }
         }
     });
+    
+    computed.testForWith = function (input) {
+        WITH.lastIndex = 0;
+        
+        while (WITH.exec(input)) {
+            
+            if (!/[\.\w\$]/.test(input[WITH.lastIndex - 1]))
+                return true;
+        }
+        
+        return false;
+    };
         
     computed.prototype.execute = function() {
         this.val = this.callbackFunction.apply(this.context, this.arguments);
