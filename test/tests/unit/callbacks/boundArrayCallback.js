@@ -1,5 +1,56 @@
+module("obsjs.callbacks.boundArrayCallback", {
+    setup: function() {
+    },
+    teardown: function() {
+    }
+});
 
-Class("obsjs.callbacks.boundArrayCallback", function () {
+var computed = obsjs.observeTypes.computed;
+
+testUtils.testWithUtils("constructor", null, false, function(methods, classes, subject, invoker) {
+    // arrange
+    var fa = [], ta = [];
+    subject._super = methods.method([false]);
+    
+    // act
+    invoker(fa, ta);
+    
+    // assert
+    strictEqual(subject.fromArray, fa);
+    strictEqual(subject.toArray, ta);
+});
+
+testUtils.testWithUtils("_evaluateSingle", null, false, function(methods, classes, subject, invoker) {
+    // arrange
+    var ch = [], index = 1;
+    subject._evaluateMultiple = methods.method([ch, index, index + 1]);
+    
+    // act
+    // assert
+    invoker(ch, index);
+});
+
+testUtils.testWithUtils("_evaluateArrayMultiple/bindArrays", null, false, function(methods, classes, subject, invoker) {
+    // arrange
+    var rem = {}, ad= {}, ind = {}, result = {
+        getRemoved: methods.method([], rem),
+        getAdded: methods.method([], ad),
+        getIndexes: methods.method([], ind)
+    };
+    subject.context = {};
+    subject.callback = methods.customMethod(function () {
+        strictEqual(this, subject.context);
+        strictEqual(arguments[0], rem);
+        strictEqual(arguments[1], ad);
+        strictEqual(arguments[2], ind);
+    });
+    
+    // act
+    // assert
+    invoker(result);
+});
+
+function aa() {
         
     var boundArrayCallback = obsjs.callbacks.arrayCallbackBase.extend(function boundArrayCallback(fromArray, toArray) {
         
@@ -14,12 +65,6 @@ Class("obsjs.callbacks.boundArrayCallback", function () {
         this.fromArray = fromArray;
         this.toArray = toArray;
     });
-
-    boundArrayCallback.prototype._evaluateSingle = function (changes, index) {
-
-        // cannot evaluate single
-        return this._evaluateMultiple(changes, index, index + 1);
-    };
 
     boundArrayCallback.prototype._evaluateArrayMultiple = function (result) {
         var vals, executor = new bindArrays(this.fromArray, this.toArray);  
@@ -44,15 +89,18 @@ Class("obsjs.callbacks.boundArrayCallback", function () {
     }());
     
     bindArrays.prototype.executeAndCapture = function (compiledChanges, addChangesTo) {
-        obsjs.observable.captureArrayChanges(this.toArray, (function () { this.execute(compiledChanges); }).bind(this), function (changes) {
-            var id = getId();
-            addChangesTo[id] = changes;
-            
-            // cleanup: will only be needed for a couple of observe cycles
-            setTimeout(function () {
-                delete addChangesTo[id];
-            }, 100);
-        });
+        obsjs.observable.captureArrayChanges(
+            this.toArray, 
+            (function () { this.execute(compiledChanges); }).bind(this), 
+            function (changes) {
+                var id = getId();
+                addChangesTo[id] = changes;
+
+                // cleanup: will only be needed for a couple of observe cycles
+                setTimeout(function () {
+                    delete addChangesTo[id];
+                }, 100);
+            });
     }
     
     bindArrays.prototype.execute = function (compiledChanges) {
@@ -72,4 +120,4 @@ Class("obsjs.callbacks.boundArrayCallback", function () {
     }
     
     return boundArrayCallback;
-});
+}
