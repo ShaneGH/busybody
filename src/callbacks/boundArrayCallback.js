@@ -44,7 +44,7 @@ Class("obsjs.callbacks.boundArrayCallback", function () {
     }());
     
     bindArrays.prototype.executeAndCapture = function (compiledChanges, addChangesTo) {
-        obsjs.observable.captureArrayChanges(this.toArray, (function () { this.execute(compiledChanges); }).bind(this), function (changes) {
+        obsjs.captureArrayChanges(this.toArray, (function () { this.execute(compiledChanges); }).bind(this), function (changes) {
             var id = getId();
             addChangesTo[id] = changes;
             

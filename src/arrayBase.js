@@ -138,7 +138,7 @@ Class("obsjs.arrayBase", function () {
         if (typeof arguments[0] === "string") {
             var args = Array.prototype.slice.call(arguments);
             args.splice(0, 0, this);
-            return obsjs.observable.observe.apply(null, args);
+            return obsjs.observe.apply(null, args);
         }
                 
         this._init();

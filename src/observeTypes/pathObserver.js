@@ -73,7 +73,7 @@ Class("obsjs.observeTypes.pathObserver", function () {
         
         // get the last item in the path subscribing to changes along the way
         for (; current && i < this.path.length - 1; i++) {
-            if ((observable.canObserve(current) || current instanceof obsjs.array) && current[this.path[i]] && i >= begin) {
+            if ((obsjs.canObserve(current) || current instanceof obsjs.array) && current[this.path[i]] && i >= begin) {
                 
                 var args = [current, (function (i) {
                     return function(oldVal, newVal) {
@@ -86,15 +86,15 @@ Class("obsjs.observeTypes.pathObserver", function () {
                     args.splice(1, 0, this.path[i]);
                 }
                 
-                this.disposables[i] = observable.tryObserve.apply(null, args);
+                this.disposables[i] = obsjs.tryObserve.apply(null, args);
             }
 
             current = current[this.path[i]];
         }
         
         // observe last item in path
-        if (observable.canObserve(current))
-            this.disposables[i] = observable.tryObserve(current, this.path[i], function (oldVal, newVal) {
+        if (obsjs.canObserve(current))
+            this.disposables[i] = obsjs.tryObserve(current, this.path[i], function (oldVal, newVal) {
                 this.val = newVal;
             }, this);
     };

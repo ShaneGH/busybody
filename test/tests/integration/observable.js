@@ -12,15 +12,15 @@ function testMe (moduleName, buildSubject) {
         
         // arrange
         var subject = buildSubject();
-        obsjs.observable.observe(subject, "aaa", function(){});
-        obsjs.observable.observe(subject, "bbb", function(){});
-        obsjs.observable.observe(subject, "ccc", function(){});
-        obsjs.observable.observe(subject, "ddd", function(){});
+        obsjs.observe(subject, "aaa", function(){});
+        obsjs.observe(subject, "bbb", function(){});
+        obsjs.observe(subject, "ccc", function(){});
+        obsjs.observe(subject, "ddd", function(){});
         
         stop(obsjs.useObjectObserve ? 1 : 3);
         
         var changes = [], i = 0;
-        obsjs.observable.captureChanges(subject, function () {
+        obsjs.captureChanges(subject, function () {
             subject.aaa = "bbb";
             subject.bbb = "ccc";
             subject.ccc = "ddd";
@@ -60,7 +60,7 @@ function testMe (moduleName, buildSubject) {
         var subject = buildSubject();
         subject.val = "aaa";
         
-        obsjs.observable.observe(subject, "val", function(oldVal, newVal) {
+        obsjs.observe(subject, "val", function(oldVal, newVal) {
             strictEqual(oldVal, "aaa");
             strictEqual(newVal, "ccc");
             start();
@@ -77,17 +77,17 @@ function testMe (moduleName, buildSubject) {
         
         // arrange
         var subject = buildSubject();
-        obsjs.observable.observe(subject, "val", function() {});    // invoke watch function
+        obsjs.observe(subject, "val", function() {});    // invoke watch function
         
         subject.val = "www";
         subject.val = "xxx";
-        obsjs.observable.observe(subject, "val", function(oldVal, newVal) {
+        obsjs.observe(subject, "val", function(oldVal, newVal) {
             strictEqual(oldVal, "xxx");
             strictEqual(newVal, "yyy");
             start();
         }, null, true);
         
-        obsjs.observable.observe(subject, "val", function(oldVal, newVal) {
+        obsjs.observe(subject, "val", function(oldVal, newVal) {
             strictEqual(oldVal, "xxx");
             strictEqual(newVal, "yyy");
             start();
@@ -104,7 +104,7 @@ function testMe (moduleName, buildSubject) {
         // arrange
         var subject = buildSubject();
         subject.val = "xxx";
-        var disp = obsjs.observable.observe(subject, "val", function(oldVal, newVal) {
+        var disp = obsjs.observe(subject, "val", function(oldVal, newVal) {
             strictEqual(oldVal, "xxx");
             strictEqual(newVal, "yyy");
             start();
@@ -125,13 +125,13 @@ function testMe (moduleName, buildSubject) {
         subject.val1 = "aaa";
         subject.val2 = "bbb";
         
-        obsjs.observable.observe(subject, "val1", function(oldVal, newVal) {
+        obsjs.observe(subject, "val1", function(oldVal, newVal) {
             strictEqual(oldVal, "aaa");
             strictEqual(newVal, "ccc");
             start();
         });
         
-        obsjs.observable.observe(subject, "val2", function(oldVal, newVal) {
+        obsjs.observe(subject, "val2", function(oldVal, newVal) {
             strictEqual(oldVal, "bbb");
             strictEqual(newVal, "ddd");
             start();
@@ -149,14 +149,14 @@ function testMe (moduleName, buildSubject) {
         var subject = buildSubject();
         subject.val = "aaa";
         
-        obsjs.observable.observe(subject, "val", function(oldVal, newVal) {
+        obsjs.observe(subject, "val", function(oldVal, newVal) {
             strictEqual(oldVal, "aaa");
             strictEqual(newVal, undefined);
             start();
         });
 
         // act
-        obsjs.observable.del(subject, "val");
+        obsjs.del(subject, "val");
 
         stop();
     });
@@ -167,7 +167,7 @@ function testMe (moduleName, buildSubject) {
         subject.val = "aaa";
 
         var number = 0;
-        obsjs.observable.observe(subject, "val", function(oldVal, newVal) {
+        obsjs.observe(subject, "val", function(oldVal, newVal) {
             if(number === 0) {
                 strictEqual(oldVal, "aaa");
                 strictEqual(newVal, "bbb");
@@ -194,7 +194,7 @@ function testMe (moduleName, buildSubject) {
         // arrange
         var subject = buildSubject();
         subject.val = "aaa";
-        var dispose = obsjs.observable.observe(subject, "val", function(oldVal, newVal) {
+        var dispose = obsjs.observe(subject, "val", function(oldVal, newVal) {
             ok(false, "should not have been called");
         });
 
@@ -212,11 +212,11 @@ function testMe (moduleName, buildSubject) {
     testUtils.testWithUtils("observe", "simple change, complex functions are in pathWatch.js", false, function(methods, classes, subject, invoker) {
         // arrange
         var subject = buildSubject();
-        subject.aa = obsjs.observable.makeObservable(buildSubject());
-        subject.aa.bb = obsjs.observable.makeObservable(buildSubject());
+        subject.aa = obsjs.makeObservable(buildSubject());
+        subject.aa.bb = obsjs.makeObservable(buildSubject());
         subject.aa.bb.cc = 11;
         
-        var disp = obsjs.observable.observe(subject, "aa.bb.cc", function(oldVal, newVal) {
+        var disp = obsjs.observe(subject, "aa.bb.cc", function(oldVal, newVal) {
             strictEqual(oldVal, 11);
             strictEqual(newVal, 22);
             start();
@@ -233,7 +233,7 @@ function testMe (moduleName, buildSubject) {
         var subject = buildSubject();
         
         subject.aa = new obsjs.array([1,2,3]);
-        obsjs.observable.observeArray(subject, "aa", function(removed, added, moved) {
+        obsjs.observeArray(subject, "aa", function(removed, added, moved) {
             strictEqual(removed.length, 0);
             strictEqual(added.length, 0);
             strictEqual(moved.moved.length, 2);
@@ -259,7 +259,7 @@ function testMe (moduleName, buildSubject) {
         var o = subject.aa = new obsjs.array([11,22,33]);
         
         var i = 0;
-        obsjs.observable.observeArray(subject, "aa", function(removed, added) {
+        obsjs.observeArray(subject, "aa", function(removed, added) {
             
             strictEqual(i, 0);
             i++;
@@ -291,7 +291,7 @@ function testMe (moduleName, buildSubject) {
         var o = subject.aa = new obsjs.array([1,2,3]);
         var n = [];
         
-        obsjs.observable.observe(subject, "aa", function(old, newVal) {
+        obsjs.observe(subject, "aa", function(old, newVal) {
             strictEqual(old, o);
             strictEqual(newVal, n);
             start();
@@ -318,7 +318,7 @@ function testMe (moduleName, buildSubject) {
             return this.val1.val2 + " " + this.val3;
         });
 
-        obsjs.observable.observe(subject, "comp", function(oldVal, newVal) {
+        obsjs.observe(subject, "comp", function(oldVal, newVal) {
             strictEqual(oldVal, "hello world");
             strictEqual(newVal, "hello shane");
             start();
@@ -350,20 +350,20 @@ function testMe (moduleName, buildSubject) {
             });
         }
 
-        obsjs.observable.observe(subject, "val3", function(oldVal, newVal) {
+        obsjs.observe(subject, "val3", function(oldVal, newVal) {
             ok(false, "observe property");
         });
 
-        obsjs.observable.observe(subject, "val1.val2", function(oldVal, newVal) {
+        obsjs.observe(subject, "val1.val2", function(oldVal, newVal) {
             ok(false, "observe path");
         });
         
-        obsjs.observable.observeArray(subject, "val4", function(oldVal, newVal) {
+        obsjs.observeArray(subject, "val4", function(oldVal, newVal) {
             ok(false, "observeArray");
         });
 
         // act
-        obsjs.observable.dispose(subject);
+        obsjs.dispose(subject);
         stop();
         
         subject.val3 = "bad";

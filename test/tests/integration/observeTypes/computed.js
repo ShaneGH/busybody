@@ -308,8 +308,8 @@ testUtils.testWithUtils("integration test", "variable change", false, function(m
 testUtils.testWithUtils("integration test", "variable name vs property name", false, function(methods, classes, subject, invoker) {
     // arrange
     subject = new obsjs.observable();
-    var var1 = obsjs.observable.makeObservable({
-        var2: obsjs.observable.makeObservable({
+    var var1 = obsjs.makeObservable({
+        var2: obsjs.makeObservable({
             var3: 44
         })
     });
@@ -340,8 +340,8 @@ testUtils.testWithUtils("integration test", "variable name vs property name", fa
 testUtils.testWithUtils("integration test", "variable name with character before", false, function(methods, classes, subject, invoker) {
     // arrange
     subject = new obsjs.observable();
-    var var1 = obsjs.observable.makeObservable({val: 2});    
-    var avar1 = obsjs.observable.makeObservable({val: 3});
+    var var1 = obsjs.makeObservable({val: 2});    
+    var avar1 = obsjs.makeObservable({val: 3});
 
     new obsjs.observeTypes.computed(function() {
         return avar1.val;
@@ -366,8 +366,8 @@ testUtils.testWithUtils("integration test", "variable name with character before
 testUtils.testWithUtils("integration test", "variable name with character after", false, function(methods, classes, subject, invoker) {
     // arrange
     subject = new obsjs.observable();
-    var var1 = obsjs.observable.makeObservable({val: 2});    
-    var var1a = obsjs.observable.makeObservable({val: 3});
+    var var1 = obsjs.makeObservable({val: 2});    
+    var var1a = obsjs.makeObservable({val: 3});
 
     new obsjs.observeTypes.computed(function() {
         return var1a.val;
@@ -392,7 +392,7 @@ testUtils.testWithUtils("integration test", "variable name with character after"
 testUtils.testWithUtils("integration test", "with args", false, function(methods, classes, subject, invoker) {
     // arrange
     subject = new obsjs.observable();
-    var var1 = obsjs.observable.makeObservable({val: 2});  
+    var var1 = obsjs.makeObservable({val: 2});  
 
     new obsjs.observeTypes.computed(function(var1) {
         return var1.val;
@@ -414,7 +414,7 @@ testUtils.testWithUtils("integration test", "with args", false, function(methods
 testUtils.testWithUtils("integration test", "with args, arg not added as watched arg", false, function(methods, classes, subject, invoker) {
     // arrange
     subject = new obsjs.observable();
-    var var1 = obsjs.observable.makeObservable({val: 2});  
+    var var1 = obsjs.makeObservable({val: 2});  
 
     throws(function() {
         new obsjs.observeTypes.computed(function(var1) {
