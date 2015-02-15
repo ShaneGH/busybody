@@ -16,5 +16,5 @@ Run the "grunt watch" command
 alter dependencies in bower.json and run: "bower install"
 
 # to do a release
-1.  Alter the version number in package.json
+1.  Alter the version number in package.json and bower.json
 2.  Use "grunt release"

@@ -1,7 +1,7 @@
 {
   "name": "obsJs",
   "author": "Shane Connon",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Build tools for obSjs",
   "devDependencies": {
     "grunt": "~0.4.5",
