@@ -1,7 +1,6 @@
 
 Class("obsjs.callbacks.arrayCallbackBase", function () {
         
-    //TODO: this file is not used, make it the base for arrayCallback and boundArrayCallback
     var arrayCallbackBase = obsjs.callbacks.changeCallback.extend(function arrayCallbackBase(evaluateOnEachChange) {
         
         this._super(evaluateOnEachChange);

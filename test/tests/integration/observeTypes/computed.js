@@ -280,19 +280,19 @@ testUtils.testWithUtils("integration test", "dispose", false, function(methods, 
     }, 100)
 });
 
-testUtils.testWithUtils("integration test", "variable change", false, function(methods, classes, subject, invoker) {
+testUtils.testWithUtils("integration test", "variable change, with $", false, function(methods, classes, subject, invoker) {
     // arrange
     var subject = new obsjs.observable();
-    var var1 = new obsjs.observable();
-    var1.val1 = new obsjs.observable();
-    var1.val1.val2 = "hello";
-    var1.val3 = "world";
+    var $var1 = new obsjs.observable();
+    $var1.val1 = new obsjs.observable();
+    $var1.val1.val2 = "hello";
+    $var1.val3 = "world";
 
     new obsjs.observeTypes.computed(function() {
-        return var1.val1.val2 + " " + var1.val3;
+        return $var1.val1.val2 + " " + $var1.val3;
     }, subject, {
         watchVariables: {
-            var1: var1
+            $var1: $var1
         }
     }).bind(subject, "comp");
 
@@ -304,7 +304,7 @@ testUtils.testWithUtils("integration test", "variable change", false, function(m
 
     // act
     stop();
-    var1.val3 = "shane";        
+    $var1.val3 = "shane";        
 });
 
 testUtils.testWithUtils("integration test", "variable name vs property name", false, function(methods, classes, subject, invoker) {
