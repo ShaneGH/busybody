@@ -729,7 +729,6 @@ Class("obsjs.callbacks.changeCallback", function () {
 
 Class("obsjs.callbacks.arrayCallbackBase", function () {
         
-    //TODO: this file is not used, make it the base for arrayCallback and boundArrayCallback
     var arrayCallbackBase = obsjs.callbacks.changeCallback.extend(function arrayCallbackBase(evaluateOnEachChange) {
         
         this._super(evaluateOnEachChange);
@@ -1720,9 +1719,12 @@ Class("obsjs.observeTypes.computed", function () {
     
     computed.prototype.watchVariable = function(variableName, variable) {
                 
+		if (!/^\s*[\$\w]+\s*$/.test(variableName))
+			throw "Invalid variable name. Variable names can only contain 0-9, a-z, A-Z, _ and $";
+		
         var match, 
             found = [], 
-            regex = new RegExp(variableName + GET_ITEMS, "g");
+            regex = new RegExp(variableName.replace("$", "\\$") + GET_ITEMS, "g");
         
         // find all instances of the variableName
         var tmp1 = [], tmp2;
