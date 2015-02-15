@@ -9,30 +9,31 @@ Class("obsjs.observeTypes.computed", function () {
     var GET_ITEMS = "((\\s*\\.\\s*([\\w\\$]*))|(\\[\\s*\\d\\s*\\]))+"; // ".propertyName" -or- "[2]"
     
     // monitor a function and change the value of a "watched" when it changes
-    var computed = obsjs.observable.extend(function computed(callback, context, watchVariables, callbackStringOverride, allowWith) {
+    var computed = obsjs.observable.extend(function computed(callback, context, options) {
         
         this._super();
         
+        options = options || {};
         this.arguments = [];
         
-        this.callbackString = computed.stripFunction(callbackStringOverride || callback);
+        this.callbackString = computed.stripFunction(callback);
         this.callbackFunction = callback;
         this.context = context;
         
-        if (!allowWith && computed.testForWith(this.callbackString))
-                throw "You cannot use the \"with\" keyword in computed functions by default. To allow \"with\", use the allowWith argument on the constructor, however, properties of the variable within the \"with\" statement cannot be monitored for change.";
+        if (!options.allowWith && computed.testForWith(this.callbackString))
+                throw "You cannot use the \"with\" keyword in computed functions by default. To allow \"with\", use the allowWith flag on the options argument of the constructor, however, properties of the variable within the \"with\" statement cannot be monitored for change.";
                 
         // get all argument names
         var args = this.callbackString.slice(
             this.callbackString.indexOf('(') + 1, this.callbackString.indexOf(')')).match(GET_ARGUMENT_NAMES) || [], completeArg = {};
         
         // get all watch variables which are also arguments
-        if (watchVariables && args.length) {            
+        if (options.watchVariables && args.length) {            
             var tmp;
-            for (var i in watchVariables) {
+            for (var i in options.watchVariables) {
                 // if variable is an argument, add it to args
                 if ((tmp = args.indexOf(i)) !== -1) {
-                    this.arguments[tmp] = watchVariables[i];
+                    this.arguments[tmp] = options.watchVariables[i];
                     args[tmp] = completeArg;
                 }
             }
@@ -48,9 +49,9 @@ Class("obsjs.observeTypes.computed", function () {
         
         // watch each watch variable
         this.watchVariable("this", context);
-        if (watchVariables) {
-            for (var i in watchVariables) {                
-                this.watchVariable(i, watchVariables[i]);
+        if (options.watchVariables) {
+            for (var i in options.watchVariables) {                
+                this.watchVariable(i, options.watchVariables[i]);
             }
         }
     });

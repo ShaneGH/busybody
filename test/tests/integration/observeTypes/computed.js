@@ -291,7 +291,9 @@ testUtils.testWithUtils("integration test", "variable change", false, function(m
     new obsjs.observeTypes.computed(function() {
         return var1.val1.val2 + " " + var1.val3;
     }, subject, {
-        var1: var1
+        watchVariables: {
+            var1: var1
+        }
     }).bind(subject, "comp");
 
     subject.observe("comp", function(oldVal, newVal) {
@@ -397,7 +399,9 @@ testUtils.testWithUtils("integration test", "with args", false, function(methods
     new obsjs.observeTypes.computed(function(var1) {
         return var1.val;
     }, subject, {
-        var1: var1
+        watchVariables: {
+            var1: var1
+        }
     }).bind(subject, "comp");
 
     subject.observe("comp", function(oldVal, newVal) {

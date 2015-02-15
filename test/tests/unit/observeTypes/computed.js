@@ -92,23 +92,23 @@ testUtils.testWithUtils("stripFunction", "string '", true, function(methods, cla
 
 testUtils.testWithUtils("constructor", null, false, function(methods, classes, subject, invoker) {
     // arrange
-    var callback = {}, context = {}, watchVariables = {arg1: {}}, callbackStringOverride = "asdasds", allowWith = false, stripedCallback = "(arg1)";
+    var callback = {}, context = {}, options = { watchVariables: {arg1: {}}, allowWith: false }, stripedCallback = "(arg1)";
     subject._super = methods.method();
     subject.execute = methods.method();
     classes.mock("obsjs.observeTypes.computed.stripFunction", function () {
-        methods.method([callbackStringOverride])(arguments[0]);
+        methods.method([callback])(arguments[0]);
         return stripedCallback;
     }, 1);
     var count = 0;
     subject.watchVariable = methods.dynamicMethod(function () {
         ok(count < 2);
         count++;
-        return count === 1 ? ["this", context] : ["arg1", watchVariables.arg1];
+        return count === 1 ? ["this", context] : ["arg1", options.watchVariables.arg1];
     }, null, "watchVariable");
     
     
     // act
-    invoker(callback, context, watchVariables, callbackStringOverride, allowWith);
+    invoker(callback, context, options);
     
     // assert
     strictEqual(subject.arguments.constructor, Array);
@@ -142,7 +142,7 @@ testUtils.testWithUtils("constructor", "has allowed with", false, function(metho
     
     // act
     // assert
-    invoker(callback, null, null, null, true);
+    invoker(callback, null, {allowWith: true});
     ok(true);
 });
 

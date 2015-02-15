@@ -167,9 +167,9 @@ Class("obsjs.observableBase", function () {
             delete this.$callbacks[i];
     };
     
-    observableBase.prototype.computed = function (property, callback, watchVariables) {
+    observableBase.prototype.computed = function (property, callback, options) {
         
-        var computed = new obsjs.observeTypes.computed(callback, this, watchVariables);
+        var computed = new obsjs.observeTypes.computed(callback, this, options);
         computed.bind(this.$forObject || this, property);
         this.registerDisposable(computed);
         return computed;        
