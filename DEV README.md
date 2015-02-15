@@ -17,4 +17,5 @@ alter dependencies in bower.json and run: "bower install"
 
 # to do a release
 1.  Alter the version number in package.json and bower.json
-2.  Use "grunt release"
+2.  Alter the file name of the releases in bower.json -> main
+3.  Use "grunt release"

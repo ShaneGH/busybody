@@ -6,7 +6,7 @@
     "Shane Connon <shane.connon@gmail.com>"
   ],
   "description": "Object observe functionality, polyfills and enhancements",
-  "main": ["release/obsjs-0.1.0.debug.js", "release/obsjs-0.1.0.js"],
+  "main": ["release/obsjs-0.1.1.debug.js", "release/obsjs-0.1.1.js"],
   "license": "MIT",
   "private": true,
   "ignore": [
