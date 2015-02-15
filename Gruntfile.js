@@ -1,11 +1,14 @@
 module.exports = function(grunt) {
 
+    var rawFile = "build/<%= pkg.name %>.raw.debug.js",
+        rawReleaseFile = "build/<%= pkg.name %>.raw.js",
+        debugFile = "build/<%= pkg.name %>.debug.js",
+        releaseFile = "build/<%= pkg.name %>.js";
+    
     var bower = grunt.file.readJSON('bower.json'),
-        pkg = grunt.file.readJSON('package.json'),
-        rawFile = 'build/<%= pkg.name %>.raw.js',
-        debugFile = 'build/<%= pkg.name %>.debug.js',
-        minFile = 'build/<%= pkg.name %>.js',
-        banner =  '// ' + pkg.name + ' v' + pkg.version + '\n// (c) ' + pkg.author + ' ' + new Date().getFullYear() + '\n// http://www.opensource.org/licenses/mit-license.php\n';
+        pkg = grunt.file.readJSON('package.json');
+    
+    var banner =  '// ' + pkg.name + ' v' + pkg.version + '\n// (c) ' + pkg.author + ' ' + new Date().getFullYear() + '\n// http://www.opensource.org/licenses/mit-license.php\n';
     
     var debugFiles = [], releaseFiles = [];
     for (var i in bower.dependencies) {
@@ -51,8 +54,8 @@ module.exports = function(grunt) {
             throw "Cannot understand dependences";
     }
     
-    debugFiles.push(debugFile);
-    releaseFiles.push(minFile);
+    debugFiles.push(rawFile);
+    releaseFiles.push(rawReleaseFile);
     
     var releaseOptions = {
         process: function (content, srcPath) {
@@ -89,7 +92,7 @@ module.exports = function(grunt) {
             },
             lib: {
                 src: releaseFiles,
-                dest: minFile
+                dest: releaseFile
             },
             libDebug: {
                 src: debugFiles,
@@ -100,7 +103,7 @@ module.exports = function(grunt) {
         uglify: {
             build: {
                 src: rawFile,
-                dest: minFile
+                dest: rawReleaseFile
             }
         },
         
@@ -114,14 +117,14 @@ module.exports = function(grunt) {
         },
         
         copy: {
-            release: {
+            releaseDebug: {
                 options: releaseOptions,
                 src: debugFile, 
                 dest: 'release/<%= pkg.name %>-<%= pkg.version %>.debug.js'
             },
-            releaseMin: {
+            release: {
                 options: releaseOptions,
-                src: minFile, 
+                src: releaseFile, 
                 dest: 'release/<%= pkg.name %>-<%= pkg.version %>.js'
             }
         }
@@ -133,7 +136,7 @@ module.exports = function(grunt) {
     grunt.registerTask('build', ['concat:build', 'concat:libDebug']);
     grunt.registerTask('rebuild', ['build', 'uglify', 'concat:lib']);
     grunt.registerTask('test', ['rebuild', 'qunit']);
-    grunt.registerTask('release', ['test', 'copy:release', 'copy:releaseMin']);
+    grunt.registerTask('release', ['test', 'copy:releaseDebug', 'copy:release']);
     
     grunt.registerTask('default', 'build');
 };
