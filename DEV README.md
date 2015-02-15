@@ -13,7 +13,7 @@ Run the "grunt" command (no args)
 Run the "grunt watch" command
 
 # to change bower dependencies or dependency versions
-use "bower install [Github username]/[Github repo]#[branch]"
+alter dependencies in bower.json and run: "bower install"
 
 # to do a release
 1.  Alter the version number in package.json
