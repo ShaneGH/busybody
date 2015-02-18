@@ -178,18 +178,17 @@ testUtils.testWithUtils("integration test", "array total", false, function(metho
 });
 
 testUtils.testWithUtils("integration test", "array, changed to object", false, function(methods, classes, subject, invoker) {
-    
+	
     // arrange
     var subject = new obsjs.observable();
     var val1 = subject.val1 = new obsjs.array([0,1,2]);
     var comp = subject.comp = [];
-
+	
     new obsjs.observeTypes.computed(function() {            
         return this.val1;
     }, subject).bind(subject, "comp");
 
     // act
-    var val2 = subject.val1 = {};
     var disp = subject.observe("comp", function () {
         disp.dispose();
         strictEqual(subject.comp, val2);
@@ -204,6 +203,8 @@ testUtils.testWithUtils("integration test", "array, changed to object", false, f
         val1.length = 0;
         val1.push(33);
     });
+	
+    var val2 = subject.val1 = {};
     
     stop();
 });

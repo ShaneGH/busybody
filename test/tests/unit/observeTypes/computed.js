@@ -234,33 +234,46 @@ testUtils.testWithUtils("createBindFunction", "dispose", true, function(methods,
 });
 
 testUtils.testWithUtils("bind", "bind and dispose", false, function(methods, classes, subject, invoker) {
-    // arrange
+    // arrange	
     subject.val = {};
-    var obj = {}, prop = {}, cb = methods.method([null, subject.val]), disp = { dispose: methods.method() };
-    cb.dispose = methods.method();
+    var obj = {}, prop = {}, cb = {}, op = {
+		registerDisposable: methods.method([cb])
+	};
     classes.mock("obsjs.observeTypes.computed.createBindFunction", function (o, p) {
         methods.method([obj, prop])(o, p);
         return cb;
     }, 1);
-    
-    subject.observe = methods.method(["val", cb], disp);
+	
+	subject.onValueChanged = methods.method([cb, true], op);
     
     // act
-    invoker(obj, prop).dispose();
+    var output = invoker(obj, prop);
     
     // assert
+	strictEqual(op, output);
 });
 
 testUtils.testWithUtils("onValueChanged", null, false, function(methods, classes, subject, invoker) {
+	
     // arrange
-    subject.val = {}, output = {}, callback = methods.method([undefined, subject.val]);
-    subject.observe = methods.method(["val", callback], output);
+	subject.val = {};
+	var callback = methods.method([undefined, subject.val]);
+	subject.bound = [];
+	subject.registerDisposable = methods.customMethod(function (arg) { strictEqual(arg.constructor, obsjs.disposable); });
     
     // act
     var op = invoker(callback, true);
     
     // assert
-    strictEqual(output, op);
+    strictEqual(subject.bound[0], callback);
+	
+	
+	// act
+	op.dispose();
+    
+    // assert
+    strictEqual(subject.bound.length, 0);
+	
 });
 
 testUtils.testWithUtils("onValueChanged", null, false, function(methods, classes, subject, invoker) {

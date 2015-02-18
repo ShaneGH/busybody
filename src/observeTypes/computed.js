@@ -9,13 +9,14 @@ Class("obsjs.observeTypes.computed", function () {
     var GET_ITEMS = "((\\s*\\.\\s*([\\w\\$]*))|(\\[\\s*\\d\\s*\\]))+"; // ".propertyName" -or- "[2]"
     
     // monitor a function and change the value of a "watched" when it changes
-    var computed = obsjs.observable.extend(function computed(callback, context, options) {
+    var computed = obsjs.disposable.extend(function computed(callback, context, options) {
         
         this._super();
         
         options = options || {};
         this.arguments = [];
         
+		this.bound = [];
         this.callbackString = computed.stripFunction(callback);
         this.callbackFunction = callback;
         this.context = context;
@@ -69,7 +70,13 @@ Class("obsjs.observeTypes.computed", function () {
     };
         
     computed.prototype.execute = function() {
-        this.val = this.callbackFunction.apply(this.context, this.arguments);
+		var oldVal = this.val;
+		this.val = this.callbackFunction.apply(this.context, this.arguments);
+		
+		if (this.val !== oldVal)
+			enumerateArr(this.bound, function (cb) {
+				cb(oldVal, this.val);
+			}, this);
     };
     
     //TODO: this should be in utils
@@ -85,7 +92,7 @@ Class("obsjs.observeTypes.computed", function () {
             
             output.dispose();
 
-			if (computed.isArray(existingVal) && !computed.isArray(newValue)) {
+			if (computed.isArray(existingVal) && newValue == null) {
 				existingVal.length = 0;	//TODO: test this case
 			} else if (!computed.isArray(newValue) || !computed.isArray(existingVal)) {
                 obsjs.utils.obj.setObject(bindToProperty, bindToObject, newValue);
@@ -107,25 +114,29 @@ Class("obsjs.observeTypes.computed", function () {
     };
     
     computed.prototype.bind = function (object, property) {
-        var arrayDisposeCallback;
-        
+		
         var callback = computed.createBindFunction(object, property);
-        var obs = this.observe("val", callback);
-        callback(null, this.val);
-        
-        var output = new obsjs.disposable();        
-        output.registerDisposable(obs);
+		var output = this.onValueChanged(callback, true);
         output.registerDisposable(callback);
-        
+		
         return output;
     };
     
     computed.prototype.onValueChanged = function (callback, executeImmediately) {
+              
+		this.bound.push(callback);
         
+        var output = new obsjs.disposable((function () {
+			if (!callback) return;			
+			this.bound.splice(this.bound.indexOf(callback), 1);
+			callback = null;
+		}).bind(this));
+        this.registerDisposable(output);
+		
         if (executeImmediately)
             callback(undefined, this.val);
-            
-        return this.observe("val", callback);
+		
+        return output;
     };
         
     computed.stripFunction = function(input) { //TODO: unit test independantly
@@ -228,6 +239,12 @@ Class("obsjs.observeTypes.computed", function () {
             this.__executePending = false;
             this.execute();
         }).bind(this));
+    };
+    
+    computed.prototype.dispose = function () {
+		this._super();
+		
+		this.bound.length = 0;
     };
     
     //TODO: document and expose better
