@@ -239,11 +239,11 @@ Class("obsjs.arrayBase", function () {
     
     arrayBase.prototype.dispose = function() {
         
-        enumerateArr(this.$disposeables, function (d) {
+        enumerateArr(this.$disposables, function (d) {
             d.dispose();
         });
         
-        this.$disposeables.length = 0;        
+        this.$disposables.length = 0;        
         this.$boundArrays.clear();
         this.$callbacks.length = 0;
     };

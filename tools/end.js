@@ -1,4 +1,3 @@
-
     
     obsjs.getObserver = function (object) {
                 
@@ -98,5 +97,4 @@
         if (target)
             return target.dispose();
     };
-
 }());

@@ -85,7 +85,9 @@ Class("obsjs.observeTypes.computed", function () {
             
             output.dispose();
 
-            if (!computed.isArray(newValue) || !computed.isArray(existingVal)) {
+			if (computed.isArray(existingVal) && !computed.isArray(newValue)) {
+				existingVal.length = 0;	//TODO: test this case
+			} else if (!computed.isArray(newValue) || !computed.isArray(existingVal)) {
                 obsjs.utils.obj.setObject(bindToProperty, bindToObject, newValue);
             } else if (newValue instanceof obsjs.array) {                                        
                 arrayDisposeCallback = newValue.bind(existingVal);
