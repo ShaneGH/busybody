@@ -200,6 +200,7 @@ Class("obsjs.arrayBase", function () {
     };
     
     arrayBase.prototype.bind = function(anotherArray) {
+		
         this._init();
         
         if (this.$boundArrays.value(anotherArray)) return;        

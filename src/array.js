@@ -66,11 +66,7 @@ Class("obsjs.array", function () {
         
         this.$onNextArrayChanges = [];
         this.$captureCallbacks = [];
-    });    
-    var i = 0;
-    function id() {
-        return "id-" + (++i);
-    }
+    }); 
     
     array.prototype.captureArrayChanges = function (logic, callback) {
         
@@ -102,8 +98,6 @@ Class("obsjs.array", function () {
         enumerateArr(this.$captureCallbacks, function (cb) {
             cb(changes);
         });
-        
-        enumerateArr(changes, function (ch) { ch.xxx = id(); });
         
         return this._super(changes);
     };

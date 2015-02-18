@@ -181,7 +181,7 @@ function testMe (moduleName, buildSubject) {
             number++;
 
             start(1);
-        }, null, true);
+        }, null, { evaluateOnEachChange: true  });
 
         // act
         subject.val = "bbb";
@@ -252,7 +252,7 @@ function testMe (moduleName, buildSubject) {
     });
 
     testUtils.testWithUtils("observeArray", "old array does not trigger change", false, function(methods, classes, subject, invoker) {
-        
+		
         // arrange
         var subject = buildSubject();
         

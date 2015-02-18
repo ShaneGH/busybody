@@ -59,6 +59,7 @@ testUtils.testWithUtils("observe", "add duplicate", false, function(methods, cla
 });
 
 testUtils.testWithUtils("observe", "subscribe and unsubscribe", false, function(methods, classes, subject, invoker) {
+	
     // arrange
     var subject = new obsjs.array();
 
@@ -95,7 +96,7 @@ testUtils.testWithUtils("observe", "property change", false, function(methods, c
 });
 
 testUtils.testWithUtils("observe", "ensure changes before observe are not noticed. Simple", false, function(methods, classes, subject, invoker) {
-    
+	
     // arrange
     var subject = new obsjs.array(["aa","bb","cc"]);
     subject._init();
@@ -551,8 +552,6 @@ testUtils.testWithUtils("remove", null, false, function(methods, classes, subjec
 });
 
 testUtils.testWithUtils("bind", "length change", false, function(methods, classes, subject, invoker) {
-    //TODO: make this test ore complex,:
-    //    test 2: with 2 way bindings
     
     // arrange
     var subject = new obsjs.array([1,2,3]);

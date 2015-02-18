@@ -101,7 +101,7 @@ Class("obsjs.observableBase", function () {
         }, this);
         
         var tmp;
-        if (tmp = obsjs.utils.obj.getObject(property, this.$forObject || this))
+        if ((tmp = obsjs.utils.obj.getObject(property, this.$forObject || this)) instanceof obsjs.array)
             d2 = this.registerDisposable(tmp.observe(callback, context, evaluateOnEachChange));
         
         return new obsjs.disposable(function () {
@@ -117,17 +117,19 @@ Class("obsjs.observableBase", function () {
         });
     }
 
-    observableBase.prototype.observe = function (property, callback, context, evaluateOnEachChange, evaluateIfValueHasNotChanged) {
+    observableBase.prototype.observe = function (property, callback, context, options) {
         
+		// options: evaluateOnEachChange, evaluateIfValueHasNotChanged
+		
         if (/[\.\[]/.test(property)) {
-            var pw = new obsjs.observeTypes.pathObserver(this.$forObject || this, property, callback, context, evaluateOnEachChange, evaluateIfValueHasNotChanged);
+            var pw = new obsjs.observeTypes.pathObserver(this.$forObject || this, property, callback, context, options);
             this.registerDisposable(pw);
             return pw;
         }
         
         this._init(property);
 
-        var cb = new obsjs.callbacks.propertyCallback(callback, context, evaluateOnEachChange, evaluateIfValueHasNotChanged);
+        var cb = new obsjs.callbacks.propertyCallback(callback, context, options);
         if (!this.$callbacks[property]) this.$callbacks[property] = [];
         this.$callbacks[property].push(cb);
 

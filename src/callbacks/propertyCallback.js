@@ -1,13 +1,15 @@
 
 Class("obsjs.callbacks.propertyCallback", function () {
         
-    var propertyCallback = obsjs.callbacks.changeCallback.extend(function propertyCallback(callback, context, evaluateOnEachChange, evaluateIfValueHasNotChanged) {
+    var propertyCallback = obsjs.callbacks.changeCallback.extend(function propertyCallback(callback, context, options) {
         
-        this._super(evaluateOnEachChange);
+		// options: evaluateOnEachChange, evaluateIfValueHasNotChanged
+		
+        this._super(options && options.evaluateOnEachChange);
         
         this.callback = callback;
         this.context = context;
-        this.evaluateIfValueHasNotChanged = evaluateIfValueHasNotChanged;
+        this.evaluateIfValueHasNotChanged = options && options.evaluateIfValueHasNotChanged;
     });
 
     propertyCallback.prototype._evaluateSingle = function (changes, index) {

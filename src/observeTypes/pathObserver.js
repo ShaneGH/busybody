@@ -4,7 +4,7 @@ Class("obsjs.observeTypes.pathObserver", function () {
     
     var observable = obsjs.observable;
     
-    var pathObserver = observable.extend(function pathObserver (forObject, property, callback, context, evaluateOnEachChange, evaluateIfValueHasNotChanged) {
+    var pathObserver = observable.extend(function pathObserver (forObject, property, callback, context, options) {
         ///<summary>Observe a property for change. Should be "call()"ed with this being a "watched"</summary>
         ///<param name="forObject" type="obsjs.observable" optional="false">The object to watch</param>
         ///<param name="property" type="String" optional="false">The property</param>
@@ -13,14 +13,14 @@ Class("obsjs.observeTypes.pathObserver", function () {
         ///<param name="evaluateOnEachChange" type="Boolean" optional="true">If set to true, will fire callback each time the property changes, rather than once, for the last time the property changed</param>
         ///<param name="evaluateIfValueHasNotChanged" type="Boolean" optional="true">If set to true, will fire callback if the new value is the same as the old value</param>
         
+		//options: evaluateOnEachChange, evaluateIfValueHasNotChanged
+		
         this._super();
         
         this.forObject = forObject;
         this.property = property;
         this.callback = callback;
         this.context = context;
-        this.evaluateOnEachChange = evaluateOnEachChange;
-        this.evaluateIfValueHasNotChanged = evaluateIfValueHasNotChanged;
         
         this.path = obsjs.utils.obj.splitPropertyName(property);
         
@@ -30,7 +30,7 @@ Class("obsjs.observeTypes.pathObserver", function () {
         this.buildObservableChain();
         this.init = true;
         
-        this.observe("val", callback, context || forObject, evaluateOnEachChange, evaluateIfValueHasNotChanged);
+        this.observe("val", callback, context || forObject, options);
     });
     
     //TODO test

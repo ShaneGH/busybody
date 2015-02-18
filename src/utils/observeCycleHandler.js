@@ -12,7 +12,10 @@ Class("obsjs.utils.observeCycleHandler", function () {
         this.observe("length", function (oldVal, newVal) {
             if (newVal === 0)
                 enumerateArr(this.$afterObserveCycles.slice(), ex);
-        }, this, false, true);
+        }, this, {
+			evaluateOnEachChange: false, 
+			evaluateIfValueHasNotChanged: true
+		});
     });
 
     function ex(callback) { callback(); }
