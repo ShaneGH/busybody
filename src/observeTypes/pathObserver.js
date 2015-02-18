@@ -30,7 +30,7 @@ Class("obsjs.observeTypes.pathObserver", function () {
     
     //TODO test
     pathObserver.prototype.onValueChanged = function (callback, evaluateImmediately) {
-		computed.prototype.onValueChanged.apply(this, arguments);
+		obsjs.observeTypes.computed.prototype.onValueChanged.apply(this, arguments);
     };
     
     pathObserver.prototype.buildObservableChain = function (begin) {
