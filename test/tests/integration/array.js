@@ -32,6 +32,38 @@ testUtils.testWithUtils("observe", "add", false, function(methods, classes, subj
     stop();
 });
 
+testUtils.testWithUtils("observe", "get raw changes", false, function(methods, classes, subject, invoker) {
+    // arrange
+    subject = new obsjs.array([1,2,3]);
+
+    var val = {};
+    var d = subject.observe(function(changes) {
+        strictEqual(changes.length, 2);
+		
+        strictEqual(changes[0].index, 1);
+        strictEqual(changes[0].removed.length, 1);
+        strictEqual(changes[0].removed[0], 2);
+        strictEqual(changes[0].addedCount, 0);
+		
+        strictEqual(changes[1].index, 2);
+        strictEqual(changes[1].removed.length, 0);
+        strictEqual(changes[1].addedCount, 2);
+        
+        start();
+    }, null, {useRawChanges: true});
+	
+	subject.splice(1, 1);
+	subject.splice(2, 0, 2, 3);
+	
+	d.dispose(true);
+
+	subject.splice(0, 0, 22);
+	
+    // act
+    subject.push(val);
+
+    stop();
+});
 
 testUtils.testWithUtils("observe", "add duplicate", false, function(methods, classes, subject, invoker) {
     // arrange
