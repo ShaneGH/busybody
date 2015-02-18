@@ -1,12 +1,12 @@
 {
   "name": "obsjs",
-  "version": "0.1.1",
+  "version": "0.0.1",
   "homepage": "https://github.com/ShaneGH/obsjs",
   "authors": [
     "Shane Connon <shane.connon@gmail.com>"
   ],
   "description": "Object observe functionality, polyfills and enhancements",
-  "main": ["release/obsjs-0.1.1.debug.js", "release/obsjs-0.1.1.js"],
+  "main": ["release/obsjs-in-dev.debug.js", "release/obsjs-in-dev.js"],
   "license": "MIT",
   "private": true,
   "ignore": [
