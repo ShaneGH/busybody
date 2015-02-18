@@ -146,7 +146,7 @@ testUtils.testWithUtils("observe", "ensure changes before observe are not notice
         strictEqual(change.index, count1);
         
         start();
-    }, null, true);
+    }, null, {evaluateOnEachChange: true});
     
     subject.push(66);
     
@@ -170,7 +170,7 @@ testUtils.testWithUtils("observe", "ensure changes before observe are not notice
         
         strictEqual(change.index, 2);
         start();
-    }, null, true);
+    }, null, {evaluateOnEachChange: true});
     
     subject.push(77);
 
@@ -316,7 +316,7 @@ testUtils.testWithUtils("observe", "length decrease", false, function(methods, c
         strictEqual(change.type, "splice");
 
         start();
-    }, null, true);
+    }, null, {evaluateOnEachChange: true});
 
     // act
     subject.length = 2;
@@ -353,7 +353,7 @@ testUtils.testWithUtils("observe", "length increase", false, function(methods, c
         strictEqual(change.type, "splice");
 
         start();
-    }, null, true);
+    }, null, {evaluateOnEachChange: true});
 
     // act
     subject.length = 4;
@@ -467,7 +467,7 @@ testUtils.testWithUtils("observe", "two changes, two observations, 1 complex, on
 
         done++;
         start();
-    }, null, true);
+    }, null, {evaluateOnEachChange: true});
 
     // act
     subject.push(val1);
@@ -496,7 +496,7 @@ testUtils.testWithUtils("observe", "pop", false, function(methods, classes, subj
         strictEqual(change.type, "splice");
         
         start();
-    }, null, true);
+    }, null, {evaluateOnEachChange: true});
 
     // act
     var result = subject.pop();
@@ -527,7 +527,7 @@ testUtils.testWithUtils("observe", "shift", false, function(methods, classes, su
         strictEqual(change.type, "splice");
         
         start();
-    }, null, true);
+    }, null, {evaluateOnEachChange: true});
 
     // act
     var result = subject.shift();

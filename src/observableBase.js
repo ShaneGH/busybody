@@ -72,7 +72,7 @@ Class("obsjs.observableBase", function () {
         throw "Abstract methods must be overridden";
     };
 
-    observableBase.prototype.observeArray = function (property, callback, context, evaluateOnEachChange) {
+    observableBase.prototype.observeArray = function (property, callback, context, options) {
         var d2, d1 = this.observe(property, function (oldValue, newValue) {
             
             if (d2) {
@@ -89,7 +89,7 @@ Class("obsjs.observableBase", function () {
             };
             
             //TODO: duplication of logic
-            if (evaluateOnEachChange) {
+            if (options && options.evaluateOnEachChange) {
                 callback.call(context, change);
             } else {
                 var cec = new obsjs.utils.compiledArrayChange([change], 0, 1);
@@ -97,12 +97,12 @@ Class("obsjs.observableBase", function () {
             }
             
             if (newValue instanceof obsjs.array)
-                d2 = this.registerDisposable(newValue.observe(callback, context, evaluateOnEachChange));
+                d2 = this.registerDisposable(newValue.observe(callback, context, options));
         }, this);
         
         var tmp;
         if ((tmp = obsjs.utils.obj.getObject(property, this.$forObject || this)) instanceof obsjs.array)
-            d2 = this.registerDisposable(tmp.observe(callback, context, evaluateOnEachChange));
+            d2 = this.registerDisposable(tmp.observe(callback, context, options));
         
         return new obsjs.disposable(function () {
             if (d2) {

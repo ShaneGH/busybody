@@ -133,8 +133,9 @@ Class("obsjs.arrayBase", function () {
         throw "Abstract methods must be implemented";
     };
     
-    arrayBase.prototype.observe = function (callback, context, evaluateOnEachChange) {
-        
+    arrayBase.prototype.observe = function (callback, context, options) {
+        // options evaluateOnEachChange and useRawChanges		
+		
         if (typeof arguments[0] === "string") {
             var args = Array.prototype.slice.call(arguments);
             args.splice(0, 0, this);
@@ -143,7 +144,7 @@ Class("obsjs.arrayBase", function () {
                 
         this._init();
 
-        var cb = new obsjs.callbacks.arrayCallback(callback, context, evaluateOnEachChange);
+        var cb = new obsjs.callbacks.arrayCallback(callback, context, options);
         this.$callbacks.push(cb);
 
         this.onNextArrayChange(function (change) {

@@ -1,10 +1,11 @@
 
 Class("obsjs.callbacks.arrayCallback", function () {
         
-    var arrayCallback = obsjs.callbacks.arrayCallbackBase.extend(function arrayCallback(callback, context, evaluateOnEachChange) {
+    var arrayCallback = obsjs.callbacks.arrayCallbackBase.extend(function arrayCallback(callback, context, options) {
         
-        this._super(evaluateOnEachChange);
+        this._super(options && options.evaluateOnEachChange);
         
+		this.useRawChanges = options && options.useRawChanges;
         this.callback = callback;
         this.context = context;
     });
@@ -13,6 +14,14 @@ Class("obsjs.callbacks.arrayCallback", function () {
 
         //TODO setTimeout?
         this.callback.call(this.context, changes[index]);
+    };
+
+    arrayCallback.prototype._evaluateMultiple = function (changes, beginAt, endAt) {
+		
+		if (this.useRawChanges)
+			this.callback.call(this.context, changes.slice(beginAt, endAt));
+		else
+			this._super.apply(this, arguments);
     };
 
     arrayCallback.prototype._evaluateArrayMultiple = function (result) {
