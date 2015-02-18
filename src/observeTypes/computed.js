@@ -122,6 +122,7 @@ Class("obsjs.observeTypes.computed", function () {
         return output;
     };
     
+	// note: this function is used by pathObserver
     computed.prototype.onValueChanged = function (callback, executeImmediately) {
               
 		this.bound.push(callback);

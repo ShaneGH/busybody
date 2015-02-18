@@ -1,19 +1,13 @@
 // name is subject to change
 
 Class("obsjs.observeTypes.pathObserver", function () {
-    
-    var observable = obsjs.observable;
-    
-    var pathObserver = observable.extend(function pathObserver (forObject, property, callback, context, options) {
+        
+    var pathObserver = obsjs.disposable.extend(function pathObserver (forObject, property, callback, context) {
         ///<summary>Observe a property for change. Should be "call()"ed with this being a "watched"</summary>
         ///<param name="forObject" type="obsjs.observable" optional="false">The object to watch</param>
         ///<param name="property" type="String" optional="false">The property</param>
         ///<param name="callback" type="Function" optional="false">The callback for property change</param>
         ///<param name="context" type="Any" optional="true">The context of the callback</param>
-        ///<param name="evaluateOnEachChange" type="Boolean" optional="true">If set to true, will fire callback each time the property changes, rather than once, for the last time the property changed</param>
-        ///<param name="evaluateIfValueHasNotChanged" type="Boolean" optional="true">If set to true, will fire callback if the new value is the same as the old value</param>
-        
-		//options: evaluateOnEachChange, evaluateIfValueHasNotChanged
 		
         this._super();
         
@@ -25,32 +19,18 @@ Class("obsjs.observeTypes.pathObserver", function () {
         this.path = obsjs.utils.obj.splitPropertyName(property);
         
         this.disposables = new Array(this.path.length);
-        this.val = obsjs.utils.obj.getObject(property, forObject);
+        this.execute();
         
         this.buildObservableChain();
         this.init = true;
-        
-        this.observe("val", callback, context || forObject, options);
+		
+		this.bound = [];
+		this.onValueChanged(callback.bind(context || forObject), false);
     });
     
     //TODO test
     pathObserver.prototype.onValueChanged = function (callback, evaluateImmediately) {
-        var obs = this.observe("val", callback); 
-        this.registerDisposable(obs);
-        if (evaluateImmediately) callback(undefined, this.val);
-        return obs;
-    };
-    
-    pathObserver.prototype.execute = function () {
-        
-        var current = this.forObject;
-        
-        // get item at index "begin"
-        for (i = 0, ii = this.path.length; current != null && i < ii; i++) {
-            current = current[this.path[i]];
-        }
-        
-        return current;
+		computed.prototype.onValueChanged.apply(this, arguments);
     };
     
     pathObserver.prototype.buildObservableChain = function (begin) {
@@ -78,7 +58,7 @@ Class("obsjs.observeTypes.pathObserver", function () {
                 var args = [current, (function (i) {
                     return function(oldVal, newVal) {
                         _this.buildObservableChain(i);
-                        _this.val = obsjs.utils.obj.getObject(_this.property, _this.forObject);
+						_this.execute();
                     };
                 }(i))];
                 
@@ -95,10 +75,29 @@ Class("obsjs.observeTypes.pathObserver", function () {
         // observe last item in path
         if (obsjs.canObserve(current))
             this.disposables[i] = obsjs.tryObserve(current, this.path[i], function (oldVal, newVal) {
-                this.val = newVal;
+                this.execute();
             }, this);
     };
-    
+        
+	//TODO: (partially) copy pasted from computed
+    pathObserver.prototype.execute = function() {
+		var oldVal = this.val;
+		
+        var current = this.forObject;
+        
+        // get item at index "begin"
+        for (i = 0, ii = this.path.length; current != null && i < ii; i++) {
+            current = current[this.path[i]];
+        }
+		
+		this.val = i === ii ? current : null;
+		
+		if (this.val !== oldVal)
+			enumerateArr(this.bound, function (cb) {
+				cb(oldVal, this.val);
+			}, this);
+    };
+	
     pathObserver.prototype.dispose = function () {
         this._super();
         

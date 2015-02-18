@@ -122,7 +122,7 @@ Class("obsjs.observableBase", function () {
 		// options: evaluateOnEachChange, evaluateIfValueHasNotChanged
 		
         if (/[\.\[]/.test(property)) {
-            var pw = new obsjs.observeTypes.pathObserver(this.$forObject || this, property, callback, context, options);
+            var pw = new obsjs.observeTypes.pathObserver(this.$forObject || this, property, callback, context);
             this.registerDisposable(pw);
             return pw;
         }
