@@ -9,14 +9,14 @@ Class("obsjs.observeTypes.computed", function () {
     var GET_ITEMS = "((\\s*\\.\\s*([\\w\\$]*))|(\\[\\s*\\d\\s*\\]))+"; // ".propertyName" -or- "[2]"
     
     // monitor a function and change the value of a "watched" when it changes
-    var computed = obsjs.disposable.extend(function computed(callback, context, options) {
+    var computed = obsjs.utils.executeCallbacks.extend(function computed(callback, context, options) {
         
         this._super();
         
         options = options || {};
         this.arguments = [];
         
-		this.bound = [];
+		this.callbacks = [];
         this.callbackString = computed.stripFunction(callback);
         this.callbackFunction = callback;
         this.context = context;
@@ -69,14 +69,14 @@ Class("obsjs.observeTypes.computed", function () {
         return false;
     };
         
-    computed.prototype.execute = function() {
+    computed.prototype._execute = function() {
 		var oldVal = this.val;
 		this.val = this.callbackFunction.apply(this.context, this.arguments);
 		
-		if (this.val !== oldVal)
-			enumerateArr(this.bound, function (cb) {
-				cb(oldVal, this.val);
-			}, this);
+		return {
+			cancel: this.val === oldVal,
+			arguments: [oldVal, this.val]
+		};
     };
     
     //TODO: this should be in utils
@@ -125,15 +125,7 @@ Class("obsjs.observeTypes.computed", function () {
 	// note: this function is used by pathObserver
     computed.prototype.onValueChanged = function (callback, executeImmediately) {
               
-		this.bound.push(callback);
-        
-        var output = new obsjs.disposable((function () {
-			if (!callback) return;			
-			this.bound.splice(this.bound.indexOf(callback), 1);
-			callback = null;
-		}).bind(this));
-        this.registerDisposable(output);
-		
+		var output = this.addCallback(callback);		
         if (executeImmediately)
             callback(undefined, this.val);
 		
@@ -229,23 +221,6 @@ Class("obsjs.observeTypes.computed", function () {
                     dispose = newVal.observe(te);
             }, true);
         }, this);
-    };
-    
-    computed.prototype.throttleExecution = function() {
-        if (this.__executePending)
-            return;
-        
-        this.__executePending = true;
-        setTimeout((function () {
-            this.__executePending = false;
-            this.execute();
-        }).bind(this));
-    };
-    
-    computed.prototype.dispose = function () {
-		this._super();
-		
-		this.bound.length = 0;
     };
     
     //TODO: document and expose better

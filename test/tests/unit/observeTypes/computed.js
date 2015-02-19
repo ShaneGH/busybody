@@ -258,21 +258,21 @@ testUtils.testWithUtils("onValueChanged", null, false, function(methods, classes
     // arrange
 	subject.val = {};
 	var callback = methods.method([undefined, subject.val]);
-	subject.bound = [];
+	subject.callbacks = [];
 	subject.registerDisposable = methods.customMethod(function (arg) { strictEqual(arg.constructor, obsjs.disposable); });
     
     // act
     var op = invoker(callback, true);
     
     // assert
-    strictEqual(subject.bound[0], callback);
+    strictEqual(subject.callbacks[0], callback);
 	
 	
 	// act
 	op.dispose();
     
     // assert
-    strictEqual(subject.bound.length, 0);
+    strictEqual(subject.callbacks.length, 0);
 	
 });
 

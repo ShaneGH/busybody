@@ -2,7 +2,7 @@
 
 Class("obsjs.observeTypes.pathObserver", function () {
         
-    var pathObserver = obsjs.disposable.extend(function pathObserver (forObject, property, callback, context) {
+    var pathObserver = obsjs.utils.executeCallbacks.extend(function pathObserver (forObject, property, callback, context) {
         ///<summary>Observe a property for change. Should be "call()"ed with this being a "watched"</summary>
         ///<param name="forObject" type="obsjs.observable" optional="false">The object to watch</param>
         ///<param name="property" type="String" optional="false">The property</param>
@@ -24,7 +24,7 @@ Class("obsjs.observeTypes.pathObserver", function () {
         this.buildObservableChain();
         this.init = true;
 		
-		this.bound = [];
+		this.callbacks = [];
 		this.onValueChanged(callback.bind(context || forObject), false);
     });
     
@@ -58,7 +58,7 @@ Class("obsjs.observeTypes.pathObserver", function () {
                 var args = [current, (function (i) {
                     return function(oldVal, newVal) {
                         _this.buildObservableChain(i);
-						_this.execute();
+						_this.throttleExecution();
                     };
                 }(i))];
                 
@@ -75,12 +75,12 @@ Class("obsjs.observeTypes.pathObserver", function () {
         // observe last item in path
         if (obsjs.canObserve(current))
             this.disposables[i] = obsjs.tryObserve(current, this.path[i], function (oldVal, newVal) {
-                this.execute();
+                this.throttleExecution();
             }, this);
     };
         
 	//TODO: (partially) copy pasted from computed
-    pathObserver.prototype.execute = function() {
+    pathObserver.prototype._execute = function() {
 		var oldVal = this.val;
 		
         var current = this.forObject;
@@ -91,11 +91,11 @@ Class("obsjs.observeTypes.pathObserver", function () {
         }
 		
 		this.val = i === ii ? current : null;
-		
-		if (this.val !== oldVal)
-			enumerateArr(this.bound, function (cb) {
-				cb(oldVal, this.val);
-			}, this);
+				
+		return {
+			cancel: this.val === oldVal,
+			arguments: [oldVal, this.val]
+		};
     };
 	
     pathObserver.prototype.dispose = function () {

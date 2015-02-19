@@ -66,6 +66,7 @@ module.exports = function(grunt) {
     var dependencies = [ 
         'src/utils/obj.js', 
         'src/disposable.js', 
+        'src/utils/executeCallbacks.js', 
         'src/observableBase.js', 
         'src/callbacks/changeCallback.js',
         'src/callbacks/arrayCallbackBase.js',
