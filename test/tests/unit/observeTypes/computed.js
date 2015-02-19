@@ -161,24 +161,54 @@ testUtils.testWithUtils("constructor", "has un allowed argument", false, functio
     });    
 });
 
-testUtils.testWithUtils("execute", null, false, function(methods, classes, subject, invoker) {
+testUtils.testWithUtils("watchVariable", "has un allowed argument", false, function(methods, classes, subject, invoker) {
+	ok(true, "too complex for unit testing");
+});
+
+testUtils.testWithUtils("_execute", "no cancel", false, function(methods, classes, subject, invoker) {
     // arrange
-    var ensure = methods.method(), result = {};
+	subject.val = 11;
+    var ensure = methods.method();
     subject.callbackFunction = function () {
         ensure();
         strictEqual(arguments[0], subject.arguments[0]);
         strictEqual(arguments[1], subject.arguments[1]);
         strictEqual(this, subject.context);
-        return result;
+        return 22;
     };
     subject.arguments = [{},{}];
     subject.context = {};
     
     // act
-    invoker();
+    var output = invoker();
     
     // assert
-    strictEqual(subject.val, result);
+    strictEqual(subject.val, 22);
+    strictEqual(output.arguments.length, 2);
+    strictEqual(output.arguments[0], 11);
+    strictEqual(output.arguments[1], 22);
+    ok(!output.cancel);
+});
+
+testUtils.testWithUtils("_execute", "no cancel", false, function(methods, classes, subject, invoker) {
+    // arrange
+	subject.val = 11;
+    var ensure = methods.method();
+    subject.callbackFunction = function () {
+        ensure();
+        strictEqual(arguments[0], subject.arguments[0]);
+        strictEqual(arguments[1], subject.arguments[1]);
+        strictEqual(this, subject.context);
+        return 11;
+    };
+    subject.arguments = [{},{}];
+    subject.context = {};
+    
+    // act
+    var output = invoker();
+    
+    // assert
+    ok(output.cancel);
 });
 
 testUtils.testWithUtils("createBindFunction", "bind objects with parser", true, function(methods, classes, subject, invoker) {
@@ -254,44 +284,16 @@ testUtils.testWithUtils("bind", "bind and dispose", false, function(methods, cla
 });
 
 testUtils.testWithUtils("onValueChanged", null, false, function(methods, classes, subject, invoker) {
-	
     // arrange
-	subject.val = {};
-	var callback = methods.method([undefined, subject.val]);
-	subject.callbacks = [];
-	subject.registerDisposable = methods.customMethod(function (arg) { strictEqual(arg.constructor, obsjs.disposable); });
+	var val = subject.val = {}, cb = methods.method([undefined, val]), op = {};
+	subject.addCallback = methods.method([cb], op);
     
     // act
-    var op = invoker(callback, true);
+    var output = invoker(cb, true);
     
     // assert
-    strictEqual(subject.callbacks[0], callback);
+    strictEqual(op, output);
 	
-	
-	// act
-	op.dispose();
-    
-    // assert
-    strictEqual(subject.callbacks.length, 0);
-	
-});
-
-testUtils.testWithUtils("onValueChanged", null, false, function(methods, classes, subject, invoker) {
-    // arrange
-    ok("too complex for unit testing, fully tested in integration testing");
-});
-
-testUtils.testWithUtils("throttleExecution", null, false, function(methods, classes, subject, invoker) {
-    // arrange
-    var i = 0;
-    subject.execute = function () { strictEqual(i, 0); i++; start(); };
-    
-    // act
-    invoker();
-    invoker();
-    stop();
-    
-    // assert
 });
 
 testUtils.testWithUtils("isArray and nonArrayType", null, true, function(methods, classes, subject, invoker) {
