@@ -84,3 +84,55 @@ testUtils.testWithUtils("addWithDispose", "", true, function(methods, classes, s
     strictEqual(arr.length, 1);
     strictEqual(arr[0], item);
 });
+
+testUtils.testWithUtils("createBindFunction", "bind objects with parser", true, function(methods, classes, subject, invoker) {
+    // arrange
+    var obj = {}, prop = "prop", newVal = {}, parsedNewVal = {};
+    subject = invoker(obj, prop, methods.method([newVal], parsedNewVal));
+    
+    // act
+    subject(null, newVal);
+    
+    // assert
+    strictEqual(obj[prop], parsedNewVal);
+});
+
+testUtils.testWithUtils("createBindFunction", "bind arrays", true, function(methods, classes, subject, invoker) {
+    // arrange
+    var obj = {prop: []}, prop = "prop", newVal = [{},{},{}];
+    subject = invoker(obj, prop);
+    
+    // act
+    subject(null, newVal);
+    
+    // assert
+    notStrictEqual(obj[prop], newVal);
+    deepEqual(obj[prop], newVal);
+});
+
+testUtils.testWithUtils("createBindFunction", "bind observable arrays", true, function(methods, classes, subject, invoker) {
+    // arrange
+    var obj = {prop: new obsjs.array()}, prop = "prop", newVal = new obsjs.array([{},{},{}]);
+    newVal.bind = methods.method([obj[prop]]);
+    
+    subject = invoker(obj, prop);
+    
+    // act
+    subject(null, newVal);
+    
+    // assert
+});
+
+testUtils.testWithUtils("createBindFunction", "dispose", true, function(methods, classes, subject, invoker) {
+    // arrange
+    var obj = {prop: new obsjs.array()}, prop = "prop", newVal = new obsjs.array([{},{},{}]);
+    newVal.bind = methods.method([obj[prop]], {dispose: methods.method([], null, "dispose was not called") });
+    
+    subject = invoker(obj, prop);
+    
+    // act
+    subject(null, newVal)
+    subject.dispose();
+    
+    // assert
+});

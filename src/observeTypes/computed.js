@@ -79,43 +79,9 @@ Class("obsjs.observeTypes.computed", function () {
 		};
     };
     
-    //TODO: this should be in utils
-    computed.createBindFunction = function (bindToObject, bindToProperty, parser) {
-        var arrayDisposeCallback;
-        var output = function (oldValue, newValue) {
-            
-            if (parser) newValue = parser(newValue);
-            
-            var existingVal = obsjs.utils.obj.getObject(bindToProperty, bindToObject);
-            if (newValue === existingVal)
-                return;
-            
-            output.dispose();
-
-			if (computed.isArray(existingVal) && newValue == null) {
-				existingVal.length = 0;	//TODO: test this case
-			} else if (!computed.isArray(newValue) || !computed.isArray(existingVal)) {
-                obsjs.utils.obj.setObject(bindToProperty, bindToObject, newValue);
-            } else if (newValue instanceof obsjs.array) {                                        
-                arrayDisposeCallback = newValue.bind(existingVal);
-            } else {
-                obsjs.array.copyAll(newValue, bindToObject[bindToProperty]);
-            }
-        };
-        
-        output.dispose = function () {
-            if (arrayDisposeCallback) {
-                arrayDisposeCallback.dispose();
-                arrayDisposeCallback = null;
-            }
-        };
-        
-        return output;
-    };
-    
     computed.prototype.bind = function (object, property) {
 		
-        var callback = computed.createBindFunction(object, property);
+        var callback = obsjs.utils.obj.createBindFunction(object, property);
 		var output = this.onValueChanged(callback, true);
         output.registerDisposable(callback);
 		
