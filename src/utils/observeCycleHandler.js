@@ -57,6 +57,14 @@ Class("obsjs.utils.observeCycleHandler", function () {
 
         return obsjs.utils.obj.addWithDispose(this.$beforeObserveCycles, callback);
     };
+
+    observeCycleHandler.prototype.dispose = function () {
+
+		this._super();
+		
+        this.$afterObserveCycles.length = 0;
+        this.$beforeObserveCycles.length = 0;
+    };
     
     observeCycleHandler.instance = new observeCycleHandler();
     
