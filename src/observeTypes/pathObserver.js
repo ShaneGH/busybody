@@ -18,7 +18,7 @@ Class("obsjs.observeTypes.pathObserver", function () {
         
         this.path = obsjs.utils.obj.splitPropertyName(property);
         
-        this.disposables = new Array(this.path.length);
+        this.__pathDisposables = new Array(this.path.length);
         this.execute();
         
         this.buildObservableChain();
@@ -28,9 +28,13 @@ Class("obsjs.observeTypes.pathObserver", function () {
 		this.onValueChanged(callback.bind(context || forObject), false);
     });
     
-    //TODO test
     pathObserver.prototype.onValueChanged = function (callback, evaluateImmediately) {
-		obsjs.observeTypes.computed.prototype.onValueChanged.apply(this, arguments);
+              
+		var output = this.addCallback(callback);		
+        if (evaluateImmediately)
+            callback(undefined, this.val);
+		
+        return output;
     };
     
     pathObserver.prototype.buildObservableChain = function (begin) {
@@ -38,9 +42,9 @@ Class("obsjs.observeTypes.pathObserver", function () {
         
         // dispose of anything in the path after the change
         for (var i = begin; i < this.path.length; i++) {
-            if (this.disposables[i]) {
-                this.disposables[i].dispose();
-                this.disposables[i] = null;
+            if (this.__pathDisposables[i]) {
+                this.__pathDisposables[i].dispose();
+                this.__pathDisposables[i] = null;
             }
         }
 
@@ -66,7 +70,7 @@ Class("obsjs.observeTypes.pathObserver", function () {
                     args.splice(1, 0, this.path[i]);
                 }
                 
-                this.disposables[i] = obsjs.tryObserve.apply(null, args);
+                this.__pathDisposables[i] = obsjs.tryObserve.apply(null, args);
             }
 
             current = current[this.path[i]];
@@ -74,7 +78,7 @@ Class("obsjs.observeTypes.pathObserver", function () {
         
         // observe last item in path
         if (obsjs.canObserve(current))
-            this.disposables[i] = obsjs.tryObserve(current, this.path[i], function (oldVal, newVal) {
+            this.__pathDisposables[i] = obsjs.tryObserve(current, this.path[i], function (oldVal, newVal) {
                 this.throttleExecution();
             }, this);
     };
@@ -101,13 +105,11 @@ Class("obsjs.observeTypes.pathObserver", function () {
     pathObserver.prototype.dispose = function () {
         this._super();
         
-        for (var i = 0, ii = this.disposables.length; i < ii && this.disposables[i]; i++)
-            if (this.disposables[i]) {
-                this.disposables[i].dispose();
-                this.disposables[i] = null;
-            }
+        for (var i = 0, ii = this.__pathDisposables.length; i < ii && this.__pathDisposables[i]; i++)
+            if (this.__pathDisposables[i])
+                this.__pathDisposables[i].dispose();
 
-        this.disposables.length = 0;
+        this.__pathDisposables.length = 0;
     };
                                       
     return pathObserver;

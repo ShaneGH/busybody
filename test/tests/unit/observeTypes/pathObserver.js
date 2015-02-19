@@ -40,3 +40,31 @@ testUtils.testWithUtils("_execute", "no cancel", false, function(methods, classe
     // assert
     ok(output.cancel);
 });
+
+testUtils.testWithUtils("onValueChanged", null, false, function(methods, classes, subject, invoker) {
+    // arrange
+	var val = subject.val = {}, cb = methods.method([undefined, val]), op = {};
+	subject.addCallback = methods.method([cb], op);
+    
+    // act
+    var output = invoker(cb, true);
+    
+    // assert
+    strictEqual(op, output);
+});
+
+testUtils.testWithUtils("buildObservableChain", null, false, function(methods, classes, subject, invoker) {
+	ok(true, "tested in integration");
+});
+
+testUtils.testWithUtils("dispose", null, false, function(methods, classes, subject, invoker) {
+    // arrange
+	subject._super = methods.method();
+	subject.__pathDisposables = [{dispose: methods.method()}];
+    
+    // act
+    invoker();
+    
+    // assert
+    strictEqual(subject.__pathDisposables.length, 0);
+});
