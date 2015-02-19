@@ -89,9 +89,9 @@ Class("obsjs.arrayBase", function () {
     function changeIndex(index) {
         if (typeof index === "number" && index % 1 === 0) {
             return index;
-        } else if(index === null) {
+        } else if (index === null) {
             return 0;
-        } else if (index instanceof Boolean) {
+        } else if (typeof index === "boolean") {
             return index ? 1 : 0;
         } else if (typeof index === "string" && !isNaN(index = parseFloat(index)) && index % 1 === 0) {
             return index;
@@ -150,25 +150,31 @@ Class("obsjs.arrayBase", function () {
             cb.activate(change);
         });
         
-        var dispose = {
-            dispose: ((function (allowPendingChanges) {
-
-                if (!dispose) return;
-                dispose = null;
-                
-                if (allowPendingChanges)
-                    this.onNextArrayChange(function (change) {
-                        cb.deactivate(change);
-                    });
-                else
-                    cb.deactivate();
-            }).bind(this))
-        };
+        var dispose = this.disposableFor(cb);
         
         this.$disposables.push(dispose);
         
         return dispose;
     };
+	
+	arrayBase.prototype.disposableFor = function (changeCallback) {
+		var dispose = {
+			dispose: (function (allowPendingChanges) {
+
+				if (!dispose) return;
+				dispose = null;
+
+				if (allowPendingChanges)
+					this.onNextArrayChange(function (change) {
+						changeCallback.deactivate(change);
+					});
+				else
+					changeCallback.deactivate();
+			}).bind(this)
+		};
+		
+		return dispose;
+	};
     
     arrayBase.prototype.alteringLength = function(callback) {
         if (this.__alteringLength) {
@@ -218,20 +224,7 @@ Class("obsjs.arrayBase", function () {
             cb.activate(change);
         });
         
-        var dispose = {
-            dispose: ((function (allowPendingChanges) {
-
-                if (!dispose) return;
-                dispose = null;
-                
-                if (allowPendingChanges)
-                    this.onNextArrayChange(function (change) {
-                        cb.deactivate(change);
-                    });
-                else
-                    cb.deactivate();
-            }).bind(this))
-        };
+        var dispose = this.disposableFor(cb);
         
         this.$disposables.push(dispose);
         

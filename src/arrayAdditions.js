@@ -86,26 +86,64 @@
     //TODO: test
     array.prototype.reverse = function(item) {
 
+		var length = this.length;
+		if (length < 2) return;
+		
         if (!useObjectObserve) {
                 
-            var half = this.length / 2;
-            half = half % 1 === 0 ? -1 : half - 0.5;
+            var half = Math.floor(length / 2), cb = [], i2;
+            for (var i = 0; i < half; i++) {
             
-            for (var i = 0, ii = this.length; i < ii; i++) {
-                if (i === half)
-                    continue;
-            
-                this.registerChangeBatch([{
+                cb.push({
                     name: i.toString(),
                     object: this,
                     oldValue: this[i],
                     type: "update"
-                }]);
+                });
+				
+				i2 = length - i - 1;
+                cb.push({
+                    name: i2.toString(),
+                    object: this,
+                    oldValue: this[i2],
+                    type: "update"
+                });
             }
+			
+            this.registerChangeBatch(cb);
         }
         
         return this.alteringLength(function() {
             return Array.prototype.reverse.call(this);
+        });
+    };
+
+    //TODO: test
+    array.prototype.sort = function() {
+		
+		var args = arguments;
+        if (!useObjectObserve) {
+                
+			var copy = this.slice(), cb = [];
+        	var output = this.alteringLength(function() {
+				return Array.prototype.sort.apply(this, args);
+			});
+			
+			for (var i = 0, ii = copy.length; i < ii; i++)
+				if (copy[i] !== this[i])
+					cb.push({
+						name: i.toString(),
+						object: this,
+						oldValue: copy[i],
+						type: "update"
+					});
+			
+            this.registerChangeBatch(cb);			
+			return output;
+        }
+        
+        return this.alteringLength(function() {
+            return Array.prototype.sort.apply(this, args);
         });
     };
 

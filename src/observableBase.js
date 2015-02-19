@@ -11,6 +11,7 @@ Class("obsjs.observableBase", function () {
         this.$callbacks = {};
     });
     
+	// this function is also used by arrayBase
     observableBase.prototype.registerChangeBatch = function (changes) {
         if (!this.$changeBatch.length)
             setTimeout(this.processChangeBatch.bind(this));
@@ -138,7 +139,7 @@ Class("obsjs.observableBase", function () {
         });
         
         var dispose = {
-            dispose: ((function (allowPendingChanges) {
+            dispose: (function (allowPendingChanges) {
 
                 if (!dispose) return;
                 dispose = null;
@@ -149,7 +150,7 @@ Class("obsjs.observableBase", function () {
                     });
                 else
                     cb.deactivate();
-            }).bind(this))
+            }).bind(this)
         };
         
         this.registerDisposable(dispose);
