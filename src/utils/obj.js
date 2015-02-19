@@ -149,10 +149,27 @@ Class("obsjs.utils.obj", function () {
             context = _getObject(propertyName.splice(0, propertyName.length -1), context);
         
         context[propertyName[0]] = value;
-    };
+    };	
+
+    //TODO: this can be re-used a LOT!!!
+    function addWithDispose(callbackArray, callback) {
+
+        callbackArray.push(callback);
+        var dispose = new obsjs.disposable(function () {
+            if (!dispose) return;
+            dispose = null;
+
+            callback = callbackArray.indexOf(callback);
+            if (callback !== -1)
+                callbackArray.splice(callback, 1);
+        });
+
+        return dispose;
+    }
     
     var obj = function obj() { };
     obj.trim = trim;
+    obj.addWithDispose = addWithDispose;
     obj.enumerateArr = enumerateArr;
     obj.enumerateObj = enumerateObj;
     obj.getObject = getObject;

@@ -50,28 +50,12 @@ Class("obsjs.utils.observeCycleHandler", function () {
 
     observeCycleHandler.prototype.afterObserveCycle = function (callback) {
 
-        return addAndDispose(this.$afterObserveCycles, callback);
+        return obsjs.utils.obj.addWithDispose(this.$afterObserveCycles, callback);
     };
 
     observeCycleHandler.prototype.befreObserveCycle = function (callback) {
 
-        return addAndDispose(this.$beforeObserveCycles, callback);
-    };
-
-    //TODO: this can be re-used a LOT!!!
-    function addAndDispose(callbackArray, callback) {
-
-        callbackArray.push(callback);
-        var dispose = new obsjs.disposable(function () {
-            if (!dispose) return;
-            dispose = null;
-
-            callback = callbackArray.indexOf(callback);
-            if (callback !== -1)
-                callbackArray.splice(callback, 1);
-        });
-
-        return dispose;
+        return obsjs.utils.obj.addWithDispose(this.$beforeObserveCycles, callback);
     };
     
     observeCycleHandler.instance = new observeCycleHandler();

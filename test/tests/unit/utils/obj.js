@@ -62,3 +62,25 @@ testUtils.testWithUtils("getObject", "", true, function(methods, classes, subjec
     // assert    
     strictEqual(invoker("a.b.c.d", ctxt), ctxt.a.b.c.d);
 });
+
+testUtils.testWithUtils("addWithDispose", "", true, function(methods, classes, subject, invoker) {
+    // arrange
+	var item, arr = [item = {}];
+    
+    // act
+	var disp = invoker(arr, item);
+	
+    // assert    
+    strictEqual(arr.length, 2);
+    strictEqual(arr[0], item);
+    strictEqual(arr[1], item);
+	
+    
+    // act
+	disp.dispose();
+	disp.dispose();
+	
+    // assert    
+    strictEqual(arr.length, 1);
+    strictEqual(arr[0], item);
+});
