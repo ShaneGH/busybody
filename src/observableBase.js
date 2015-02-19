@@ -28,16 +28,16 @@ Class("obsjs.observableBase", function () {
         });
         
         this.$changeBatch.length = 0;
-        obsjs.utils.observeCycleHandler.instance.before(this.$forObject || this);
 
-        var evaluateMultiple = [];
-        enumerateObj(splitChanges, function (changes, name) {
-            if (this.$callbacks[name])
-                evaluateMultiple.push.apply(evaluateMultiple, observableBase.processChanges(this.$callbacks[name], changes));
-        }, this);
+        obsjs.utils.observeCycleHandler.instance.execute(this.$forObject || this, (function () {
+			var evaluateMultiple = [];
+			enumerateObj(splitChanges, function (changes, name) {
+				if (this.$callbacks[name])
+					evaluateMultiple.push.apply(evaluateMultiple, observableBase.processChanges(this.$callbacks[name], changes));
+			}, this);
 
-        enumerateArr(evaluateMultiple, function (c) { c(); });
-        obsjs.utils.observeCycleHandler.instance.after(this.$forObject || this);
+			enumerateArr(evaluateMultiple, function (c) { c(); });
+		}).bind(this));
     };
 
     observableBase.processChanges = function (callbacks, changes) {

@@ -1,4 +1,16 @@
-Class("obsjs.arrayBase", function () {
+
+module("obsjs.arrayBase", {
+	setup: function() {
+	},
+	teardown: function() {
+	}
+});
+
+testUtils.testWithUtils("placeholder", null, false, function(methods, classes, subject, invoker) {
+	ok(true);
+});
+
+function a() {
     
     function dictionary () {
         this.__keyArray = [], this.__valueArray = [];        
@@ -71,9 +83,10 @@ Class("obsjs.arrayBase", function () {
         var changeBatch = this.$changeBatch.slice();
         this.$changeBatch.length = 0;
 
-        obsjs.utils.observeCycleHandler.instance.execute(this, (function () {
-        	enumerateArr(obsjs.observableBase.processChanges(this.$callbacks, changeBatch), function (c) { c(); });
-		}).bind(this));
+        //TODO: copy pasted from observableBase
+        obsjs.utils.observeCycleHandler.instance.before(this);
+        enumerateArr(obsjs.observableBase.processChanges(this.$callbacks, changeBatch), function (c) { c(); });
+        obsjs.utils.observeCycleHandler.instance.after(this);
     };
     
     arrayBase.prototype.registerChangeBatch = function (changes) {
@@ -248,6 +261,4 @@ Class("obsjs.arrayBase", function () {
         this.$boundArrays.clear();
         this.$callbacks.length = 0;
     };
-    
-    return arrayBase;
-});
+};

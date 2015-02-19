@@ -17,6 +17,16 @@ Class("obsjs.utils.observeCycleHandler", function () {
 			evaluateIfValueHasNotChanged: true
 		});
     });
+	
+    observeCycleHandler.prototype.execute = function (forObject, executionLogic) {
+		
+		try {
+			this.before(forObject);
+			executionLogic();
+		} finally {
+        	this.after(forObject);
+		}
+	};
 
     function ex(callback) { callback(); }
     observeCycleHandler.prototype.before = function (forObject) {
@@ -40,16 +50,16 @@ Class("obsjs.utils.observeCycleHandler", function () {
 
     observeCycleHandler.prototype.afterObserveCycle = function (callback) {
 
-        return afterCycle(this.$afterObserveCycles, callback);
+        return addAndDispose(this.$afterObserveCycles, callback);
     };
 
     observeCycleHandler.prototype.befreObserveCycle = function (callback) {
 
-        return afterCycle(this.$beforeObserveCycles, callback);
+        return addAndDispose(this.$beforeObserveCycles, callback);
     };
 
     //TODO: this can be re-used a LOT!!!
-    function afterCycle(callbackArray, callback) {
+    function addAndDispose(callbackArray, callback) {
 
         callbackArray.push(callback);
         var dispose = new obsjs.disposable(function () {
