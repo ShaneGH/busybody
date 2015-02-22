@@ -179,9 +179,9 @@ Class("obsjs.utils.obj", function () {
             
             output.dispose();
 
-			if (computed.isArray(existingVal) && newValue == null) {
+			if (obsjs.observeTypes.computed.isArray(existingVal) && newValue == null) {
 				existingVal.length = 0;	//TODO: test this case
-			} else if (!computed.isArray(newValue) || !computed.isArray(existingVal)) {
+			} else if (!obsjs.observeTypes.computed.isArray(newValue) || !obsjs.observeTypes.computed.isArray(existingVal)) {
                 obsjs.utils.obj.setObject(bindToProperty, bindToObject, newValue);
             } else if (newValue instanceof obsjs.array) {                                        
                 arrayDisposeCallback = newValue.bind(existingVal);

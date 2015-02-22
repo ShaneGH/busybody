@@ -360,9 +360,9 @@ Class("obsjs.utils.obj", function () {
             
             output.dispose();
 
-			if (computed.isArray(existingVal) && newValue == null) {
+			if (obsjs.observeTypes.computed.isArray(existingVal) && newValue == null) {
 				existingVal.length = 0;	//TODO: test this case
-			} else if (!computed.isArray(newValue) || !computed.isArray(existingVal)) {
+			} else if (!obsjs.observeTypes.computed.isArray(newValue) || !obsjs.observeTypes.computed.isArray(existingVal)) {
                 obsjs.utils.obj.setObject(bindToProperty, bindToObject, newValue);
             } else if (newValue instanceof obsjs.array) {                                        
                 arrayDisposeCallback = newValue.bind(existingVal);
@@ -1925,15 +1925,13 @@ Class("obsjs.observeTypes.pathObserver", function () {
         ///<summary>Observe a property for change. Should be "call()"ed with this being a "watched"</summary>
         ///<param name="forObject" type="obsjs.observable" optional="false">The object to watch</param>
         ///<param name="property" type="String" optional="false">The property</param>
-        ///<param name="callback" type="Function" optional="false">The callback for property change</param>
+        ///<param name="callback" type="Function" optional="true">A callback for property change</param>
         ///<param name="context" type="Any" optional="true">The context of the callback</param>
 		
         this._super();
         
         this.forObject = forObject;
         this.property = property;
-        this.callback = callback;
-        this.context = context;
         
         this.path = obsjs.utils.obj.splitPropertyName(property);
         
@@ -1944,7 +1942,8 @@ Class("obsjs.observeTypes.pathObserver", function () {
         this.init = true;
 		
 		this.callbacks = [];
-		this.onValueChanged(callback.bind(context || forObject), false);
+		if (callback)
+			this.onValueChanged(callback.bind(context || forObject), false);
     });
     
     pathObserver.prototype.onValueChanged = function (callback, evaluateImmediately) {
