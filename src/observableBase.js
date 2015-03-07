@@ -134,9 +134,12 @@ Class("obsjs.observableBase", function () {
         if (!this.$callbacks[property]) this.$callbacks[property] = [];
         this.$callbacks[property].push(cb);
 
-        this.onNextPropertyChange(property, function (change) {
-            cb.activate(change);
-        });
+		if (options && options.activateImmediately)
+			cb.activate();
+		else
+			this.onNextPropertyChange(property, function (change) {
+				cb.activate(change);
+			});
         
         var dispose = {
             dispose: (function (allowPendingChanges) {

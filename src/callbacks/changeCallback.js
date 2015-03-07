@@ -14,7 +14,10 @@ Class("obsjs.callbacks.changeCallback", function () {
         if (this._activated || this._activatingChange)
             throw "This callback has been activated";
         
-        this._activatingChange = activatingChange;
+		if (arguments.length)
+        	this._activatingChange = activatingChange;
+		else
+			this._activated = true;
     };
     
     changeCallback.prototype.deactivate = function (deactivatingChange) {

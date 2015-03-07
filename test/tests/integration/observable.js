@@ -52,7 +52,24 @@ function testMe (moduleName, buildSubject) {
         
         subject.ddd = "fff";
     });
+    
+    testUtils.testWithUtils("observe", "activate immediately", false, function(methods, classes, subject, invoker) {
+		
+        // arrange
+        var subject = buildSubject();
+        obsjs.observe(subject, "val", function() {});
+        subject.val = "aaa";
+        
+        obsjs.observe(subject, "val", function(oldVal, newVal) {
+            strictEqual(oldVal, undefined);
+            strictEqual(newVal, "aaa");
+            start();
+        }, null, {activateImmediately: true});
 
+        // act
+
+        stop();
+    });
     
     testUtils.testWithUtils("observe", "multiple changes, 1 registration", false, function(methods, classes, subject, invoker) {
         

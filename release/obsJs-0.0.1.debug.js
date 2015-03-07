@@ -656,9 +656,12 @@ Class("obsjs.observableBase", function () {
         if (!this.$callbacks[property]) this.$callbacks[property] = [];
         this.$callbacks[property].push(cb);
 
-        this.onNextPropertyChange(property, function (change) {
-            cb.activate(change);
-        });
+		if (options && options.activateImmediately)
+			cb.activate();
+		else
+			this.onNextPropertyChange(property, function (change) {
+				cb.activate(change);
+			});
         
         var dispose = {
             dispose: (function (allowPendingChanges) {
@@ -757,7 +760,10 @@ Class("obsjs.callbacks.changeCallback", function () {
         if (this._activated || this._activatingChange)
             throw "This callback has been activated";
         
-        this._activatingChange = activatingChange;
+		if (arguments.length)
+        	this._activatingChange = activatingChange;
+		else
+			this._activated = true;
     };
     
     changeCallback.prototype.deactivate = function (deactivatingChange) {
