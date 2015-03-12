@@ -143,6 +143,7 @@ Class("obsjs.arrayBase", function () {
         // options evaluateOnEachChange and useRawChanges
 		
         if (typeof arguments[0] === "string") {
+			if (arguments[0] === "length") arguments[0] = "$length";
 			
             var args = Array.prototype.slice.call(arguments);
             args.splice(0, 0, this);
