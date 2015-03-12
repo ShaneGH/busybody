@@ -67,19 +67,20 @@
             this.splice(i, 1);
     };
 
-    array.prototype.push = function(item) {
+    array.prototype.push = function() {
 
         if (!useObjectObserve)
             this.registerChangeBatch([{
-                addedCount: 1,
+                addedCount: arguments.length,
                 index: this.length,
                 object: this,
                 removed: [],
                 type: "splice"
             }]);
 
+		var args = arguments;
         return this.alteringLength(function() {
-            return Array.prototype.push.call(this, item);
+            return Array.prototype.push.apply(this, args);
         });
     };
 

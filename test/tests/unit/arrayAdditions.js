@@ -130,18 +130,20 @@ testUtils.testWithUtils("push", null, false, function(methods, classes, subject,
 		
 		strictEqual(changes[0].index, 3);
 		strictEqual(changes[0].type, "splice");
-		strictEqual(changes[0].addedCount, 1);
+		strictEqual(changes[0].addedCount, 3);
 		strictEqual(changes[0].removed.length, 0);	
 		start();
 	}, null, { useRawChanges: true });
 	
 	// act
-	subject.push(4);
+	subject.push(4, 5, 6);
 	stop();
 	
 	// assert
-	strictEqual(subject.length, 4);
+	strictEqual(subject.length, 6);
 	strictEqual(subject[3], 4);
+	strictEqual(subject[4], 5);
+	strictEqual(subject[5], 6);
 });
 
 testUtils.testWithUtils("reverse", "odd number", false, function(methods, classes, subject, invoker) {
