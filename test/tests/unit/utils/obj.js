@@ -45,6 +45,13 @@ testUtils.testWithUtils("enumerateObj", null, true, function(methods, classes, s
     strictEqual(subject[3].val, 4);
 });
 
+testUtils.testWithUtils("splitPropertyName", "", true, function(methods, classes, subject, invoker) {
+    // arrange    
+    // act	
+    // assert    
+    deepEqual(invoker("a . b.c[3].d [4].e[ 5].f[6 ].g[7] .t"), ["a", "b", "c", 3, "d", 4, "e", 5, "f", 6, "g", 7, "t"]);
+});
+
 testUtils.testWithUtils("trim", "", true, function(methods, classes, subject, invoker) {
     // arrange
     var string = "JKHVJKHVJKHVH";
