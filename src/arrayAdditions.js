@@ -2,26 +2,7 @@
     
     var array = obsjs.array;
     
-    //TODO: old implementation was not updating length.
-    //TODO: use old emeplemntation, there are already tests in place
-    array.prototype.replace = function(index, replacement) {
-        
-        /*
-        if (!useObjectObserve)
-            this.registerChangeBatch([{
-                name: index.toString(),
-                object: this,
-                oldValue: this[index],
-                type: "update"
-            }]);
-        
-        return this.alteringLength(function() {
-            if (this.length <= index)
-                this.length = index + 1;
-                
-            return this[index] = replacement;
-        });*/
-        
+    array.prototype.replace = function(index, replacement) {        
         this.splice(index, index >= this.length ? 0 : 1, replacement);
         return replacement;
     };

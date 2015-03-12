@@ -12,7 +12,6 @@ Class("obsjs.callbacks.arrayCallback", function () {
 
     arrayCallback.prototype._evaluateSingle = function (changes, index) {
 
-        //TODO setTimeout?
         this.callback.call(this.context, changes[index]);
     };
 

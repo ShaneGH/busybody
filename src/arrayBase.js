@@ -140,21 +140,8 @@ Class("obsjs.arrayBase", function () {
             args.splice(0, 0, this);
             return obsjs.observe.apply(null, args);
         }
-                
-        this._init();
-
-        var cb = new obsjs.callbacks.arrayCallback(callback, context, options);
-        this.$callbacks.push(cb);
-
-        this.onNextArrayChange(function (change) {
-            cb.activate(change);
-        });
-        
-        var dispose = this.disposableFor(cb);
-        
-        this.$disposables.push(dispose);
-        
-        return dispose;
+		
+		return this.addCallback(new obsjs.callbacks.arrayCallback(callback, context, options));
     };
 	
 	arrayBase.prototype.disposableFor = function (changeCallback) {
@@ -206,8 +193,6 @@ Class("obsjs.arrayBase", function () {
     };
     
     arrayBase.prototype.bind = function(anotherArray) {
-		
-        this._init();
         
         if (this.$boundArrays.value(anotherArray)) return;        
         
@@ -216,20 +201,24 @@ Class("obsjs.arrayBase", function () {
         
         this.$boundArrays.add(anotherArray, {});
         
-        //TODO: copied from observe
-        var cb = new obsjs.callbacks.boundArrayCallback(this, anotherArray);
-        this.$callbacks.push(cb);
+		return this.addCallback(new obsjs.callbacks.boundArrayCallback(this, anotherArray));
+    };
+	
+	arrayBase.prototype.addCallback = function (callback) {
+        this._init();
+
+        this.$callbacks.push(callback);
 
         this.onNextArrayChange(function (change) {
-            cb.activate(change);
+            callback.activate(change);
         });
         
-        var dispose = this.disposableFor(cb);
+        var dispose = this.disposableFor(callback);
         
         this.$disposables.push(dispose);
         
         return dispose;
-    };
+	};
     
     arrayBase.prototype.dispose = function() {
         
