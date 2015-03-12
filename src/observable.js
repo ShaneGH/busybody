@@ -73,6 +73,7 @@ var observable = useObjectObserve ?
             this.$captureCallbacks.splice(this.$captureCallbacks.indexOf(cb), 1);
         };
 
+        function getObserver(forObject) { return forObject.$observer || forObject; }
         observable.prototype._init = function (forProperty) {
 
             if (this.$observed.hasOwnProperty(forProperty)) return;
@@ -80,8 +81,6 @@ var observable = useObjectObserve ?
             if ((this.$forObject || this).hasOwnProperty(forProperty))
                 this.$observed[forProperty] = (this.$forObject || this)[forProperty];
 
-            //TODO: observe array length tests
-            function getObserver(forObject) { return forObject.$observer || forObject; }
             Object.defineProperty(this.$forObject || this, forProperty, {
                 get: function() {
                     return getObserver(this).$observed[forProperty];
