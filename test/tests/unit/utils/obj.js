@@ -52,6 +52,13 @@ testUtils.testWithUtils("splitPropertyName", "", true, function(methods, classes
     deepEqual(invoker("a . b.c[3].d [4].e[ 5].f[6 ].g[7] .t"), ["a", "b", "c", 3, "d", 4, "e", 5, "f", 6, "g", 7, "t"]);
 });
 
+testUtils.testWithUtils("joinPropertyName", "", true, function(methods, classes, subject, invoker) {
+    // arrange    
+    // act	
+    // assert 
+    deepEqual(invoker(["a", "b", "c", 3, "t"]), "a.b.c[3].t");
+});
+
 testUtils.testWithUtils("trim", "", true, function(methods, classes, subject, invoker) {
     // arrange
     var string = "JKHVJKHVJKHVH";
@@ -68,6 +75,17 @@ testUtils.testWithUtils("getObject", "", true, function(methods, classes, subjec
     // act    
     // assert    
     strictEqual(invoker("a.b.c.d", ctxt), ctxt.a.b.c.d);
+});
+
+testUtils.testWithUtils("setObject", "", true, function(methods, classes, subject, invoker) {
+    // arrange
+    var ctxt = {a:{b:{c:{d:{}}}}}, obj = {};
+    
+    // act
+	invoker("a.b.c.d", ctxt, obj);
+	
+    // assert    
+    strictEqual(obj, ctxt.a.b.c.d);
 });
 
 testUtils.testWithUtils("addWithDispose", "", true, function(methods, classes, subject, invoker) {
