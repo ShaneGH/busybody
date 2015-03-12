@@ -102,8 +102,7 @@ Class("obsjs.arrayBase", function () {
 
     Object.defineProperty(arrayBase.prototype, "length", {
         set: function(v) {
-            v = changeIndex(v);            
-            if (v === undefined) 
+            if ((v = changeIndex(v)) === undefined) 
                 throw RangeError("Invalid array length");
 
             if (v === this.$length)
@@ -119,6 +118,14 @@ Class("obsjs.arrayBase", function () {
                     this.splice(v, this.length - v);
                 }
             }
+			
+			if (this.$observer)
+				this.$observer.registerChangeBatch([{
+					name: "length",
+					oldValue: this.$length,
+					type: "update",
+					object: this
+				}]);
             
             var oldValue = this.$length;
             this.$length = v;
@@ -133,9 +140,10 @@ Class("obsjs.arrayBase", function () {
     };
     
     arrayBase.prototype.observe = function (callback, context, options) {
-        // options evaluateOnEachChange and useRawChanges		
+        // options evaluateOnEachChange and useRawChanges
 		
         if (typeof arguments[0] === "string") {
+			
             var args = Array.prototype.slice.call(arguments);
             args.splice(0, 0, this);
             return obsjs.observe.apply(null, args);

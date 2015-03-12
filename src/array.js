@@ -6,6 +6,11 @@ Class("obsjs.array", function () {
         this._super.apply(this, arguments);
     });
          
+    array.prototype.observe = function (callback, context, options) {
+		if (arguments[0] === "length") arguments[0] = "$length";
+    	return obsjs.arrayBase.prototype.observe.apply(this, arguments);
+    };
+         
     array.prototype.onNextArrayChange = function (callback) {
 
         var cb = (function (changes) {

@@ -6,6 +6,25 @@ module("obsjs.array, integration", {
     }
 });
 
+testUtils.testWithUtils("observe", "length", false, function(methods, classes, subject, invoker) {
+    // arrange
+    var subject = new obsjs.array([1]);
+	subject[0] = 8;
+
+    var val = {};
+    subject.observe("length", function(oldVal, newVal) {
+        strictEqual(oldVal, 1);
+        strictEqual(newVal, 3);
+        
+        start();
+    });
+
+    // act
+    subject.length = 3;
+
+    stop();
+});
+
 testUtils.testWithUtils("observe", "add", false, function(methods, classes, subject, invoker) {
     // arrange
     var subject = new obsjs.array();
