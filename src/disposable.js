@@ -1,12 +1,14 @@
 
 Class("obsjs.disposable", function () {
     
+	function init (disp) {
+		if (!disp.$disposables) disp.$disposables = {};
+	}
+	
     var disposable = objjs.object.extend(function disposable(disposableOrDisposeFunction) {
         ///<summary>An object which can be disposed</summary>
         
         this._super();
-        
-        this.$disposables = {};
         
         if (!disposableOrDisposeFunction)
             ;
@@ -19,16 +21,19 @@ Class("obsjs.disposable", function () {
     disposable.prototype.disposeOf = function(key) {
         ///<summary>Dispose of an item registered as a disposable</summary>
         ///<param name="key" type="String" optional="false">The key of the item to dispose</param>
-        if(this.$disposables[key]) {
+        if(this.$disposables && this.$disposables[key]) {
             this.$disposables[key]();
-            delete this.$disposables[key];
+            return delete this.$disposables[key];
         }
+		
+		return false;
     };
     
     disposable.prototype.disposeOfAll = function() {
         ///<summary>Dispose of all items registered as a disposable</summary>
-        for(var i in this.$disposables)
-            this.disposeOf(i);
+		if (this.$disposables)
+			for(var i in this.$disposables)
+				this.disposeOf(i);
     };
     
     disposable.prototype.registerDisposeCallback = (function() {
@@ -40,6 +45,7 @@ Class("obsjs.disposable", function () {
 
             if(!disposeFunction || disposeFunction.constructor !== Function) throw "The dispose function must be a Function";
 
+			init(this);
             var id = (++i).toString();            
             this.$disposables[id] = disposeFunction;            
             return id;
