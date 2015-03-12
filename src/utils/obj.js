@@ -77,7 +77,6 @@ var trim = function(string) {
 
 Class("obsjs.utils.obj", function () {
         
-    //TODO: test for array
     var arrayMatch = /\[\s*\d\s*\]$/g;
     var splitPropertyName = function(propertyName) {
         propertyName = propertyName.split(".");
@@ -102,7 +101,6 @@ Class("obsjs.utils.obj", function () {
         return propertyName;
     };
     
-    //TODO test
     var joinPropertyName = function (propertyName) {
         var output = [];
         enumerateArr(propertyName, function (item) {
@@ -150,7 +148,6 @@ Class("obsjs.utils.obj", function () {
         context[propertyName[0]] = value;
     };	
 
-    //TODO: this can be re-used a LOT!!!
     function addWithDispose(callbackArray, callback) {
 
         callbackArray.push(callback);

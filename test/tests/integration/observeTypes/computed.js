@@ -32,6 +32,28 @@ testUtils.testWithUtils("integration test", "very simple change", false, functio
     subject.val3 = "hello shane";
 });
 
+testUtils.testWithUtils("bind non array to array", null, false, function(methods, classes, subject, invoker) {
+    // arrange
+    var subject = new obsjs.observable();
+    subject.comp = new obsjs.array([1,2,3]);
+	
+    subject.comp.observe(function(oldVal, newVal) {
+        strictEqual(subject.comp.length, 0);
+        
+        comp.dispose();
+        start();
+    });
+
+    var comp = new obsjs.observeTypes.computed(function() {
+        return null;
+    }, subject);
+    
+    comp.bind(subject, "comp");
+
+    // act
+    stop();
+});
+
 testUtils.testWithUtils("integration test", "simple change", false, function(methods, classes, subject, invoker) {
     // arrange
     var subject = new obsjs.observable();

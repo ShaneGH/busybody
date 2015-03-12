@@ -135,6 +135,18 @@ testUtils.testWithUtils("createBindFunction", "bind arrays", true, function(meth
     deepEqual(obj[prop], newVal);
 });
 
+testUtils.testWithUtils("createBindFunction", "bind null to array", true, function(methods, classes, subject, invoker) {
+    // arrange
+    var obj = {prop: [1,2,3]}, prop = "prop";
+    subject = invoker(obj, prop);
+    
+    // act
+    subject(null, null);
+    
+    // assert
+    strictEqual(obj[prop].length, 0);
+});
+
 testUtils.testWithUtils("createBindFunction", "bind observable arrays", true, function(methods, classes, subject, invoker) {
     // arrange
     var obj = {prop: new obsjs.array()}, prop = "prop", newVal = new obsjs.array([{},{},{}]);
