@@ -67,6 +67,7 @@ module.exports = function(grunt) {
         'src/utils/obj.js', 
         'src/disposable.js', 
         'src/utils/executeCallbacks.js', 
+        'src/observeTypes/observeTypesBase.js', 
         'src/observableBase.js', 
         'src/callbacks/changeCallback.js',
         'src/callbacks/arrayCallbackBase.js',

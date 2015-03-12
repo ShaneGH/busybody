@@ -165,50 +165,20 @@ testUtils.testWithUtils("watchVariable", "has un allowed argument", false, funct
 	ok(true, "too complex for unit testing");
 });
 
-testUtils.testWithUtils("_execute", "no cancel", false, function(methods, classes, subject, invoker) {
+testUtils.testWithUtils("getValue", null, false, function(methods, classes, subject, invoker) {
     // arrange
-	subject.val = 11;
-    var ensure = methods.method();
-    subject.callbackFunction = function () {
-        ensure();
-        strictEqual(arguments[0], subject.arguments[0]);
-        strictEqual(arguments[1], subject.arguments[1]);
-        strictEqual(this, subject.context);
-        return 22;
-    };
-    subject.arguments = [{},{}];
-    subject.context = {};
+	var ctxt = {}, args = {}, op = {};
+	subject.callbackFunction = {
+		apply: methods.method([ctxt, args], op)
+	};
+	subject.context = ctxt;
+	subject.arguments = args;
     
     // act
     var output = invoker();
     
     // assert
-    strictEqual(subject.val, 22);
-    strictEqual(output.arguments.length, 2);
-    strictEqual(output.arguments[0], 11);
-    strictEqual(output.arguments[1], 22);
-    ok(!output.cancel);
-});
-
-testUtils.testWithUtils("_execute", "no cancel", false, function(methods, classes, subject, invoker) {
-    // arrange
-	subject.val = 11;
-    var ensure = methods.method();
-    subject.callbackFunction = function () {
-        ensure();
-        strictEqual(arguments[0], subject.arguments[0]);
-        strictEqual(arguments[1], subject.arguments[1]);
-        strictEqual(this, subject.context);
-        return 11;
-    };
-    subject.arguments = [{},{}];
-    subject.context = {};
-    
-    // act
-    var output = invoker();
-    
-    // assert
-    ok(output.cancel);
+    strictEqual(output, op);
 });
 
 testUtils.testWithUtils("bind", "bind and dispose", false, function(methods, classes, subject, invoker) {

@@ -2,7 +2,7 @@
 
 Class("obsjs.observeTypes.pathObserver", function () {
         
-    var pathObserver = obsjs.utils.executeCallbacks.extend(function pathObserver (forObject, property, callback, context) {
+    var pathObserver = obsjs.observeTypes.observeTypesBase.extend(function pathObserver (forObject, property, callback, context) {
         ///<summary>Observe a property for change. Should be "call()"ed with this being a "watched"</summary>
         ///<param name="forObject" type="obsjs.observable" optional="false">The object to watch</param>
         ///<param name="property" type="String" optional="false">The property</param>
@@ -82,10 +82,7 @@ Class("obsjs.observeTypes.pathObserver", function () {
             }, this);
     };
         
-	//TODO: (partially) copy pasted from computed
-    pathObserver.prototype._execute = function() {
-		var oldVal = this.val;
-		
+    pathObserver.prototype.getValue = function() {
         var current = this.forObject;
         
         // get item at index "begin"
@@ -93,12 +90,7 @@ Class("obsjs.observeTypes.pathObserver", function () {
             current = current[this.path[i]];
         }
 		
-		this.val = i === ii ? current : null;
-				
-		return {
-			cancel: this.val === oldVal,
-			arguments: [oldVal, this.val]
-		};
+		return i === ii ? current : null;
     };
 	
     pathObserver.prototype.dispose = function () {

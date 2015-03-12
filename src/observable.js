@@ -109,7 +109,7 @@ var observable = useObjectObserve ?
 
                 },
                 enumerable: true,
-                configurable: true //TODO: !this.usePrototypeAndWoBag
+                configurable: true
             });
         };
         

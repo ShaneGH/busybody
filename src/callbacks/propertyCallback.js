@@ -14,7 +14,6 @@ Class("obsjs.callbacks.propertyCallback", function () {
 
     propertyCallback.prototype._evaluateSingle = function (changes, index) {
 
-        //TODO setTimeout?
         var change = changes[index], 
             nextChange = changes[index + 1], 
             newVal = nextChange ? nextChange.oldValue : change.object[change.name];
@@ -24,9 +23,8 @@ Class("obsjs.callbacks.propertyCallback", function () {
     };
 
     propertyCallback.prototype._evaluateMultiple = function (changes, beginAt, endAt) {
-                
-        //TODO setTimeout?
-        var newVal = changes[endAt] ? changes[endAt].oldValue : changes[0].object[changes[0].name];
+		
+		var newVal = changes[endAt] ? changes[endAt].oldValue : changes[0].object[changes[0].name];
         if (this.evaluateIfValueHasNotChanged || newVal !== changes[beginAt].oldValue)
             this.callback.call(this.context, changes[beginAt].oldValue, newVal);
     };

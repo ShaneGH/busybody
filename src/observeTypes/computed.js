@@ -9,7 +9,7 @@ Class("obsjs.observeTypes.computed", function () {
     var GET_ITEMS = "((\\s*\\.\\s*([\\w\\$]*))|(\\[\\s*\\d\\s*\\]))+"; // ".propertyName" -or- "[2]"
     
     // monitor a function and change the value of a "watched" when it changes
-    var computed = obsjs.utils.executeCallbacks.extend(function computed(callback, context, options) {
+    var computed = obsjs.observeTypes.observeTypesBase.extend(function computed(callback, context, options) {
         
         this._super();
         
@@ -69,14 +69,8 @@ Class("obsjs.observeTypes.computed", function () {
         return false;
     };
         
-    computed.prototype._execute = function() {
-		var oldVal = this.val;
-		this.val = this.callbackFunction.apply(this.context, this.arguments);
-		
-		return {
-			cancel: this.val === oldVal,
-			arguments: [oldVal, this.val]
-		};
+    computed.prototype.getValue = function() {
+		return this.callbackFunction.apply(this.context, this.arguments);
     };
     
     computed.prototype.bind = function (object, property) {

@@ -7,9 +7,8 @@ module("obsjs.observeTypes.pathObserver", {
 
 var pathObserver = obsjs.observeTypes.pathObserver;
 
-testUtils.testWithUtils("_execute", "no cancel", false, function(methods, classes, subject, invoker) {
+testUtils.testWithUtils("getValue", "valid path", false, function(methods, classes, subject, invoker) {
     // arrange
-	subject.val = 11;
     subject.forObject = {
         aa: {bb: {cc: 22}}
     };
@@ -19,18 +18,13 @@ testUtils.testWithUtils("_execute", "no cancel", false, function(methods, classe
     var output = invoker();
     
     // assert
-    strictEqual(subject.val, 22);
-    strictEqual(output.arguments.length, 2);
-    strictEqual(output.arguments[0], 11);
-    strictEqual(output.arguments[1], 22);
-    ok(!output.cancel);
+    strictEqual(output, 22);
 });
 
-testUtils.testWithUtils("_execute", "no cancel", false, function(methods, classes, subject, invoker) {
+testUtils.testWithUtils("getValue", "invalid path", false, function(methods, classes, subject, invoker) {
     // arrange
-	subject.val = 11;
     subject.forObject = {
-        aa: {bb: {cc: 11}}
+        aa: 22
     };
     subject.path = ["aa", "bb", "cc"];
     
@@ -38,7 +32,7 @@ testUtils.testWithUtils("_execute", "no cancel", false, function(methods, classe
     var output = invoker();
     
     // assert
-    ok(output.cancel);
+    strictEqual(output, null);
 });
 
 testUtils.testWithUtils("onValueChanged", null, false, function(methods, classes, subject, invoker) {
