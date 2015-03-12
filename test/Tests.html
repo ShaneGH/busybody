@@ -8,11 +8,13 @@
 <body>
   <div id="qunit"></div>
   <div id="qunit-fixture"></div>
-  <script src="../build/obsJs.debug.js"></script>
+  <script src="../build/obsJs.debug.js" data-cover></script>
     
   <script src="lib/jquery/jquery-1.10.2.min.js"></script>
   <script src="lib/qunit/qunit-1.17.1.js"></script>
   <script src="lib/testUtils.js"></script>
+	
+  <script src="lib/blanket.min.js"></script>
     
   <script src="tests/integration/array.js"></script>
   <script src="tests/integration/disposable.js"></script>

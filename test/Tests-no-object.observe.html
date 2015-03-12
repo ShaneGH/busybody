@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <title>Obsjs</title>
-  <link rel="stylesheet" href="lib/qunit/qunit-1.12.0.css">
+  <link rel="stylesheet" href="lib/qunit/qunit-1.17.1.css">
 </head>
 <body>
   <script type="application/javascript">
@@ -11,11 +11,13 @@
   </script>
   <div id="qunit"></div>
   <div id="qunit-fixture"></div>
-  <script src="../build/obsJs.debug.js"></script>
+  <script src="../build/obsJs.debug.js" data-cover></script>
     
   <script src="lib/jquery/jquery-1.10.2.min.js"></script>
-  <script src="lib/qunit/qunit-1.12.0.js"></script>
+  <script src="lib/qunit/qunit-1.17.1.js"></script>
   <script src="lib/testUtils.js"></script>
+	
+  <script src="lib/blanket.min.js"></script>
     
   <script src="tests/integration/array.js"></script>
   <script src="tests/integration/disposable.js"></script>
