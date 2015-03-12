@@ -1,7 +1,6 @@
 
 Class("obsjs.disposable", function () {
     
-    //TODO: test
     var disposable = objjs.object.extend(function disposable(disposableOrDisposeFunction) {
         ///<summary>An object which can be disposed</summary>
         

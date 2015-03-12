@@ -40,7 +40,6 @@ Class("obsjs.array", function () {
     };
 
     array.prototype._init = function () {
-        //TODO: dispose
         if (this.__subscription) return;
         
         this.__subscription = this.registerChangeBatch.bind(this);

@@ -97,7 +97,7 @@ Class("obsjs.observeTypes.computed", function () {
         return output;
     };
         
-    computed.stripFunction = function(input) { //TODO: unit test independantly
+    computed.stripFunction = function(input) {
         input = input
             .toString()
             .replace(STRIP_INLINE_COMMENTS, "")

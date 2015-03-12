@@ -77,7 +77,7 @@ var trim = function(string) {
 
 Class("obsjs.utils.obj", function () {
         
-    //TODO: merge with path watch
+    // : merge with path watch
     //TODO: test for array
     var arrayMatch = /\[\s*\d\s*\]$/g;
     var splitPropertyName = function(propertyName) {

@@ -83,7 +83,6 @@
         });
     };
 
-    //TODO: test
     array.prototype.reverse = function(item) {
 
 		var length = this.length;
@@ -118,7 +117,6 @@
         });
     };
 
-    //TODO: test
     array.prototype.sort = function() {
 		
 		var args = arguments;
@@ -173,5 +171,4 @@
     //TODO
     //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/copyWithin
     //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/fill
-    //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
 }());

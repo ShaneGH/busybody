@@ -207,7 +207,7 @@ testUtils.testWithUtils("reverse", "even number", false, function(methods, class
 	strictEqual(subject[3], 1);
 });
 
-testUtils.testWithUtils("sort", "cannot test this to rigourously. Observe and non observe implekentations will differ slightly", false, function(methods, classes, subject, invoker) {
+testUtils.testWithUtils("sort", "cannot test this to0 rigourously. Observe and non observe implementations will differ slightly", false, function(methods, classes, subject, invoker) {
 	// arrange
 	var subject = new obsjs.array([1,3,2]);
 	subject.observe(function (changes) {
