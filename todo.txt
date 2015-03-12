@@ -1,4 +1,0 @@
-
-
-array, push with multiple arguments does not work
-path, try to allow this kind of thing "obj.getSomething().value"
