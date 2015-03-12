@@ -118,14 +118,6 @@ Class("obsjs.arrayBase", function () {
                     this.splice(v, this.length - v);
                 }
             }
-			
-			if (this.$observer)
-				this.$observer.registerChangeBatch([{
-					name: "length",
-					oldValue: this.$length,
-					type: "update",
-					object: this
-				}]);
             
             var oldValue = this.$length;
             this.$length = v;
