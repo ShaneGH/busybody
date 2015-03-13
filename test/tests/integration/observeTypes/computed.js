@@ -154,7 +154,8 @@ testUtils.testWithUtils("monitor array contents", "get value from array index", 
         start();
     });
 	
-	subject.prop.people[1].replace(2, 44);
+	//subject.prop.people[1].replace(2, 44);
+	subject.prop.people[1][2] = 44;
 	
 	stop();
 });

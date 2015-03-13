@@ -10,7 +10,7 @@ var observable = useObjectObserve ?
             var cb = (function (changes) {
                 if (!cb) return;
                 for (var i = 0, ii = changes.length; i < ii; i++) {
-                    if (changes[i].name === property) {                            
+                    if (changes[i].name == property) {	// in this case numbers and strings are the same
                         var _cb = cb;
                         Object.unobserve(this.$forObject || this, _cb);
                         cb = null;

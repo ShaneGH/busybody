@@ -84,7 +84,6 @@ Class("obsjs.observeTypes.computed", function () {
 				possibleArray.disposeKeys = possibleArray.disposeKeys || [];
 				enumerateArr(array, function (item) {
 					enumerateArr(possibleArray.subPaths, function (subPath) {
-						debugger;
 						possibleArray.disposeKeys.push(this.addPathWatchFor(item, subPath));
 					}, this);
 				}, this);
