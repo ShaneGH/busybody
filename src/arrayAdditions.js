@@ -19,7 +19,7 @@
                     type: "splice"
                 }]);
 
-        return this.alteringLength("pop");
+        return this.alteringArray("pop");
     };
 
     array.prototype.shift = function() {
@@ -34,7 +34,7 @@
                     type: "splice"
                 }]);
 
-        return this.alteringLength("shift");
+        return this.alteringArray("shift");
     };
 
     array.prototype.remove = function(item) {
@@ -55,7 +55,7 @@
                 type: "splice"
             }]);
 
-        return this.alteringLength("push", arguments);
+        return this.alteringArray("push", arguments);
     };
 
     array.prototype.reverse = function(item) {
@@ -87,7 +87,7 @@
             this.registerChangeBatch(cb);
         }
         
-        return this.alteringLength("reverse");
+        return this.alteringArray("reverse");
     };
 
     array.prototype.sort = function() {
@@ -95,7 +95,7 @@
         if (!useObjectObserve) {
                 
 			var copy = this.slice(), cb = [];
-        	var output = this.alteringLength("sort", arguments);
+        	var output = this.alteringArray("sort", arguments);
 			
 			for (var i = 0, ii = copy.length; i < ii; i++)
 				if (copy[i] !== this[i])
@@ -110,7 +110,7 @@
 			return output;
         }
         
-        return this.alteringLength("sort", arguments);
+        return this.alteringArray("sort", arguments);
     };
 
     array.prototype.splice = function(index, removeCount, addItems) {
@@ -130,7 +130,7 @@
             }]);
         }
 
-        return this.alteringLength("splice", arguments);
+        return this.alteringArray("splice", arguments);
     };
 
     //TODO

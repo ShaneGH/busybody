@@ -108,7 +108,7 @@ Class("obsjs.arrayBase", function () {
             if (v === this.$length)
                 return;
 
-            if(!this.__alteringLength) {
+            if(!this.__alteringArray) {
                 if(v > this.$length) {
                     var args = new Array(v - this.length + 2);
                     args[0] = this.length;
@@ -162,15 +162,15 @@ Class("obsjs.arrayBase", function () {
 		return dispose;
 	};
     
-    arrayBase.prototype.alteringLength = function(method, arguments) {
-        if (this.__alteringLength) {
+    arrayBase.prototype.alteringArray = function(method, arguments) {
+        if (this.__alteringArray) {
             return Array.prototype[method].apply(this, arguments);
         } else {
             try {
-                this.__alteringLength = true;
+                this.__alteringArray = true;
             	return Array.prototype[method].apply(this, arguments);
             } finally {
-                this.__alteringLength = false;
+                this.__alteringArray = false;
             }
         }
     };
