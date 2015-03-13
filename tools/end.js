@@ -60,6 +60,8 @@
         if (object instanceof obsjs.array) {
 			if (property instanceof Function)
             	return object.observe(arguments[1], arguments[2], arguments[3]);    // property names are misleading in this case
+			if (property === "length")
+				property = "$length";
 			
 			obsjs.makeObservable(object);	//TODO: test
 		}

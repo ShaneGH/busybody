@@ -134,9 +134,7 @@ Class("obsjs.arrayBase", function () {
     arrayBase.prototype.observe = function (callback, context, options) {
         // options evaluateOnEachChange and useRawChanges
 		
-        if (typeof arguments[0] === "string") {
-			if (arguments[0] === "length") arguments[0] = "$length";
-			
+        if (typeof arguments[0] === "string") {			
             var args = Array.prototype.slice.call(arguments);
             args.splice(0, 0, this);
             return obsjs.observe.apply(null, args);

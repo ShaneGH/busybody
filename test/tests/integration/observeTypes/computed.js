@@ -78,6 +78,7 @@ testUtils.testWithUtils("monitor array contents", "simple", false, function(meth
     }, subject, {observeArrayElements: true});
     
     comp.bind(subject, "comp");
+	debugger;
 	strictEqual(subject.comp, 88);
 	
     subject.observe("comp", function(oldVal, newVal) {
@@ -154,8 +155,7 @@ testUtils.testWithUtils("monitor array contents", "get value from array index", 
         start();
     });
 	
-	//subject.prop.people[1].replace(2, 44);
-	subject.prop.people[1][2] = 44;
+	subject.prop.people[1].replace(2, 44);
 	
 	stop();
 });
