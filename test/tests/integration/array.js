@@ -609,12 +609,6 @@ testUtils.testWithUtils("bind", "length change", false, function(methods, classe
     var another = [];
 
     var val = {};
-    
-    obsjs.observable.afterNextObserveCycle(function () {
-        strictEqual(subject.length, 2);
-        assert();
-        start();
-    }, true);
 
     // act
     subject.bind(another);
@@ -628,7 +622,8 @@ testUtils.testWithUtils("bind", "length change", false, function(methods, classe
     
     assert();
     subject.length = 2;
-    stop();
+	strictEqual(subject.length, 2);
+	assert();
 });
 
 testUtils.testWithUtils("bind", "2 splices", false, function(methods, classes, subject, invoker) {

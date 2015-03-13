@@ -87,8 +87,7 @@ Class("obsjs.arrayBase", function () {
                     this.splice(v, this.length - v);
                 }
             }
-            
-            var oldValue = this.$length;
+			
             this.$length = v;
         },
         get: function() {
