@@ -78,7 +78,6 @@ testUtils.testWithUtils("monitor array contents", "simple", false, function(meth
     }, subject, {observeArrayElements: true});
     
     comp.bind(subject, "comp");
-	debugger;
 	strictEqual(subject.comp, 88);
 	
     subject.observe("comp", function(oldVal, newVal) {

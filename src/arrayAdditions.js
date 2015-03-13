@@ -19,9 +19,7 @@
                     type: "splice"
                 }]);
 
-        return this.alteringLength(function() {
-            return Array.prototype.pop.call(this);
-        });
+        return this.alteringLength("pop");
     };
 
     array.prototype.shift = function() {
@@ -36,9 +34,7 @@
                     type: "splice"
                 }]);
 
-        return this.alteringLength(function() {
-            return Array.prototype.shift.call(this);
-        });
+        return this.alteringLength("shift");
     };
 
     array.prototype.remove = function(item) {
@@ -59,10 +55,7 @@
                 type: "splice"
             }]);
 
-		var args = arguments;
-        return this.alteringLength(function() {
-            return Array.prototype.push.apply(this, args);
-        });
+        return this.alteringLength("push", arguments);
     };
 
     array.prototype.reverse = function(item) {
@@ -94,20 +87,15 @@
             this.registerChangeBatch(cb);
         }
         
-        return this.alteringLength(function() {
-            return Array.prototype.reverse.call(this);
-        });
+        return this.alteringLength("reverse");
     };
 
     array.prototype.sort = function() {
 		
-		var args = arguments;
         if (!useObjectObserve) {
                 
 			var copy = this.slice(), cb = [];
-        	var output = this.alteringLength(function() {
-				return Array.prototype.sort.apply(this, args);
-			});
+        	var output = this.alteringLength("sort", arguments);
 			
 			for (var i = 0, ii = copy.length; i < ii; i++)
 				if (copy[i] !== this[i])
@@ -122,9 +110,7 @@
 			return output;
         }
         
-        return this.alteringLength(function() {
-            return Array.prototype.sort.apply(this, args);
-        });
+        return this.alteringLength("sort", arguments);
     };
 
     array.prototype.splice = function(index, removeCount, addItems) {
@@ -144,10 +130,7 @@
             }]);
         }
 
-        var args = arguments;
-        return this.alteringLength(function() {
-            return Array.prototype.splice.apply(this, args);
-        });
+        return this.alteringLength("splice", arguments);
     };
 
     //TODO

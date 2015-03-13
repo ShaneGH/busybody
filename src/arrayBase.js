@@ -162,13 +162,13 @@ Class("obsjs.arrayBase", function () {
 		return dispose;
 	};
     
-    arrayBase.prototype.alteringLength = function(callback) {
+    arrayBase.prototype.alteringLength = function(method, arguments) {
         if (this.__alteringLength) {
-            return callback.call(this);
+            return Array.prototype[method].apply(this, arguments);
         } else {
             try {
                 this.__alteringLength = true;
-                return callback.call(this);
+            	return Array.prototype[method].apply(this, arguments);
             } finally {
                 this.__alteringLength = false;
             }
