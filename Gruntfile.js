@@ -70,7 +70,6 @@ module.exports = function(grunt) {
         'src/observeTypes/observeTypesBase.js', 
         'src/observableBase.js', 
         'src/callbacks/changeCallback.js',
-        'src/callbacks/arrayCallbackBase.js',
         'src/arrayBase.js'];
     
     var src = [

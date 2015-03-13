@@ -1,7 +1,7 @@
 
 Class("obsjs.callbacks.arrayCallback", function () {
         
-    var arrayCallback = obsjs.callbacks.arrayCallbackBase.extend(function arrayCallback(callback, context, options) {
+    var arrayCallback = obsjs.callbacks.changeCallback.extend(function arrayCallback(callback, context, options) {
         
         this._super(options && options.evaluateOnEachChange);
         
@@ -17,10 +17,26 @@ Class("obsjs.callbacks.arrayCallback", function () {
 
     arrayCallback.prototype._evaluateMultiple = function (changes, beginAt, endAt) {
 		
-		if (this.useRawChanges)
+		if (this.useRawChanges) {
 			this.callback.call(this.context, changes.slice(beginAt, endAt));
-		else
-			this._super.apply(this, arguments);
+			return;
+		}
+                
+        if (!changes.compiled)
+            changes.compiled = [];
+        
+        var result;
+        for (var i = 0, ii = changes.compiled.length; i < ii; i++) {
+            if (changes.compiled[i].areEqual(beginAt, endAt)) {
+                result = changes.compiled[i];
+                break;
+            }
+        }
+        
+        if (!result)
+            changes.compiled.push(result = new obsjs.utils.compiledArrayChange(changes, beginAt, endAt));
+        
+        this._evaluateArrayMultiple(result);
     };
 
     arrayCallback.prototype._evaluateArrayMultiple = function (result) {
