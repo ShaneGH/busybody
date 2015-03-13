@@ -131,18 +131,31 @@ Class("obsjs.arrayBase", function () {
 		return dispose;
 	};
     
+	var boundArrayStopKey = "obsjs-do-not-apply-to";
     arrayBase.prototype.alteringArray = function(method, arguments) {
-		
-		if (this.__alteringArray) {
-            return Array.prototype[method].apply(this, arguments);
-        } else {
-            try {
-                this.__alteringArray = true;
-            	return Array.prototype[method].apply(this, arguments);
-            } finally {
-                this.__alteringArray = false;
-            }
-        }
+        if (this.__alteringArray)
+            throw "Calls to alteringArray must be synchronus and not nested.";
+			
+		try {
+			this.__alteringArray = true;
+			
+			enumerateArr(this.$boundArrays, function (array) {
+				if (array[boundArrayStopKey])
+					throw "Circular reference in array bindings found";
+				
+				if (this[boundArrayStopKey] === array) return;
+								
+				array[boundArrayStopKey] = this;
+				array[method].apply(array, arguments);
+			}, this);
+			
+			return Array.prototype[method].apply(this, arguments);
+		} finally {
+			this.__alteringArray = false;
+			enumerateArr(this.$boundArrays, function (array) {
+				delete array[boundArrayStopKey];
+			});
+		}
     };
 
     arrayBase.copyAll = function (from, to, convert) {

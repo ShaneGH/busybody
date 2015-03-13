@@ -603,7 +603,7 @@ testUtils.testWithUtils("remove", null, false, function(methods, classes, subjec
 });
 
 testUtils.testWithUtils("bind", "length change", false, function(methods, classes, subject, invoker) {
-    
+	
     // arrange
     var subject = new obsjs.array([1,2,3]);
     var another = [];
