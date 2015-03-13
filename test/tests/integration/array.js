@@ -695,7 +695,6 @@ testUtils.testWithUtils("bind", "2 way, simple", false, function(methods, classe
 
 testUtils.testWithUtils("bind", "2 way bindings, complex", false, function(methods, classes, subject, invoker) {
         
-    //TODO: dispose test
     // arrange
     var subject = new obsjs.array([1,2,3,4,5,6,7,8,9]);
     subject.name = "subject";
@@ -707,7 +706,7 @@ testUtils.testWithUtils("bind", "2 way bindings, complex", false, function(metho
     obsjs.observable.afterNextObserveCycle(function () {
         strictEqual(subject.length, 8);
         assert();
-    window.ssstttoooppp = true;
+		
         subject.splice(2, 2, 99, 110);
         obsjs.observable.afterNextObserveCycle(function () {
             strictEqual(another.length, 8);
@@ -730,6 +729,35 @@ testUtils.testWithUtils("bind", "2 way bindings, complex", false, function(metho
     assert();
     another.splice(3, 3);
     another.splice(5, 0, 99, 88);
+    stop();
+});
+
+testUtils.testWithUtils("bind", "disposal", false, function(methods, classes, subject, invoker) {
+        
+    // arrange
+	var initial = [1,2,3,4,5,6,7,8,9];
+    var subject = new obsjs.array(initial);
+    var another = [];
+
+    // act
+    subject.bind(another).dispose();
+    
+    // assert
+	
+	
+    function assert() {
+        strictEqual(another.length, initial.length);
+        for(var i = 0, ii = another.length; i < ii; i++)
+            strictEqual(initial[i], another[i]);
+    }
+	
+    assert();
+	subject.push(44);
+	setTimeout(function () {
+		assert();
+		start();
+	}, 50);
+	
     stop();
 });
 

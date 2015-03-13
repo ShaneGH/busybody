@@ -10,10 +10,10 @@ var computed = obsjs.observeTypes.computed;
 
 testUtils.testWithUtils("integration test", "very simple change", false, function(methods, classes, subject, invoker) {
     // arrange
-    var subject = XXX = new obsjs.observable();
+    var subject = new obsjs.observable();
     subject.val3 = "hello world";
 
-    var comp = YYY = new obsjs.observeTypes.computed(function() {
+    var comp = new obsjs.observeTypes.computed(function() {
         return this.val3;
     }, subject);
     

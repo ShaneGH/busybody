@@ -86,7 +86,7 @@ Class("obsjs.observeTypes.pathObserver", function () {
         var current = this.forObject;
         
         // get item at index "begin"
-        for (i = 0, ii = this.path.length; current != null && i < ii; i++) {
+        for (var i = 0, ii = this.path.length; current != null && i < ii; i++) {
             current = current[this.path[i]];
         }
 		
