@@ -1,36 +1,5 @@
 Class("obsjs.arrayBase", function () {
-    
-    function dictionary () {
-        this.__keyArray = [], this.__valueArray = [];        
-    }
-    
-    dictionary.prototype.add = function (key, value) {
-        var i = this.__keyArray.indexOf(key);
-        i === -1 ? (this.__keyArray.push(key), this.__valueArray.push(value)) : this.__valueArray[i] = value;
-
-        return value;
-    };
-    
-    dictionary.prototype.clear = function () {
-        this.__keyArray.length = 0;
-        this.__valueArray.length = 0;        
-    };
-    
-    dictionary.prototype.remove = function (key) {
-        var i = this.__keyArray.indexOf(key);
-        if (i !== -1) {
-            this.__keyArray.splice(i, 0);
-            this.__valueArray.splice(i, 0);
-            return true;
-        }            
-
-        return false;
-    };
-    
-    dictionary.prototype.value = function (key) {
-        return this.__valueArray[this.__keyArray.indexOf(key)];
-    };
-    
+        
     var arrayBase = objjs.object.extend.call(Array, function arrayBase (initialValues) {
         
         Array.call(this);
@@ -40,7 +9,7 @@ Class("obsjs.arrayBase", function () {
                 throw "The initial values must be an array";
         
         this.$disposables = [];
-        this.$boundArrays = new dictionary();
+        this.$boundArrays = [];
         this.$callbacks = [];
         this.$changeBatch = [];
         this.$length = initialValues ? initialValues.length : 0;    
@@ -163,7 +132,8 @@ Class("obsjs.arrayBase", function () {
 	};
     
     arrayBase.prototype.alteringArray = function(method, arguments) {
-        if (this.__alteringArray) {
+		
+		if (this.__alteringArray) {
             return Array.prototype[method].apply(this, arguments);
         } else {
             try {
@@ -193,14 +163,21 @@ Class("obsjs.arrayBase", function () {
     
     arrayBase.prototype.bind = function(anotherArray) {
         
-        if (this.$boundArrays.value(anotherArray)) return;        
+        if (!anotherArray || this.$boundArrays.indexOf(anotherArray) !== -1) return;
+		
+		this.$boundArrays.push(anotherArray);
         
-        if (!(anotherArray instanceof obsjs.array && anotherArray.$boundArrays.value(this)))
+        if (!(anotherArray instanceof obsjs.array) || anotherArray.$boundArrays.indexOf(this) === -1)
             arrayBase.copyAll(this, anotherArray);
-        
-        this.$boundArrays.add(anotherArray, {});
-        
-		return this.addCallback(new obsjs.callbacks.boundArrayCallback(this, anotherArray));
+		
+		return new obsjs.disposable(function () {
+			if (!anotherArray) return;
+			var i;
+			if ((i = this.$boundArrays.indexOf(anotherArray)) !== -1)
+				this.$boundArrays.splice(i, 1);
+			
+			anotherArray = null;
+		});
     };
 	
 	arrayBase.prototype.addCallback = function (callback) {
@@ -226,7 +203,7 @@ Class("obsjs.arrayBase", function () {
         });
         
         this.$disposables.length = 0;        
-        this.$boundArrays.clear();
+        this.$boundArrays.length = 0;
         this.$callbacks.length = 0;
     };
     
