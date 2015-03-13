@@ -132,7 +132,7 @@ Class("obsjs.arrayBase", function () {
 	};
     
 	var boundArrayStopKey = "obsjs-do-not-apply-to";
-    arrayBase.prototype.alteringArray = function(method, arguments) {
+    arrayBase.prototype.alteringArray = function(method, args) {
         if (this.__alteringArray)
             throw "Calls to alteringArray must be synchronus and not nested.";
 			
@@ -146,10 +146,10 @@ Class("obsjs.arrayBase", function () {
 				if (this[boundArrayStopKey] === array) return;
 								
 				array[boundArrayStopKey] = this;
-				array[method].apply(array, arguments);
+				array[method].apply(array, args);
 			}, this);
 			
-			return Array.prototype[method].apply(this, arguments);
+			return Array.prototype[method].apply(this, args);
 		} finally {
 			this.__alteringArray = false;
 			enumerateArr(this.$boundArrays, function (array) {
@@ -183,14 +183,14 @@ Class("obsjs.arrayBase", function () {
         if (!(anotherArray instanceof obsjs.array) || anotherArray.$boundArrays.indexOf(this) === -1)
             arrayBase.copyAll(this, anotherArray);
 		
-		return new obsjs.disposable(function () {
+		return new obsjs.disposable((function () {
 			if (!anotherArray) return;
 			var i;
 			if ((i = this.$boundArrays.indexOf(anotherArray)) !== -1)
 				this.$boundArrays.splice(i, 1);
 			
 			anotherArray = null;
-		});
+		}).bind(this));
     };
 	
 	arrayBase.prototype.addCallback = function (callback) {

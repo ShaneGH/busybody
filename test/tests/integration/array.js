@@ -603,7 +603,7 @@ testUtils.testWithUtils("remove", null, false, function(methods, classes, subjec
 });
 
 testUtils.testWithUtils("bind", "length change", false, function(methods, classes, subject, invoker) {
-	
+	ok(false);return;
     // arrange
     var subject = new obsjs.array([1,2,3]);
     var another = [];
@@ -639,12 +639,6 @@ testUtils.testWithUtils("bind", "2 splices", false, function(methods, classes, s
 
     var val = {};
     
-    obsjs.observable.afterNextObserveCycle(function () {
-        strictEqual(subject.length, 8);
-        assert();
-        start();
-    }, true);
-
     // act
     subject.bind(another);
     
@@ -658,7 +652,9 @@ testUtils.testWithUtils("bind", "2 splices", false, function(methods, classes, s
     assert();
     subject.splice(3, 3);
     subject.splice(5, 0, 99, 88);
-    stop();
+	
+	strictEqual(subject.length, 8);
+	assert();
 });
 
 testUtils.testWithUtils("bind", "2 way, simple", false, function(methods, classes, subject, invoker) {
@@ -670,12 +666,6 @@ testUtils.testWithUtils("bind", "2 way, simple", false, function(methods, classe
     another.name = "change target";
     
     var val = {};
-    
-    obsjs.observable.afterNextObserveCycle(function () {
-        strictEqual(subject.length, 2);
-        assert();
-        start();
-    }, true);
 
     // act
     subject.bind(another);
@@ -690,7 +680,8 @@ testUtils.testWithUtils("bind", "2 way, simple", false, function(methods, classe
     
     assert();
     subject.splice(0, 1);
-    stop();
+	strictEqual(subject.length, 2);
+	assert();
 });
 
 testUtils.testWithUtils("bind", "2 way bindings, complex", false, function(methods, classes, subject, invoker) {
@@ -703,18 +694,6 @@ testUtils.testWithUtils("bind", "2 way bindings, complex", false, function(metho
     
     var val = {};
     
-    obsjs.observable.afterNextObserveCycle(function () {
-        strictEqual(subject.length, 8);
-        assert();
-		
-        subject.splice(2, 2, 99, 110);
-        obsjs.observable.afterNextObserveCycle(function () {
-            strictEqual(another.length, 8);
-            assert();
-            start();
-        }, true);
-    }, true);
-
     // act
     subject.bind(another);
     another.bind(subject);
@@ -729,7 +708,12 @@ testUtils.testWithUtils("bind", "2 way bindings, complex", false, function(metho
     assert();
     another.splice(3, 3);
     another.splice(5, 0, 99, 88);
-    stop();
+	strictEqual(subject.length, 8);
+	assert();
+
+	subject.splice(2, 2, 99, 110);
+    strictEqual(another.length, 8);
+    assert();
 });
 
 testUtils.testWithUtils("bind", "disposal", false, function(methods, classes, subject, invoker) {
@@ -740,6 +724,7 @@ testUtils.testWithUtils("bind", "disposal", false, function(methods, classes, su
     var another = [];
 
     // act
+	debugger;
     subject.bind(another).dispose();
     
     // assert
