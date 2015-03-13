@@ -14,7 +14,9 @@ Class("obsjs.observeTypes.computed", function () {
         this._super();
         
         options = options || {};
-        this.arguments = [];
+        this.arguments = []; 
+		if (options.observeArrayElements)
+			this.possibleArrays = [];
         
 		this.callbacks = [];
         this.callbackString = computed.stripFunction(callback);
@@ -46,15 +48,15 @@ Class("obsjs.observeTypes.computed", function () {
                 throw "Argument \"" + arg + "\" must be added as a watch variable.";
         });
         
-        this.execute();
-        
         // watch each watch variable
-        this.watchVariable("this", context);
+        this.watchVariable("this", context, options.observeArrayElements);
         if (options.watchVariables) {
             for (var i in options.watchVariables) {                
-                this.watchVariable(i, options.watchVariables[i]);
+                this.watchVariable(i, options.watchVariables[i], options.observeArrayElements);
             }
         }
+        
+        this.execute();
     });
     
     computed.testForWith = function (input) {
@@ -69,7 +71,31 @@ Class("obsjs.observeTypes.computed", function () {
         return false;
     };
         
+    computed.prototype.rebuildArrays = function() {
+		
+		enumerateArr(this.possibleArrays, function (possibleArray) {
+			if (possibleArray.disposeKeys && possibleArray.disposeKeys.length) {
+				this.disposeOf(possibleArray.disposeKeys);
+				possibleArray.disposeKeys.length = 0;
+			}	
+			
+			var array = obsjs.utils.obj.getObject(possibleArray.path, possibleArray.root);
+			if (array instanceof Array) {
+				possibleArray.disposeKeys = possibleArray.disposeKeys || [];
+				enumerateArr(array, function (item) {
+					enumerateArr(possibleArray.subPaths, function (subPath) {
+						debugger;
+						possibleArray.disposeKeys.push(this.addPathWatchFor(item, subPath));
+					}, this);
+				}, this);
+			}
+		}, this);
+	};
+        
     computed.prototype.getValue = function() {
+		if (this.possibleArrays)
+			this.rebuildArrays();
+		
 		return this.callbackFunction.apply(this.context, this.arguments);
     };
     
@@ -91,6 +117,7 @@ Class("obsjs.observeTypes.computed", function () {
         return output;
     };
         
+	//TODO: somehow retain "this.prop['val']"
     computed.stripFunction = function(input) {
         input = input
             .toString()
@@ -122,9 +149,9 @@ Class("obsjs.observeTypes.computed", function () {
         return input;
     };
     
-    computed.prototype.watchVariable = function(variableName, variable) {
-                
-		if (!/^\s*[\$\w]+\s*$/.test(variableName))
+    computed.prototype.watchVariable = function(variableName, variable, observeArrayElements) {
+		variableName = trim(variableName);
+		if (!/^[\$\w]+$/.test(variableName))
 			throw "Invalid variable name. Variable names can only contain 0-9, a-z, A-Z, _ and $";
 		
         var match, 
@@ -161,26 +188,57 @@ Class("obsjs.observeTypes.computed", function () {
             }
             
             tmp1 = obsjs.utils.obj.splitPropertyName(item.value);
-            var path = new obsjs.observeTypes.pathObserver(
-                    variable, 
-                    obsjs.utils.obj.joinPropertyName(tmp1.slice(1)),
-                    this.throttleExecution, this);
-            
-            this.registerDisposable(path);
-            
-            var dispose;
-            var te = this.throttleExecution.bind(this);
-            path.onValueChanged(function(oldVal, newVal) {
-                if (dispose) {
-                    dispose.dispose();
-                    dispose = null;
-                }
-
-                if (newVal instanceof obsjs.array)
-                    dispose = newVal.observe(te);
-            }, true);
+			this.addPathWatchFor(variable, obsjs.utils.obj.joinPropertyName(tmp1.slice(1)));
+			
+			var arrProps;
+			if (observeArrayElements && (arrProps = this.examineArrayProperties(item.value)) && arrProps.length) {
+				this.possibleArrays.push({
+					root: variable,
+					path: obsjs.utils.obj.joinPropertyName(tmp1.slice(1)),
+					subPaths: arrProps
+				});
+			}
         }, this);
     };
+	
+    computed.prototype.addPathWatchFor = function(variable, path) {
+		var path = new obsjs.observeTypes.pathObserver(variable, path, this.throttleExecution, this);
+		
+		var dispose;
+		var te = this.throttleExecution.bind(this);
+		path.onValueChanged(function(oldVal, newVal) {
+			if (dispose) {
+				dispose.dispose();
+				dispose = null;
+			}
+
+			if (newVal instanceof obsjs.array)
+				dispose = newVal.observe(te);
+		}, true);
+		
+		return this.registerDisposable(path);
+	};
+	
+	computed.prototype.examineArrayProperties = function (pathName) {
+		
+		pathName = pathName.replace(/\$/g, "\\$")
+							.replace(/\./g, "\\.")
+							.replace(/\[/g, "\\[")
+							.replace(/\]/g, "\\]") + 
+							 "\\s*\\[\\s*[\\w\\$]+\\s*\\]\\s*"; // pathName[variable]
+		
+		var regex1 = new RegExp(pathName + GET_ITEMS, "g");
+		var regex2 = new RegExp("^" + pathName);
+		
+		var found, output = [];
+        while (found = regex1.exec(this.callbackFunction)) {
+            found = found[0].substring(regex2.exec(found[0])[0].length);
+			
+			output.push(found[0] === "." ? found.substring(1) : found);
+        }
+		
+		return output;
+	};
     
     //TODO: document and expose better
     var nonArrayTypes = [];

@@ -31,7 +31,12 @@
         if (!arguments.length)
             object = {};
         
-        if (obsjs.canObserve(object)) return object;
+		if (object instanceof obsjs.array) {
+			if (obsjs.getObserver(object)) 
+				return object;
+		} else if (obsjs.canObserve(object)) {
+			return object;
+		}
         
         if (object.$observer) throw "The $observer property is reserved";
 
@@ -52,8 +57,12 @@
 
     obsjs.tryObserve = function (object, property, callback, context, evaluateOnEachChange, evaluateIfValueHasNotChanged) {
         
-        if (object instanceof obsjs.array && property instanceof Function)
-            return object.observe(arguments[1], arguments[2], arguments[3]);    // property names are misleading in this case
+        if (object instanceof obsjs.array) {
+			if (property instanceof Function)
+            	return object.observe(arguments[1], arguments[2], arguments[3]);    // property names are misleading in this case
+			
+			obsjs.makeObservable(object);	//TODO: test
+		}
         
         var target = obsjs.getObserver(object);
         
@@ -80,7 +89,8 @@
 
     obsjs.canObserve = function (object) {
         
-        return !!obsjs.getObserver(object);
+			//TODO: test array bit
+        return object instanceof obsjs.array || !!obsjs.getObserver(object);
     };
 
     obsjs.del = function (object, property) {

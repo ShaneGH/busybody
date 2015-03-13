@@ -21,6 +21,16 @@ Class("obsjs.disposable", function () {
     disposable.prototype.disposeOf = function(key) {
         ///<summary>Dispose of an item registered as a disposable</summary>
         ///<param name="key" type="String" optional="false">The key of the item to dispose</param>
+		
+		if (key instanceof Array) {
+			var result = false;
+			enumerateArr(key, function (key) {
+				result |= this.disposeOf(key);
+			}, this);
+			
+			return result;
+		}
+		
         if(this.$disposables && this.$disposables[key]) {
             this.$disposables[key]();
             return delete this.$disposables[key];
