@@ -338,6 +338,15 @@ testUtils.testWithUtils("examineArrayProperties", "with spaces", false, function
 	strictEqual(invoker("myVar", 0), "something[4].somethingElse");
 });
 
+testUtils.testWithUtils("examineArrayProperties", "simple, partial", false, function(methods, classes, subject, invoker) {
+	// arrange
+	subject.callbackString = "myVar[r].something[i].somethingElse";
+	
+	// act
+	// assert
+	strictEqual(invoker("myVar", 0), "something");
+});
+
 testUtils.testWithUtils("examineArrayProperties", "with index", false, function(methods, classes, subject, invoker) {
 	// arrange
 	subject.callbackString = "    myVar[r].something[4].somethingElse;";
