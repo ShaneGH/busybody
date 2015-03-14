@@ -93,6 +93,39 @@ testUtils.testWithUtils("monitor array contents", "simple", false, function(meth
 	stop();
 });
 
+testUtils.testWithUtils("monitor array contents", "enumerate over this", false, function(methods, classes, subject, invoker) {
+	
+	ok(false); return;
+	
+	// arrange
+    var subject = new obsjs.array([
+		obsjs.makeObservable({ age: 33 }),
+		obsjs.makeObservable({ age: 55 })
+	]);
+
+	var comp = new obsjs.observeTypes.computed(function() {
+		var op = 0;
+		for (var i = 0, ii = this.length; i < ii; i++)
+			op += this[i].age;
+		return op;
+    }, subject, {observeArrayElements: true});
+    
+    comp.bind(subject, "comp");
+	strictEqual(subject.comp, 88);
+	
+    subject.observe("comp", function(oldVal, newVal) {
+        strictEqual(oldVal, 88);
+        strictEqual(newVal, 77);
+        
+        comp.dispose();
+        start();
+    });
+	
+	subject[1].age = 44;
+	
+	stop();
+});
+
 testUtils.testWithUtils("monitor array contents", "$ in property name", false, function(methods, classes, subject, invoker) {
 	
 	// arrange
@@ -192,8 +225,47 @@ testUtils.testWithUtils("monitor array contents", "get initial array from array 
 	stop();
 });
 
-	//				this.prop.array[i][2]	(2 being age)
-	//				this.prop[2].array[i].age
+testUtils.testWithUtils("monitor array contents", "2 observed properties", false, function(methods, classes, subject, invoker) {
+	
+	// arrange
+    var subject = new obsjs.observable();
+	subject.prop = new obsjs.observable();
+	subject.prop.people = new obsjs.array([
+		obsjs.makeObservable({ age1: 1, age2: 2 }),
+		obsjs.makeObservable({ age1: 3, age2: 4 })
+	]);
+
+    var comp = new obsjs.observeTypes.computed(function() {
+		var op = 0;
+		for (var i = 0, ii = this.prop.people.length; i < ii; i++)
+			op += this.prop.people[i].age1 + this.prop.people[i].age2;
+		return op;
+    }, subject, {observeArrayElements: true});
+    
+    comp.bind(subject, "comp");
+	strictEqual(subject.comp, 10);
+	
+    var obs = subject.observe("comp", function(oldVal, newVal) {
+		obs.dispose();
+        strictEqual(oldVal, 10);
+        strictEqual(newVal, 20);
+		
+		obs = subject.observe("comp", function(oldVal, newVal) {
+			obs.dispose();
+			strictEqual(oldVal, 20);
+			strictEqual(newVal, 120);
+			
+			comp.dispose();
+			start();
+		});
+		
+		subject.prop.people[0].age2 = 102
+    });
+	
+	subject.prop.people[1].age1 = 13;
+	
+	stop();
+});
 
 testUtils.testWithUtils("bind non array to array", null, false, function(methods, classes, subject, invoker) {
     // arrange

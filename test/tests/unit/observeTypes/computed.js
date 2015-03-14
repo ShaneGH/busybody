@@ -311,7 +311,7 @@ testUtils.testWithUtils("examineVariable", "complex analysis", false, function(m
 	strictEqual(output[0].complexResults[1].index, 1 + item1.length + 1);
 });
 
-testUtils.testWithUtils("examineArrayProperties", "simple", false, function(methods, classes, subject, invoker) {ok(true);return;
+testUtils.testWithUtils("examineArrayProperties", "simple", false, function(methods, classes, subject, invoker) {
 	// arrange
 	subject.callbackString = "myVar.something[i].somethingElse[5].anotherThing";
 	
