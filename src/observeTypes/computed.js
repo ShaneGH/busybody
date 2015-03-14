@@ -6,7 +6,7 @@ Class("obsjs.observeTypes.computed", function () {
     var GET_ARGUMENT_NAMES = /([^\s,]+)/g;
     var STRIP_INLINE_COMMENTS = /\/\/.*$/mg;  
     var STRIP_BLOCK_COMMENTS = /\/\*[\s\S]*?\*\//mg;
-    var GET_ITEMS = "((\\s*\\.\\s*([\\w\\$]*))|(\\[\\s*\\d\\s*\\]))+"; // ".propertyName" -or- "[2]"
+    var GET_ITEMS = "((\\s*\\.\\s*([\\w\\$]*))|(\\s*\\[\\s*\\d\\s*\\]))+"; // ".propertyName" -or- "[2]"
     
     // monitor a function and change the value of a "watched" when it changes
     var computed = obsjs.observeTypes.observeTypesBase.extend(function computed(callback, context, options) {
@@ -148,7 +148,7 @@ Class("obsjs.observeTypes.computed", function () {
         return input;
     };
     
-    computed.prototype.watchVariable = function(variableName, variable, observeArrayElements) {
+    computed.prototype.examineVariable = function(variableName) {
 		variableName = trim(variableName);
 		if (!/^[\$\w]+$/.test(variableName))
 			throw "Invalid variable name. Variable names can only contain 0-9, a-z, A-Z, _ and $";
@@ -158,39 +158,48 @@ Class("obsjs.observeTypes.computed", function () {
             regex = new RegExp(variableName.replace("$", "\\$") + GET_ITEMS, "g");
         
         // find all instances of the variableName
-        var tmp1 = [], tmp2;
+        var foundVariables = [], foundVariable, index;
         while ((match = regex.exec(this.callbackString)) !== null) {
-            if (tmp1.indexOf(tmp2 = trim(match[0])) === -1) {
-                tmp1.push(tmp2);
-                found.push({
-                    value: match[0],
-                    index: regex.lastIndex - match[0].length
-                });
+            if (foundVariables.indexOf(foundVariable = match[0].replace(/\s/g, "")) === -1) {
+                foundVariables.push(foundVariable);
+				index = regex.lastIndex - match[0].length;
+				
+				if (index > 0) {
+					// determine whether the instance is part of a bigger variable name
+					// do not need to check trailing char as this is filtered by the regex
+					if (this.callbackString[index - 1].search(/[\w\$]/) !== -1)  //TODO test (another char before and after)
+						continue;
+
+					// determine whether the instance is a property rather than a variable
+					for (var j = index - 1; j >= 0; j--) { // TODO: test
+						if (this.callbackString[j] === ".") {
+							foundVariable = null;
+							break;
+						} else if (this.callbackString[j].search(/\s/) !== 0) {
+							break;
+						}
+					}
+				}
+				
+				if (foundVariable !== null)
+                	found.push(foundVariable);
             }
         }
+		
+		return found;
+	};
+    
+    computed.prototype.watchVariable = function(variableName, variable, observeArrayElements) {
+		
+		var found = this.examineVariable(variableName), tmp1;
 
         enumerateArr(found, function (item) {
             
-            if (item.index > 0) {
-                // determine whether the instance is part of a bigger variable name
-                // do not need to check trailing char as this is filtered by the regex
-                if (this.callbackString[item.index - 1].search(/[\w\$]/) !== -1)  //TODO test (another char before and after)
-                    return;
-
-                // determine whether the instance is a property rather than a variable
-                for (var j = item.index - 1; j >= 0; j--) { // TODO: test
-                    if (this.callbackString[j] === ".")
-                        return;
-                    else if (this.callbackString[j].search(/\s/) !== 0)
-                        break;
-                }
-            }
-            
-            tmp1 = obsjs.utils.obj.splitPropertyName(item.value);
+            tmp1 = obsjs.utils.obj.splitPropertyName(item);
 			this.addPathWatchFor(variable, obsjs.utils.obj.joinPropertyName(tmp1.slice(1)));
 			
 			var arrProps;
-			if (observeArrayElements && (arrProps = this.examineArrayProperties(item.value)) && arrProps.length) {
+			if (observeArrayElements && (arrProps = this.examineArrayProperties(item)) && arrProps.length) {
 				this.possibleArrays.push({
 					root: variable,
 					path: obsjs.utils.obj.joinPropertyName(tmp1.slice(1)),

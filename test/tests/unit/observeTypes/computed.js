@@ -161,8 +161,136 @@ testUtils.testWithUtils("constructor", "has un allowed argument", false, functio
     });    
 });
 
-testUtils.testWithUtils("watchVariable", "has un allowed argument", false, function(methods, classes, subject, invoker) {
-	ok(true, "too complex for unit testing");
+testUtils.testWithUtils("watchVariable", "too complex for unit testing", false, function(methods, classes, subject, invoker) {
+	ok(true, "too complex for unit testing, lots of integration tests");
+});
+
+testUtils.testWithUtils("examineVariable", "simple", false, function(methods, classes, subject, invoker) {
+	// arrange
+	subject.callbackString = "myVar.something";
+	
+	// act
+	var output = invoker("myVar");
+	
+	// assert
+	strictEqual(output.length, 1);
+	strictEqual(output[0], "myVar.something");
+});
+
+testUtils.testWithUtils("examineVariable", "invalid variable", false, function(methods, classes, subject, invoker) {
+	// arrange
+	subject.callbackString = "myVar.something";
+	
+	// act
+	// assert
+	throws(function () {
+		invoker("#myVar");
+	});
+});
+
+testUtils.testWithUtils("examineVariable", "variable has spaces", false, function(methods, classes, subject, invoker) {
+	// arrange
+	subject.callbackString = "myVar.something";
+	
+	// act
+	var output = invoker(" myVar ");
+	
+	// assert
+	strictEqual(output.length, 1);
+	strictEqual(output[0], "myVar.something");
+});
+
+testUtils.testWithUtils("examineVariable", "simple, multiple 1", false, function(methods, classes, subject, invoker) {
+	// arrange
+	subject.callbackString = "myVar.something;myVar.something";
+	
+	// act
+	var output = invoker("myVar");
+	
+	// assert
+	strictEqual(output.length, 1);
+	strictEqual(output[0], "myVar.something");
+});
+
+testUtils.testWithUtils("examineVariable", "simple, multiple 2", false, function(methods, classes, subject, invoker) {
+	// arrange
+	subject.callbackString = "myVar.something;myVar.somethingElse";
+	
+	// act
+	var output = invoker("myVar");
+	
+	// assert
+	strictEqual(output.length, 2);
+	strictEqual(output[0], "myVar.something");
+	strictEqual(output[1], "myVar.somethingElse");
+});
+
+testUtils.testWithUtils("examineVariable", "char before var name", false, function(methods, classes, subject, invoker) {
+	// arrange
+	subject.callbackString = "amyVar.something";
+	
+	// act
+	var output = invoker("myVar");
+	
+	// assert
+	strictEqual(output.length, 0);
+});
+
+testUtils.testWithUtils("examineVariable", "char after var name", false, function(methods, classes, subject, invoker) {
+	// arrange
+	subject.callbackString = "myVara.something";
+	
+	// act
+	var output = invoker("myVar");
+	
+	// assert
+	strictEqual(output.length, 0);
+});
+
+testUtils.testWithUtils("examineVariable", "var is property 1", false, function(methods, classes, subject, invoker) {
+	// arrange
+	subject.callbackString = "somethingElse.myVar.something";
+	
+	// act
+	var output = invoker("myVar");
+	
+	// assert
+	strictEqual(output.length, 0);
+});
+
+testUtils.testWithUtils("examineVariable", "var is property 2", false, function(methods, classes, subject, invoker) {
+	// arrange
+	subject.callbackString = "somethingElse . myVar.something";
+	
+	// act
+	var output = invoker("myVar");
+	
+	// assert
+	strictEqual(output.length, 0);
+});
+
+testUtils.testWithUtils("examineVariable", "complex", false, function(methods, classes, subject, invoker) {
+	// arrange
+	subject.callbackString = "myVar.something[3].somethingElse";
+	
+	// act
+	var output = invoker("myVar");
+	
+	// assert
+	strictEqual(output.length, 1);
+	strictEqual(output[0], "myVar.something[3].somethingElse");
+});
+
+testUtils.testWithUtils("examineVariable", "with whitespace", false, function(methods, classes, subject, invoker) {
+	// arrange
+	subject.callbackString = " myVar . something [ 3 ] . somethingElse";
+	
+	// act
+	var output = invoker("myVar");
+	
+	// assert
+	strictEqual(output.length, 1);
+	strictEqual(output[0], "myVar.something[3].somethingElse");
 });
 
 testUtils.testWithUtils("getValue", null, false, function(methods, classes, subject, invoker) {
