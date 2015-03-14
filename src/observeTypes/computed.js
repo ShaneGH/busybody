@@ -1,5 +1,7 @@
 // name is subject to change
 
+//TODO: look into esprima and falafel
+
 Class("obsjs.observeTypes.computed", function () {
     
     var WITH = /\s*with\s*\(/g;
