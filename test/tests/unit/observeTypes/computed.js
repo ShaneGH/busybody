@@ -313,14 +313,38 @@ testUtils.testWithUtils("examineVariable", "complex analysis", false, function(m
 
 testUtils.testWithUtils("examineArrayProperties", "simple", false, function(methods, classes, subject, invoker) {
 	// arrange
-	subject.callbackString = "myVar.something[i].somethingElse[5].anotherThing";
+	subject.callbackString = "myVar[r].something[4].somethingElse";
 	
 	// act
-	var output = invoker("myVar");
-	
 	// assert
-	strictEqual(output.length, 1);
-	strictEqual(output[0].variableName, "myVar.something[3].somethingElse");
+	strictEqual(invoker("myVar", 0), "something[4].somethingElse");
+});
+
+testUtils.testWithUtils("examineArrayProperties", "not found", false, function(methods, classes, subject, invoker) {
+	// arrange
+	subject.callbackString = "myVar.something[4].somethingElse";
+	
+	// act
+	// assert
+	strictEqual(invoker("myVar", 0), undefined);
+});
+
+testUtils.testWithUtils("examineArrayProperties", "with spaces", false, function(methods, classes, subject, invoker) {
+	// arrange
+	subject.callbackString = "myVar [ r ] . something [ 4 ] . somethingElse ";
+	
+	// act
+	// assert
+	strictEqual(invoker("myVar", 0), "something[4].somethingElse");
+});
+
+testUtils.testWithUtils("examineArrayProperties", "with index", false, function(methods, classes, subject, invoker) {
+	// arrange
+	subject.callbackString = "    myVar[r].something[4].somethingElse;";
+	
+	// act
+	// assert
+	strictEqual(invoker("myVar", 4), "something[4].somethingElse");
 });
 
 testUtils.testWithUtils("getValue", null, false, function(methods, classes, subject, invoker) {
