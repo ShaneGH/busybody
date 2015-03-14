@@ -69,7 +69,7 @@ testUtils.testWithUtils("monitor array contents", "simple", false, function(meth
 		obsjs.makeObservable({ age: 33 }),
 		obsjs.makeObservable({ age: 55 })
 	]);
-
+	
     var comp = new obsjs.observeTypes.computed(function() {
 		var op = 0;
 		for (var i = 0, ii = this.prop.people.length; i < ii; i++)
@@ -94,8 +94,6 @@ testUtils.testWithUtils("monitor array contents", "simple", false, function(meth
 });
 
 testUtils.testWithUtils("monitor array contents", "enumerate over this", false, function(methods, classes, subject, invoker) {
-	
-	ok(false); return;
 	
 	// arrange
     var subject = new obsjs.array([

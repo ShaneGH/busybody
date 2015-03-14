@@ -74,6 +74,7 @@ Class("obsjs.observeTypes.computed", function () {
     };
         
     computed.prototype.rebuildArrays = function() {
+		///<summary>Re-subscribe to all possible arrays</summary>
 		
 		enumerateArr(this.possibleArrays, function (possibleArray) {
 			if (possibleArray.disposeKeys && possibleArray.disposeKeys.length) {
@@ -81,7 +82,10 @@ Class("obsjs.observeTypes.computed", function () {
 				possibleArray.disposeKeys.length = 0;
 			}	
 			
-			var array = obsjs.utils.obj.getObject(possibleArray.path, possibleArray.root);
+			var array = possibleArray.path.length ? 
+				obsjs.utils.obj.getObject(possibleArray.path, possibleArray.root) : 
+				possibleArray.root;
+			
 			if (array instanceof Array) {
 				possibleArray.disposeKeys = possibleArray.disposeKeys || [];
 				enumerateArr(array, function (item) {
@@ -151,13 +155,18 @@ Class("obsjs.observeTypes.computed", function () {
     };
     
     computed.prototype.examineVariable = function(variableName, complexExamination) {
+		///<summary>Find all property paths of a given variable<summary>
+		///<param name="variableName" type="String">The variable name<param>
+		///<param name="complexExamination" type="Boolean">If set to true, the result will include the indexes of the property path as well as the actual text of the property paths<param>
+		
 		variableName = trim(variableName);
 		if (!/^[\$\w]+$/.test(variableName))
 			throw "Invalid variable name. Variable names can only contain 0-9, a-z, A-Z, _ and $";
 		
         var match, 
             output = [], 
-            regex = new RegExp(variableName.replace("$", "\\$") + GET_ITEMS, "g"),
+			r = variableName.replace("$", "\\$"),
+            regex = new RegExp((complexExamination ? "(" : "") + r + GET_ITEMS + (complexExamination ? ")|" + r : ""), "g"),
 			foundVariables = [], 
 			foundVariable, 
 			index,
@@ -214,15 +223,23 @@ Class("obsjs.observeTypes.computed", function () {
 	};
     
     computed.prototype.watchVariable = function(variableName, variable, observeArrayElements) {
+		///<summary>Create subscriptions to all of the property paths to a specific variable<summary>
+		///<param name="variableName" type="String">The variable name<param>
+		///<param name="variable" type="Any">The instance of the variable<param>
+		///<param name="observeArrayElements" type="Boolean">If set to true, each find will also be treated as a possible array and subscribed to. This is a more expensive process computationally<param>
 		
+		// find all instances
 		var found = this.examineVariable(variableName, observeArrayElements), tmp;
 
+		var arrProps;
         enumerateArr(found, function (item) {
             
+			// if there is a path, i.e. variable.property, subscribe to it
             tmp = obsjs.utils.obj.splitPropertyName(item.variableName);
-			this.addPathWatchFor(variable, obsjs.utils.obj.joinPropertyName(tmp.slice(1)));
+			if (tmp.length > 1)
+				this.addPathWatchFor(variable, obsjs.utils.obj.joinPropertyName(tmp.slice(1)));
 			
-			var arrProps;
+			// if we are looking for array elements, do more examination for this
 			if (observeArrayElements) {
 				var possibleArray;
 				enumerateArr(item.complexResults, function (found) {
@@ -243,6 +260,10 @@ Class("obsjs.observeTypes.computed", function () {
 	
 	var getArrayItems = new RegExp("^\\s*\\[\\s*[\\w\\$]+\\s*\\]\\s*" + GET_ITEMS);
 	computed.prototype.examineArrayProperties = function (pathName, index) {
+		///<summary>Discover whether a property path may be an indexed array<summary>
+		///<param name="pathName" type="String">The property path<param>
+		///<param name="index" type="Number">The location of the property path<param>
+		///<returns type="String">The second half of the possible indexed array property, if any<returns>
 		
 		var found;
 		if (found = getArrayItems.exec(this.callbackString.substr(index + pathName.length))) {
