@@ -174,7 +174,7 @@ testUtils.testWithUtils("examineVariable", "simple", false, function(methods, cl
 	
 	// assert
 	strictEqual(output.length, 1);
-	strictEqual(output[0], "myVar.something");
+	strictEqual(output[0].variableName, "myVar.something");
 });
 
 testUtils.testWithUtils("examineVariable", "invalid variable", false, function(methods, classes, subject, invoker) {
@@ -197,7 +197,7 @@ testUtils.testWithUtils("examineVariable", "variable has spaces", false, functio
 	
 	// assert
 	strictEqual(output.length, 1);
-	strictEqual(output[0], "myVar.something");
+	strictEqual(output[0].variableName, "myVar.something");
 });
 
 testUtils.testWithUtils("examineVariable", "simple, multiple 1", false, function(methods, classes, subject, invoker) {
@@ -209,7 +209,7 @@ testUtils.testWithUtils("examineVariable", "simple, multiple 1", false, function
 	
 	// assert
 	strictEqual(output.length, 1);
-	strictEqual(output[0], "myVar.something");
+	strictEqual(output[0].variableName, "myVar.something");
 });
 
 testUtils.testWithUtils("examineVariable", "simple, multiple 2", false, function(methods, classes, subject, invoker) {
@@ -221,8 +221,8 @@ testUtils.testWithUtils("examineVariable", "simple, multiple 2", false, function
 	
 	// assert
 	strictEqual(output.length, 2);
-	strictEqual(output[0], "myVar.something");
-	strictEqual(output[1], "myVar.somethingElse");
+	strictEqual(output[0].variableName, "myVar.something");
+	strictEqual(output[1].variableName, "myVar.somethingElse");
 });
 
 testUtils.testWithUtils("examineVariable", "char before var name", false, function(methods, classes, subject, invoker) {
@@ -278,7 +278,7 @@ testUtils.testWithUtils("examineVariable", "complex", false, function(methods, c
 	
 	// assert
 	strictEqual(output.length, 1);
-	strictEqual(output[0], "myVar.something[3].somethingElse");
+	strictEqual(output[0].variableName, "myVar.something[3].somethingElse");
 });
 
 testUtils.testWithUtils("examineVariable", "with whitespace", false, function(methods, classes, subject, invoker) {
@@ -290,7 +290,37 @@ testUtils.testWithUtils("examineVariable", "with whitespace", false, function(me
 	
 	// assert
 	strictEqual(output.length, 1);
-	strictEqual(output[0], "myVar.something[3].somethingElse");
+	strictEqual(output[0].variableName, "myVar.something[3].somethingElse");
+});
+
+testUtils.testWithUtils("examineVariable", "complex analysis", false, function(methods, classes, subject, invoker) {
+	// arrange
+	var item1 = "myVar . something [ 3 ] . somethingElse", item2 = "myVar.something [3].somethingElse";
+	subject.callbackString = " " + item1 + ";" + item2;
+	
+	// act
+	var output = invoker("myVar", true);
+	
+	// assert
+	strictEqual(output.length, 1);
+	strictEqual(output[0].variableName, "myVar.something[3].somethingElse");
+	strictEqual(output[0].complexResults.length, 2);
+	strictEqual(output[0].complexResults[0].name, item1);
+	strictEqual(output[0].complexResults[0].index, 1);
+	strictEqual(output[0].complexResults[1].name, item2);
+	strictEqual(output[0].complexResults[1].index, 1 + item1.length + 1);
+});
+
+testUtils.testWithUtils("examineArrayProperties", "simple", false, function(methods, classes, subject, invoker) {ok(true);return;
+	// arrange
+	subject.callbackString = "myVar.something[i].somethingElse[5].anotherThing";
+	
+	// act
+	var output = invoker("myVar");
+	
+	// assert
+	strictEqual(output.length, 1);
+	strictEqual(output[0].variableName, "myVar.something[3].somethingElse");
 });
 
 testUtils.testWithUtils("getValue", null, false, function(methods, classes, subject, invoker) {

@@ -148,66 +148,106 @@ Class("obsjs.observeTypes.computed", function () {
         return input;
     };
     
-    computed.prototype.examineVariable = function(variableName) {
+    computed.prototype.examineVariable = function(variableName, complexExamination) {
 		variableName = trim(variableName);
 		if (!/^[\$\w]+$/.test(variableName))
 			throw "Invalid variable name. Variable names can only contain 0-9, a-z, A-Z, _ and $";
 		
         var match, 
-            found = [], 
-            regex = new RegExp(variableName.replace("$", "\\$") + GET_ITEMS, "g");
+            output = [], 
+            regex = new RegExp(variableName.replace("$", "\\$") + GET_ITEMS, "g"),
+			foundVariables = [], 
+			foundVariable, 
+			index,
+			i;
         
         // find all instances of the variableName
-        var foundVariables = [], foundVariable, index;
         while ((match = regex.exec(this.callbackString)) !== null) {
-            if (foundVariables.indexOf(foundVariable = match[0].replace(/\s/g, "")) === -1) {
-                foundVariables.push(foundVariable);
-				index = regex.lastIndex - match[0].length;
-				
-				if (index > 0) {
-					// determine whether the instance is part of a bigger variable name
-					// do not need to check trailing char as this is filtered by the regex
-					if (this.callbackString[index - 1].search(/[\w\$]/) !== -1)  //TODO test (another char before and after)
-						continue;
+			index = regex.lastIndex - match[0].length;
+			
+			// if the variable has been found before and we do not need to find each instance
+			if ((i = foundVariables.indexOf(foundVariable = match[0].replace(/\s/g, ""))) !== -1 && !complexExamination)
+				continue;
 
-					// determine whether the instance is a property rather than a variable
-					for (var j = index - 1; j >= 0; j--) { // TODO: test
-						if (this.callbackString[j] === ".") {
-							foundVariable = null;
-							break;
-						} else if (this.callbackString[j].search(/\s/) !== 0) {
-							break;
-						}
+			if (index > 0) {
+				// determine whether the instance is part of a bigger variable name
+				// do not need to check trailing char as this is filtered by the regex
+				if (this.callbackString[index - 1].search(/[\w\$]/) !== -1)  //TODO test (another char before and after)
+					continue;
+
+				// determine whether the instance is a property rather than a variable
+				for (var j = index - 1; j >= 0; j--) { // TODO: test
+					if (this.callbackString[j] === ".") {
+						foundVariable = null;
+						break;
+					} else if (this.callbackString[j].search(/\s/) !== 0) {
+						break;
 					}
 				}
+			}
+			
+			if (foundVariable === null) 
+				continue;
+			
+			// if this is the first time the var has been found
+			if (i === -1) {
+				foundVariables.push(foundVariable);
+				i = output.length;
+				output.push({
+					variableName: foundVariable,
+					complexResults: []
+				});
+			}
 				
-				if (foundVariable !== null)
-                	found.push(foundVariable);
-            }
+			// if we need to record the exact instance
+			if (complexExamination) {
+				output[i].complexResults.push({
+					name: match[0],
+					index: index
+				});
+			}
         }
 		
-		return found;
+		return output;
 	};
     
     computed.prototype.watchVariable = function(variableName, variable, observeArrayElements) {
 		
-		var found = this.examineVariable(variableName), tmp1;
+		var found = this.examineVariable(variableName, observeArrayElements), tmp;
 
         enumerateArr(found, function (item) {
             
-            tmp1 = obsjs.utils.obj.splitPropertyName(item);
-			this.addPathWatchFor(variable, obsjs.utils.obj.joinPropertyName(tmp1.slice(1)));
+            tmp = obsjs.utils.obj.splitPropertyName(item.variableName);
+			this.addPathWatchFor(variable, obsjs.utils.obj.joinPropertyName(tmp.slice(1)));
 			
 			var arrProps;
-			if (observeArrayElements && (arrProps = this.examineArrayProperties(item)) && arrProps.length) {
-				this.possibleArrays.push({
-					root: variable,
-					path: obsjs.utils.obj.joinPropertyName(tmp1.slice(1)),
-					subPaths: arrProps
-				});
+			if (observeArrayElements) {
+				var possibleArray;
+				enumerateArr(item.complexResults, function (found) {
+					if (arrProps = this.examineArrayProperties(found.name, found.index)) {
+						if (!possibleArray)
+							this.possibleArrays.push(possibleArray = {
+								root: variable,
+								path: obsjs.utils.obj.joinPropertyName(tmp.slice(1)),
+								subPaths: [arrProps]
+							});
+						else
+							possibleArray.subPaths.push(arrProps);
+					}
+				}, this);
 			}
         }, this);
     };
+	
+	var getArrayItems = new RegExp("^\\s*\\[\\s*[\\w\\$]+\\s*\\]\\s*" + GET_ITEMS);
+	computed.prototype.examineArrayProperties = function (pathName, index) {
+		
+		var found;
+		if (found = getArrayItems.exec(this.callbackString.substr(index + pathName.length))) {
+			found = found[0].substr(found[0].indexOf("]") + 1)
+			return (found[0] === "." ? found.substring(1) : found).replace(/\s/g, "");
+		}
+	};
 	
     computed.prototype.addPathWatchFor = function(variable, path) {
 		var path = new obsjs.observeTypes.pathObserver(variable, path, this.throttleExecution, this);
@@ -225,27 +265,6 @@ Class("obsjs.observeTypes.computed", function () {
 		}, true);
 		
 		return this.registerDisposable(path);
-	};
-	
-	computed.prototype.examineArrayProperties = function (pathName) {
-		
-		pathName = pathName.replace(/\$/g, "\\$")
-							.replace(/\./g, "\\.")
-							.replace(/\[/g, "\\[")
-							.replace(/\]/g, "\\]") + 
-							 "\\s*\\[\\s*[\\w\\$]+\\s*\\]\\s*"; // pathName[variable]
-		
-		var regex1 = new RegExp(pathName + GET_ITEMS, "g");
-		var regex2 = new RegExp("^" + pathName);
-		
-		var found, output = [];
-        while (found = regex1.exec(this.callbackFunction)) {
-            found = found[0].substring(regex2.exec(found[0])[0].length);
-			
-			output.push(found[0] === "." ? found.substring(1) : found);
-        }
-		
-		return output;
 	};
     
     //TODO: document and expose better
