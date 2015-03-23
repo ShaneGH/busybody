@@ -17,7 +17,7 @@ Class("obsjs.utils.executeCallbacks", function () {
 		return op;
 	};
     
-    executeCallbacks.prototype.throttleExecution = function (time) {
+    executeCallbacks.prototype.throttleExecution = function () {
 		
 		if (this.__executePending != null)
 			clearTimeout(this.__executePending);
@@ -25,7 +25,7 @@ Class("obsjs.utils.executeCallbacks", function () {
         this.__executePending = setTimeout((function () {
             delete this.__executePending;
             this.execute();
-        }).bind(this), time || 0);
+        }).bind(this));
     };
         
     executeCallbacks.prototype._execute = function() {

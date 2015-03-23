@@ -258,8 +258,6 @@ var trim = function(string) {
 
 Class("obsjs.utils.obj", function () {
         
-    //TODO: merge with path watch
-    //TODO: test for array
     var arrayMatch = /\[\s*\d\s*\]$/g;
     var splitPropertyName = function(propertyName) {
         propertyName = propertyName.split(".");
@@ -284,7 +282,6 @@ Class("obsjs.utils.obj", function () {
         return propertyName;
     };
     
-    //TODO test
     var joinPropertyName = function (propertyName) {
         var output = [];
         enumerateArr(propertyName, function (item) {
@@ -332,7 +329,6 @@ Class("obsjs.utils.obj", function () {
         context[propertyName[0]] = value;
     };	
 
-    //TODO: this can be re-used a LOT!!!
     function addWithDispose(callbackArray, callback) {
 
         callbackArray.push(callback);
@@ -361,7 +357,7 @@ Class("obsjs.utils.obj", function () {
             output.dispose();
 
 			if (obsjs.observeTypes.computed.isArray(existingVal) && newValue == null) {
-				existingVal.length = 0;	//TODO: test this case
+				existingVal.length = 0;
 			} else if (!obsjs.observeTypes.computed.isArray(newValue) || !obsjs.observeTypes.computed.isArray(existingVal)) {
                 obsjs.utils.obj.setObject(bindToProperty, bindToObject, newValue);
             } else if (newValue instanceof obsjs.array) {                                        
@@ -398,13 +394,14 @@ Class("obsjs.utils.obj", function () {
 
 Class("obsjs.disposable", function () {
     
-    //TODO: test
+	function init (disp) {
+		if (!disp.$disposables) disp.$disposables = {};
+	}
+	
     var disposable = objjs.object.extend(function disposable(disposableOrDisposeFunction) {
         ///<summary>An object which can be disposed</summary>
         
         this._super();
-        
-        this.$disposables = {};
         
         if (!disposableOrDisposeFunction)
             ;
@@ -417,16 +414,29 @@ Class("obsjs.disposable", function () {
     disposable.prototype.disposeOf = function(key) {
         ///<summary>Dispose of an item registered as a disposable</summary>
         ///<param name="key" type="String" optional="false">The key of the item to dispose</param>
-        if(this.$disposables[key]) {
+		
+		if (key instanceof Array) {
+			var result = false;
+			enumerateArr(key, function (key) {
+				result |= this.disposeOf(key);
+			}, this);
+			
+			return result;
+		}
+		
+        if(this.$disposables && this.$disposables[key]) {
             this.$disposables[key]();
-            delete this.$disposables[key];
+            return delete this.$disposables[key];
         }
+		
+		return false;
     };
     
     disposable.prototype.disposeOfAll = function() {
         ///<summary>Dispose of all items registered as a disposable</summary>
-        for(var i in this.$disposables)
-            this.disposeOf(i);
+		if (this.$disposables)
+			for(var i in this.$disposables)
+				this.disposeOf(i);
     };
     
     disposable.prototype.registerDisposeCallback = (function() {
@@ -438,6 +448,7 @@ Class("obsjs.disposable", function () {
 
             if(!disposeFunction || disposeFunction.constructor !== Function) throw "The dispose function must be a Function";
 
+			init(this);
             var id = (++i).toString();            
             this.$disposables[id] = disposeFunction;            
             return id;
@@ -484,7 +495,7 @@ Class("obsjs.utils.executeCallbacks", function () {
 		return op;
 	};
     
-    executeCallbacks.prototype.throttleExecution = function (time) {
+    executeCallbacks.prototype.throttleExecution = function () {
 		
 		if (this.__executePending != null)
 			clearTimeout(this.__executePending);
@@ -492,7 +503,7 @@ Class("obsjs.utils.executeCallbacks", function () {
         this.__executePending = setTimeout((function () {
             delete this.__executePending;
             this.execute();
-        }).bind(this), time || 0);
+        }).bind(this));
     };
         
     executeCallbacks.prototype._execute = function() {
@@ -518,6 +529,32 @@ Class("obsjs.utils.executeCallbacks", function () {
     };
 	
 	return executeCallbacks;
+});
+
+
+Class("obsjs.observeTypes.observeTypesBase", function () {
+	
+	var observeTypesBase = obsjs.utils.executeCallbacks.extend(function observeTypesBase() {
+		if (this.constructor === observeTypesBase) throw "You cannot create an instance of an abstract class";
+		
+		this._super();
+	});
+      
+    observeTypesBase.prototype.getValue = function() {
+		throw "Abstract methods must be implemented";
+	};
+        
+    observeTypesBase.prototype._execute = function() {
+		var oldVal = this.val;
+		this.val = this.getValue();
+		
+		return {
+			cancel: this.val === oldVal,
+			arguments: [oldVal, this.val]
+		};
+    };
+	
+	return observeTypesBase;
 });
 
 
@@ -841,73 +878,8 @@ Class("obsjs.callbacks.changeCallback", function () {
     return changeCallback;
 });
 
-
-Class("obsjs.callbacks.arrayCallbackBase", function () {
-        
-    var arrayCallbackBase = obsjs.callbacks.changeCallback.extend(function arrayCallbackBase(evaluateOnEachChange) {
-        
-        this._super(evaluateOnEachChange);
-    });
-
-    arrayCallbackBase.prototype._evaluateMultiple = function (changes, beginAt, endAt) {
-                
-        if (!changes.compiled)
-            changes.compiled = [];
-        
-        var result;
-        for (var i = 0, ii = changes.compiled.length; i < ii; i++) {
-            if (changes.compiled[i].areEqual(beginAt, endAt)) {
-                result = changes.compiled[i];
-                break;
-            }
-        }
-        
-        if (!result)
-            changes.compiled.push(result = new obsjs.utils.compiledArrayChange(changes, beginAt, endAt));
-        
-        this._evaluateArrayMultiple(result);
-    };
-    
-    arrayCallbackBase.prototype._evaluateArrayMultiple = function (compiledArrayChange) {
-        throw "Abstract methods must be implemented";
-    };
-    
-    return arrayCallbackBase;
-});
-
 Class("obsjs.arrayBase", function () {
-    
-    function dictionary () {
-        this.__keyArray = [], this.__valueArray = [];        
-    }
-    
-    dictionary.prototype.add = function (key, value) {
-        var i = this.__keyArray.indexOf(key);
-        i === -1 ? (this.__keyArray.push(key), this.__valueArray.push(value)) : this.__valueArray[i] = value;
-
-        return value;
-    };
-    
-    dictionary.prototype.clear = function () {
-        this.__keyArray.length = 0;
-        this.__valueArray.length = 0;        
-    };
-    
-    dictionary.prototype.remove = function (key) {
-        var i = this.__keyArray.indexOf(key);
-        if (i !== -1) {
-            this.__keyArray.splice(i, 0);
-            this.__valueArray.splice(i, 0);
-            return true;
-        }            
-
-        return false;
-    };
-    
-    dictionary.prototype.value = function (key) {
-        return this.__valueArray[this.__keyArray.indexOf(key)];
-    };
-    
+        
     var arrayBase = objjs.object.extend.call(Array, function arrayBase (initialValues) {
         
         Array.call(this);
@@ -917,7 +889,7 @@ Class("obsjs.arrayBase", function () {
                 throw "The initial values must be an array";
         
         this.$disposables = [];
-        this.$boundArrays = new dictionary();
+        this.$boundArrays = [];
         this.$callbacks = [];
         this.$changeBatch = [];
         this.$length = initialValues ? initialValues.length : 0;    
@@ -979,14 +951,13 @@ Class("obsjs.arrayBase", function () {
 
     Object.defineProperty(arrayBase.prototype, "length", {
         set: function(v) {
-            v = changeIndex(v);            
-            if (v === undefined) 
+            if ((v = changeIndex(v)) === undefined) 
                 throw RangeError("Invalid array length");
 
             if (v === this.$length)
                 return;
 
-            if(!this.__alteringLength) {
+            if(!this.__alteringArray) {
                 if(v > this.$length) {
                     var args = new Array(v - this.length + 2);
                     args[0] = this.length;
@@ -996,8 +967,7 @@ Class("obsjs.arrayBase", function () {
                     this.splice(v, this.length - v);
                 }
             }
-            
-            var oldValue = this.$length;
+			
             this.$length = v;
         },
         get: function() {
@@ -1010,28 +980,15 @@ Class("obsjs.arrayBase", function () {
     };
     
     arrayBase.prototype.observe = function (callback, context, options) {
-        // options evaluateOnEachChange and useRawChanges		
+        // options evaluateOnEachChange and useRawChanges
 		
-        if (typeof arguments[0] === "string") {
+        if (typeof arguments[0] === "string") {			
             var args = Array.prototype.slice.call(arguments);
             args.splice(0, 0, this);
             return obsjs.observe.apply(null, args);
         }
-                
-        this._init();
-
-        var cb = new obsjs.callbacks.arrayCallback(callback, context, options);
-        this.$callbacks.push(cb);
-
-        this.onNextArrayChange(function (change) {
-            cb.activate(change);
-        });
-        
-        var dispose = this.disposableFor(cb);
-        
-        this.$disposables.push(dispose);
-        
-        return dispose;
+		
+		return this.addCallback(new obsjs.callbacks.arrayCallback(callback, context, options));
     };
 	
 	arrayBase.prototype.disposableFor = function (changeCallback) {
@@ -1053,17 +1010,31 @@ Class("obsjs.arrayBase", function () {
 		return dispose;
 	};
     
-    arrayBase.prototype.alteringLength = function(callback) {
-        if (this.__alteringLength) {
-            return callback.call(this);
-        } else {
-            try {
-                this.__alteringLength = true;
-                return callback.call(this);
-            } finally {
-                this.__alteringLength = false;
-            }
-        }
+	var boundArrayStopKey = "obsjs-do-not-apply-to";
+    arrayBase.prototype.alteringArray = function(method, args) {
+        if (this.__alteringArray)
+            throw "Calls to alteringArray must be synchronus and not nested.";
+			
+		try {
+			this.__alteringArray = true;
+			
+			enumerateArr(this.$boundArrays, function (array) {
+				if (array[boundArrayStopKey])
+					throw "Circular reference in array bindings found";
+				
+				if (this[boundArrayStopKey] === array) return;
+								
+				array[boundArrayStopKey] = this;
+				array[method].apply(array, args);
+			}, this);
+			
+			return Array.prototype[method].apply(this, args);
+		} finally {
+			this.__alteringArray = false;
+			enumerateArr(this.$boundArrays, function (array) {
+				delete array[boundArrayStopKey];
+			});
+		}
     };
 
     arrayBase.copyAll = function (from, to, convert) {
@@ -1083,30 +1054,39 @@ Class("obsjs.arrayBase", function () {
     };
     
     arrayBase.prototype.bind = function(anotherArray) {
+        
+        if (!anotherArray || this.$boundArrays.indexOf(anotherArray) !== -1) return;
 		
-        this._init();
+		this.$boundArrays.push(anotherArray);
         
-        if (this.$boundArrays.value(anotherArray)) return;        
-        
-        if (!(anotherArray instanceof obsjs.array && anotherArray.$boundArrays.value(this)))
+        if (!(anotherArray instanceof obsjs.array) || anotherArray.$boundArrays.indexOf(this) === -1)
             arrayBase.copyAll(this, anotherArray);
-        
-        this.$boundArrays.add(anotherArray, {});
-        
-        //TODO: copied from observe
-        var cb = new obsjs.callbacks.boundArrayCallback(this, anotherArray);
-        this.$callbacks.push(cb);
+		
+		return new obsjs.disposable((function () {
+			if (!anotherArray) return;
+			var i;
+			if ((i = this.$boundArrays.indexOf(anotherArray)) !== -1)
+				this.$boundArrays.splice(i, 1);
+			
+			anotherArray = null;
+		}).bind(this));
+    };
+	
+	arrayBase.prototype.addCallback = function (callback) {
+        this._init();
+
+        this.$callbacks.push(callback);
 
         this.onNextArrayChange(function (change) {
-            cb.activate(change);
+            callback.activate(change);
         });
         
-        var dispose = this.disposableFor(cb);
+        var dispose = this.disposableFor(callback);
         
         this.$disposables.push(dispose);
         
         return dispose;
-    };
+	};
     
     arrayBase.prototype.dispose = function() {
         
@@ -1115,7 +1095,7 @@ Class("obsjs.arrayBase", function () {
         });
         
         this.$disposables.length = 0;        
-        this.$boundArrays.clear();
+        this.$boundArrays.length = 0;
         this.$callbacks.length = 0;
     };
     
@@ -1164,7 +1144,6 @@ Class("obsjs.array", function () {
     };
 
     array.prototype._init = function () {
-        //TODO: dispose
         if (this.__subscription) return;
         
         this.__subscription = this.registerChangeBatch.bind(this);
@@ -1242,26 +1221,7 @@ Class("obsjs.array", function () {
     
     var array = obsjs.array;
     
-    //TODO: old implementation was not updating length.
-    //TODO: use old emeplemntation, there are already tests in place
-    array.prototype.replace = function(index, replacement) {
-        
-        /*
-        if (!useObjectObserve)
-            this.registerChangeBatch([{
-                name: index.toString(),
-                object: this,
-                oldValue: this[index],
-                type: "update"
-            }]);
-        
-        return this.alteringLength(function() {
-            if (this.length <= index)
-                this.length = index + 1;
-                
-            return this[index] = replacement;
-        });*/
-        
+    array.prototype.replace = function(index, replacement) {        
         this.splice(index, index >= this.length ? 0 : 1, replacement);
         return replacement;
     };
@@ -1278,9 +1238,7 @@ Class("obsjs.array", function () {
                     type: "splice"
                 }]);
 
-        return this.alteringLength(function() {
-            return Array.prototype.pop.call(this);
-        });
+        return this.alteringArray("pop");
     };
 
     array.prototype.shift = function() {
@@ -1295,9 +1253,7 @@ Class("obsjs.array", function () {
                     type: "splice"
                 }]);
 
-        return this.alteringLength(function() {
-            return Array.prototype.shift.call(this);
-        });
+        return this.alteringArray("shift");
     };
 
     array.prototype.remove = function(item) {
@@ -1307,23 +1263,20 @@ Class("obsjs.array", function () {
             this.splice(i, 1);
     };
 
-    array.prototype.push = function(item) {
+    array.prototype.push = function() {
 
         if (!useObjectObserve)
             this.registerChangeBatch([{
-                addedCount: 1,
+                addedCount: arguments.length,
                 index: this.length,
                 object: this,
                 removed: [],
                 type: "splice"
             }]);
 
-        return this.alteringLength(function() {
-            return Array.prototype.push.call(this, item);
-        });
+        return this.alteringArray("push", arguments);
     };
 
-    //TODO: test
     array.prototype.reverse = function(item) {
 
 		var length = this.length;
@@ -1353,21 +1306,15 @@ Class("obsjs.array", function () {
             this.registerChangeBatch(cb);
         }
         
-        return this.alteringLength(function() {
-            return Array.prototype.reverse.call(this);
-        });
+        return this.alteringArray("reverse");
     };
 
-    //TODO: test
     array.prototype.sort = function() {
 		
-		var args = arguments;
         if (!useObjectObserve) {
                 
 			var copy = this.slice(), cb = [];
-        	var output = this.alteringLength(function() {
-				return Array.prototype.sort.apply(this, args);
-			});
+        	var output = this.alteringArray("sort", arguments);
 			
 			for (var i = 0, ii = copy.length; i < ii; i++)
 				if (copy[i] !== this[i])
@@ -1382,9 +1329,7 @@ Class("obsjs.array", function () {
 			return output;
         }
         
-        return this.alteringLength(function() {
-            return Array.prototype.sort.apply(this, args);
-        });
+        return this.alteringArray("sort", arguments);
     };
 
     array.prototype.splice = function(index, removeCount, addItems) {
@@ -1404,22 +1349,18 @@ Class("obsjs.array", function () {
             }]);
         }
 
-        var args = arguments;
-        return this.alteringLength(function() {
-            return Array.prototype.splice.apply(this, args);
-        });
+        return this.alteringArray("splice", arguments);
     };
 
     //TODO
     //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/copyWithin
     //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/fill
-    //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
 }());
 
 
 Class("obsjs.callbacks.arrayCallback", function () {
         
-    var arrayCallback = obsjs.callbacks.arrayCallbackBase.extend(function arrayCallback(callback, context, options) {
+    var arrayCallback = obsjs.callbacks.changeCallback.extend(function arrayCallback(callback, context, options) {
         
         this._super(options && options.evaluateOnEachChange);
         
@@ -1430,16 +1371,31 @@ Class("obsjs.callbacks.arrayCallback", function () {
 
     arrayCallback.prototype._evaluateSingle = function (changes, index) {
 
-        //TODO setTimeout?
         this.callback.call(this.context, changes[index]);
     };
 
     arrayCallback.prototype._evaluateMultiple = function (changes, beginAt, endAt) {
 		
-		if (this.useRawChanges)
+		if (this.useRawChanges) {
 			this.callback.call(this.context, changes.slice(beginAt, endAt));
-		else
-			this._super.apply(this, arguments);
+			return;
+		}
+                
+        if (!changes.compiled)
+            changes.compiled = [];
+        
+        var result;
+        for (var i = 0, ii = changes.compiled.length; i < ii; i++) {
+            if (changes.compiled[i].areEqual(beginAt, endAt)) {
+                result = changes.compiled[i];
+                break;
+            }
+        }
+        
+        if (!result)
+            changes.compiled.push(result = new obsjs.utils.compiledArrayChange(changes, beginAt, endAt));
+        
+        this._evaluateArrayMultiple(result);
     };
 
     arrayCallback.prototype._evaluateArrayMultiple = function (result) {
@@ -1448,82 +1404,6 @@ Class("obsjs.callbacks.arrayCallback", function () {
     };
     
     return arrayCallback;
-});
-
-
-Class("obsjs.callbacks.boundArrayCallback", function () {
-        
-    var boundArrayCallback = obsjs.callbacks.arrayCallbackBase.extend(function boundArrayCallback(fromArray, toArray) {
-        
-        this._super(false);
-        
-        if (!(fromArray instanceof obsjs.array))
-            throw "The from array must be an \"obsjs.array\"";
-        
-        if (!(toArray instanceof Array))
-            throw "The to array must be an \"Array\"";
-            
-        this.fromArray = fromArray;
-        this.toArray = toArray;
-    });
-
-    boundArrayCallback.prototype._evaluateSingle = function (changes, index) {
-
-        // cannot evaluate single
-        return this._evaluateMultiple(changes, index, index + 1);
-    };
-
-    boundArrayCallback.prototype._evaluateArrayMultiple = function (result) {
-        var vals, executor = new bindArrays(this.fromArray, this.toArray);  
-        if (this.toArray instanceof obsjs.array && (vals = this.toArray.$boundArrays.value(this.fromArray))) {
-            executor.executeAndCapture(result.changes, vals);
-        } else {
-            executor.execute(result.changes);
-        }
-    };
-    
-    function bindArrays (fromArray, toArray) {
-        
-        this.fromArray = fromArray;
-        this.toArray = toArray;
-    }
-    
-    var getId = (function () {
-        var i = 0;
-        return function () {
-            return "id-" + (++i);
-        };
-    }());
-    
-    bindArrays.prototype.executeAndCapture = function (compiledChanges, addChangesTo) {
-        obsjs.captureArrayChanges(this.toArray, (function () { this.execute(compiledChanges); }).bind(this), function (changes) {
-            var id = getId();
-            addChangesTo[id] = changes;
-            
-            // cleanup: will only be needed for a couple of observe cycles
-            setTimeout(function () {
-                delete addChangesTo[id];
-            }, 100);
-        });
-    }
-    
-    bindArrays.prototype.execute = function (compiledChanges) {
-        var forbidden = [], vals;
-        if (this.toArray instanceof obsjs.array && (vals = this.fromArray.$boundArrays.value(this.toArray)))
-            enumerateObj(vals, function (val) {
-                forbidden.push.apply(forbidden, val);
-            });
-
-        enumerateArr(compiledChanges, function (change) {
-            if (forbidden.indexOf(change.change) !== -1) return;
-
-            var args = change.added.slice();
-            args.splice(0, 0, change.index, change.removed.length);
-            this.toArray.splice.apply(this.toArray, args);
-        }, this);
-    }
-    
-    return boundArrayCallback;
 });
 
 
@@ -1542,7 +1422,6 @@ Class("obsjs.callbacks.propertyCallback", function () {
 
     propertyCallback.prototype._evaluateSingle = function (changes, index) {
 
-        //TODO setTimeout?
         var change = changes[index], 
             nextChange = changes[index + 1], 
             newVal = nextChange ? nextChange.oldValue : change.object[change.name];
@@ -1552,9 +1431,8 @@ Class("obsjs.callbacks.propertyCallback", function () {
     };
 
     propertyCallback.prototype._evaluateMultiple = function (changes, beginAt, endAt) {
-                
-        //TODO setTimeout?
-        var newVal = changes[endAt] ? changes[endAt].oldValue : changes[0].object[changes[0].name];
+		
+		var newVal = changes[endAt] ? changes[endAt].oldValue : changes[0].object[changes[0].name];
         if (this.evaluateIfValueHasNotChanged || newVal !== changes[beginAt].oldValue)
             this.callback.call(this.context, changes[beginAt].oldValue, newVal);
     };
@@ -1574,7 +1452,7 @@ var observable = useObjectObserve ?
             var cb = (function (changes) {
                 if (!cb) return;
                 for (var i = 0, ii = changes.length; i < ii; i++) {
-                    if (changes[i].name === property) {                            
+                    if (changes[i].name == property) {	// in this case numbers and strings are the same
                         var _cb = cb;
                         Object.unobserve(this.$forObject || this, _cb);
                         cb = null;
@@ -1637,6 +1515,7 @@ var observable = useObjectObserve ?
             this.$captureCallbacks.splice(this.$captureCallbacks.indexOf(cb), 1);
         };
 
+        function getObserver(forObject) { return forObject.$observer || forObject; }
         observable.prototype._init = function (forProperty) {
 
             if (this.$observed.hasOwnProperty(forProperty)) return;
@@ -1644,8 +1523,6 @@ var observable = useObjectObserve ?
             if ((this.$forObject || this).hasOwnProperty(forProperty))
                 this.$observed[forProperty] = (this.$forObject || this)[forProperty];
 
-            //TODO: observe array length tests
-            function getObserver(forObject) { return forObject.$observer || forObject; }
             Object.defineProperty(this.$forObject || this, forProperty, {
                 get: function() {
                     return getObserver(this).$observed[forProperty];
@@ -1674,7 +1551,7 @@ var observable = useObjectObserve ?
 
                 },
                 enumerable: true,
-                configurable: true //TODO: !this.usePrototypeAndWoBag
+                configurable: true
             });
         };
         
@@ -1712,21 +1589,26 @@ var observable = useObjectObserve ?
 
 // name is subject to change
 
+//TODO: look into esprima and falafel
+
 Class("obsjs.observeTypes.computed", function () {
     
     var WITH = /\s*with\s*\(/g;
     var GET_ARGUMENT_NAMES = /([^\s,]+)/g;
     var STRIP_INLINE_COMMENTS = /\/\/.*$/mg;  
     var STRIP_BLOCK_COMMENTS = /\/\*[\s\S]*?\*\//mg;
-    var GET_ITEMS = "((\\s*\\.\\s*([\\w\\$]*))|(\\[\\s*\\d\\s*\\]))+"; // ".propertyName" -or- "[2]"
-    
+    var GET_ITEMS = "((\\s*\\.\\s*([\\w\\$]*))|(\\s*\\[\\s*\\d\\s*\\]))+"; // ".propertyName" -or- "[2]"
+    var completeArg = {};
+	
     // monitor a function and change the value of a "watched" when it changes
-    var computed = obsjs.utils.executeCallbacks.extend(function computed(callback, context, options) {
+    var computed = obsjs.observeTypes.observeTypesBase.extend(function computed(callback, context, options) {
         
         this._super();
         
         options = options || {};
-        this.arguments = [];
+        this.arguments = []; 
+		if (options.observeArrayElements)
+			this.possibleArrays = [];
         
 		this.callbacks = [];
         this.callbackString = computed.stripFunction(callback);
@@ -1738,7 +1620,7 @@ Class("obsjs.observeTypes.computed", function () {
                 
         // get all argument names
         var args = this.callbackString.slice(
-            this.callbackString.indexOf('(') + 1, this.callbackString.indexOf(')')).match(GET_ARGUMENT_NAMES) || [], completeArg = {};
+            this.callbackString.indexOf('(') + 1, this.callbackString.indexOf(')')).match(GET_ARGUMENT_NAMES) || [];
         
         // get all watch variables which are also arguments
         if (options.watchVariables && args.length) {            
@@ -1758,15 +1640,15 @@ Class("obsjs.observeTypes.computed", function () {
                 throw "Argument \"" + arg + "\" must be added as a watch variable.";
         });
         
-        this.execute();
-        
         // watch each watch variable
-        this.watchVariable("this", context);
+        this.watchVariable("this", context, options.observeArrayElements);
         if (options.watchVariables) {
             for (var i in options.watchVariables) {                
-                this.watchVariable(i, options.watchVariables[i]);
+                this.watchVariable(i, options.watchVariables[i], options.observeArrayElements);
             }
         }
+        
+        this.execute();
     });
     
     computed.testForWith = function (input) {
@@ -1781,14 +1663,35 @@ Class("obsjs.observeTypes.computed", function () {
         return false;
     };
         
-    computed.prototype._execute = function() {
-		var oldVal = this.val;
-		this.val = this.callbackFunction.apply(this.context, this.arguments);
+    computed.prototype.rebuildArrays = function() {
+		///<summary>Re-subscribe to all possible arrays</summary>
 		
-		return {
-			cancel: this.val === oldVal,
-			arguments: [oldVal, this.val]
-		};
+		enumerateArr(this.possibleArrays, function (possibleArray) {
+			if (possibleArray.disposeKeys && possibleArray.disposeKeys.length) {
+				this.disposeOf(possibleArray.disposeKeys);
+				possibleArray.disposeKeys.length = 0;
+			}	
+			
+			var array = possibleArray.path.length ? 
+				obsjs.utils.obj.getObject(possibleArray.path, possibleArray.root) : 
+				possibleArray.root;
+			
+			if (array instanceof Array) {
+				possibleArray.disposeKeys = possibleArray.disposeKeys || [];
+				enumerateArr(array, function (item) {
+					enumerateArr(possibleArray.subPaths, function (subPath) {
+						possibleArray.disposeKeys.push(this.addPathWatchFor(item, subPath));
+					}, this);
+				}, this);
+			}
+		}, this);
+	};
+        
+    computed.prototype.getValue = function() {
+		if (this.possibleArrays)
+			this.rebuildArrays();
+		
+		return this.callbackFunction.apply(this.context, this.arguments);
     };
     
     computed.prototype.bind = function (object, property) {
@@ -1809,7 +1712,8 @@ Class("obsjs.observeTypes.computed", function () {
         return output;
     };
         
-    computed.stripFunction = function(input) { //TODO: unit test independantly
+	//TODO: somehow retain "this.prop['val']"
+    computed.stripFunction = function(input) {
         input = input
             .toString()
             .replace(STRIP_INLINE_COMMENTS, "")
@@ -1840,65 +1744,141 @@ Class("obsjs.observeTypes.computed", function () {
         return input;
     };
     
-    computed.prototype.watchVariable = function(variableName, variable) {
-                
-		if (!/^\s*[\$\w]+\s*$/.test(variableName))
+    computed.prototype.examineVariable = function(variableName, complexExamination) {
+		///<summary>Find all property paths of a given variable<summary>
+		///<param name="variableName" type="String">The variable name<param>
+		///<param name="complexExamination" type="Boolean">If set to true, the result will include the indexes of the property path as well as the actual text of the property paths<param>
+		
+		variableName = trim(variableName);
+		if (!/^[\$\w]+$/.test(variableName))
 			throw "Invalid variable name. Variable names can only contain 0-9, a-z, A-Z, _ and $";
 		
         var match, 
-            found = [], 
-            regex = new RegExp(variableName.replace("$", "\\$") + GET_ITEMS, "g");
+            output = [], 
+			r = variableName.replace("$", "\\$"),
+            regex = new RegExp((complexExamination ? "(" : "") + r + GET_ITEMS + (complexExamination ? ")|" + r : ""), "g"),
+			foundVariables = [], 
+			foundVariable, 
+			index,
+			i;
         
         // find all instances of the variableName
-        var tmp1 = [], tmp2;
         while ((match = regex.exec(this.callbackString)) !== null) {
-            if (tmp1.indexOf(tmp2 = trim(match[0])) === -1) {
-                tmp1.push(tmp2);
-                found.push({
-                    value: match[0],
-                    index: regex.lastIndex - match[0].length
-                });
-            }
-        }
+			index = regex.lastIndex - match[0].length;
+			
+			// if the variable has been found before and we do not need to find each instance
+			if ((i = foundVariables.indexOf(foundVariable = match[0].replace(/\s/g, ""))) !== -1 && !complexExamination)
+				continue;
 
+			if (index > 0) {
+				// determine whether the instance is part of a bigger variable name
+				// do not need to check trailing char as this is filtered by the regex
+				if (this.callbackString[index - 1].search(/[\w\$]/) !== -1)  //TODO test (another char before and after)
+					continue;
+
+				// determine whether the instance is a property rather than a variable
+				for (var j = index - 1; j >= 0; j--) { // TODO: test
+					if (this.callbackString[j] === ".") {
+						foundVariable = null;
+						break;
+					} else if (this.callbackString[j].search(/\s/) !== 0) {
+						break;
+					}
+				}
+			}
+			
+			if (foundVariable === null) 
+				continue;
+			
+			// if this is the first time the var has been found
+			if (i === -1) {
+				foundVariables.push(foundVariable);
+				i = output.length;
+				output.push({
+					variableName: foundVariable,
+					complexResults: []
+				});
+			}
+				
+			// if we need to record the exact instance
+			if (complexExamination) {
+				output[i].complexResults.push({
+					name: match[0],
+					index: index
+				});
+			}
+        }
+		
+		return output;
+	};
+    
+    computed.prototype.watchVariable = function(variableName, variable, observeArrayElements) {
+		///<summary>Create subscriptions to all of the property paths to a specific variable<summary>
+		///<param name="variableName" type="String">The variable name<param>
+		///<param name="variable" type="Any">The instance of the variable<param>
+		///<param name="observeArrayElements" type="Boolean">If set to true, each find will also be treated as a possible array and subscribed to. This is a more expensive process computationally<param>
+		
+		// find all instances
+		var found = this.examineVariable(variableName, observeArrayElements), tmp;
+
+		var arrProps;
         enumerateArr(found, function (item) {
             
-            if (item.index > 0) {
-                // determine whether the instance is part of a bigger variable name
-                // do not need to check trailing char as this is filtered by the regex
-                if (this.callbackString[item.index - 1].search(/[\w\$]/) !== -1)  //TODO test (another char before and after)
-                    return;
-
-                // determine whether the instance is a property rather than a variable
-                for (var j = item.index - 1; j >= 0; j--) { // TODO: test
-                    if (this.callbackString[j] === ".")
-                        return;
-                    else if (this.callbackString[j].search(/\s/) !== 0)
-                        break;
-                }
-            }
-            
-            tmp1 = obsjs.utils.obj.splitPropertyName(item.value);
-            var path = new obsjs.observeTypes.pathObserver(
-                    variable, 
-                    obsjs.utils.obj.joinPropertyName(tmp1.slice(1)),
-                    this.throttleExecution, this);
-            
-            this.registerDisposable(path);
-            
-            var dispose;
-            var te = this.throttleExecution.bind(this);
-            path.onValueChanged(function(oldVal, newVal) {
-                if (dispose) {
-                    dispose.dispose();
-                    dispose = null;
-                }
-
-                if (newVal instanceof obsjs.array)
-                    dispose = newVal.observe(te);
-            }, true);
+			// if there is a path, i.e. variable.property, subscribe to it
+            tmp = obsjs.utils.obj.splitPropertyName(item.variableName);
+			if (tmp.length > 1)
+				this.addPathWatchFor(variable, obsjs.utils.obj.joinPropertyName(tmp.slice(1)));
+			
+			// if we are looking for array elements, do more examination for this
+			if (observeArrayElements) {
+				var possibleArray;
+				enumerateArr(item.complexResults, function (found) {
+					if (arrProps = this.examineArrayProperties(found.name, found.index)) {
+						if (!possibleArray)
+							this.possibleArrays.push(possibleArray = {
+								root: variable,
+								path: obsjs.utils.obj.joinPropertyName(tmp.slice(1)),
+								subPaths: [arrProps]
+							});
+						else
+							possibleArray.subPaths.push(arrProps);
+					}
+				}, this);
+			}
         }, this);
     };
+	
+	var getArrayItems = new RegExp("^\\s*\\[\\s*[\\w\\$]+\\s*\\]\\s*" + GET_ITEMS);
+	computed.prototype.examineArrayProperties = function (pathName, index) {
+		///<summary>Discover whether a property path may be an indexed array<summary>
+		///<param name="pathName" type="String">The property path<param>
+		///<param name="index" type="Number">The location of the property path<param>
+		///<returns type="String">The second half of the possible indexed array property, if any<returns>
+		
+		var found;
+		if (found = getArrayItems.exec(this.callbackString.substr(index + pathName.length))) {
+			found = found[0].substr(found[0].indexOf("]") + 1).replace(/\s/g, "")
+			return (found[0] === "." ? found.substring(1) : found);
+		}
+	};
+	
+    computed.prototype.addPathWatchFor = function(variable, path) {
+		var path = new obsjs.observeTypes.pathObserver(variable, path, this.throttleExecution, this);
+		
+		var dispose;
+		var te = this.throttleExecution.bind(this);
+		path.onValueChanged(function(oldVal, newVal) {
+			if (dispose) {
+				dispose.dispose();
+				dispose = null;
+			}
+
+			if (newVal instanceof obsjs.array)
+				dispose = newVal.observe(te);
+		}, true);
+		
+		return this.registerDisposable(path);
+	};
     
     //TODO: document and expose better
     var nonArrayTypes = [];
@@ -1927,7 +1907,7 @@ Class("obsjs.observeTypes.computed", function () {
 
 Class("obsjs.observeTypes.pathObserver", function () {
         
-    var pathObserver = obsjs.utils.executeCallbacks.extend(function pathObserver (forObject, property, callback, context) {
+    var pathObserver = obsjs.observeTypes.observeTypesBase.extend(function pathObserver (forObject, property, callback, context) {
         ///<summary>Observe a property for change. Should be "call()"ed with this being a "watched"</summary>
         ///<param name="forObject" type="obsjs.observable" optional="false">The object to watch</param>
         ///<param name="property" type="String" optional="false">The property</param>
@@ -2007,23 +1987,15 @@ Class("obsjs.observeTypes.pathObserver", function () {
             }, this);
     };
         
-	//TODO: (partially) copy pasted from computed
-    pathObserver.prototype._execute = function() {
-		var oldVal = this.val;
-		
+    pathObserver.prototype.getValue = function() {
         var current = this.forObject;
         
         // get item at index "begin"
-        for (i = 0, ii = this.path.length; current != null && i < ii; i++) {
+        for (var i = 0, ii = this.path.length; current != null && i < ii; i++) {
             current = current[this.path[i]];
         }
 		
-		this.val = i === ii ? current : null;
-				
-		return {
-			cancel: this.val === oldVal,
-			arguments: [oldVal, this.val]
-		};
+		return i === ii ? current : null;
     };
 	
     pathObserver.prototype.dispose = function () {
@@ -2316,7 +2288,12 @@ Class("obsjs.utils.observeCycleHandler", function () {
         if (!arguments.length)
             object = {};
         
-        if (obsjs.canObserve(object)) return object;
+		if (object instanceof obsjs.array) {
+			if (obsjs.getObserver(object)) 
+				return object;
+		} else if (obsjs.canObserve(object)) {
+			return object;
+		}
         
         if (object.$observer) throw "The $observer property is reserved";
 
@@ -2337,8 +2314,14 @@ Class("obsjs.utils.observeCycleHandler", function () {
 
     obsjs.tryObserve = function (object, property, callback, context, evaluateOnEachChange, evaluateIfValueHasNotChanged) {
         
-        if (object instanceof obsjs.array && property instanceof Function)
-            return object.observe(arguments[1], arguments[2], arguments[3]);    // property names are misleading in this case
+        if (object instanceof obsjs.array) {
+			if (property instanceof Function)
+            	return object.observe(arguments[1], arguments[2], arguments[3]);    // property names are misleading in this case
+			if (property === "length")
+				property = "$length";
+			
+			obsjs.makeObservable(object);	//TODO: test
+		}
         
         var target = obsjs.getObserver(object);
         
@@ -2365,7 +2348,8 @@ Class("obsjs.utils.observeCycleHandler", function () {
 
     obsjs.canObserve = function (object) {
         
-        return !!obsjs.getObserver(object);
+			//TODO: test array bit
+        return object instanceof obsjs.array || !!obsjs.getObserver(object);
     };
 
     obsjs.del = function (object, property) {

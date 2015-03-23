@@ -9,7 +9,8 @@ Class("obsjs.observeTypes.computed", function () {
     var STRIP_INLINE_COMMENTS = /\/\/.*$/mg;  
     var STRIP_BLOCK_COMMENTS = /\/\*[\s\S]*?\*\//mg;
     var GET_ITEMS = "((\\s*\\.\\s*([\\w\\$]*))|(\\s*\\[\\s*\\d\\s*\\]))+"; // ".propertyName" -or- "[2]"
-    
+    var completeArg = {};
+	
     // monitor a function and change the value of a "watched" when it changes
     var computed = obsjs.observeTypes.observeTypesBase.extend(function computed(callback, context, options) {
         
@@ -30,7 +31,7 @@ Class("obsjs.observeTypes.computed", function () {
                 
         // get all argument names
         var args = this.callbackString.slice(
-            this.callbackString.indexOf('(') + 1, this.callbackString.indexOf(')')).match(GET_ARGUMENT_NAMES) || [], completeArg = {};
+            this.callbackString.indexOf('(') + 1, this.callbackString.indexOf(')')).match(GET_ARGUMENT_NAMES) || [];
         
         // get all watch variables which are also arguments
         if (options.watchVariables && args.length) {            
