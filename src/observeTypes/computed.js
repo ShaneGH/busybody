@@ -268,7 +268,7 @@ Class("obsjs.observeTypes.computed", function () {
 		
 		var found;
 		if (found = getArrayItems.exec(this.callbackString.substr(index + pathName.length))) {
-			found = found[0].substr(found[0].indexOf("]") + 1).replace(/\s/g, "")
+			found = found[0].substr(found[0].indexOf("]") + 1).replace(/\s/g, "");
 			return (found[0] === "." ? found.substring(1) : found);
 		}
 	};
