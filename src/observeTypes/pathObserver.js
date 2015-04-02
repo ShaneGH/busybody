@@ -61,7 +61,7 @@ Class("obsjs.observeTypes.pathObserver", function () {
                 var args = [current, (function (i) {
                     return function(oldVal, newVal) {
                         _this.buildObservableChain(i);
-						_this.throttleExecution();
+						_this.execute();
                     };
                 }(i))];
                 
@@ -78,7 +78,7 @@ Class("obsjs.observeTypes.pathObserver", function () {
         // observe last item in path
         if (obsjs.canObserve(current))
             this.__pathDisposables[i] = obsjs.tryObserve(current, this.path[i], function (oldVal, newVal) {
-                this.throttleExecution();
+                this.execute();
             }, this);
     };
         

@@ -274,10 +274,10 @@ Class("obsjs.observeTypes.computed", function () {
 	};
 	
     computed.prototype.addPathWatchFor = function(variable, path) {
-		var path = new obsjs.observeTypes.pathObserver(variable, path, this.throttleExecution, this);
+		var path = new obsjs.observeTypes.pathObserver(variable, path, this.execute, this);
 		
 		var dispose;
-		var te = this.throttleExecution.bind(this);
+		var te = this.execute.bind(this);
 		path.onValueChanged(function(oldVal, newVal) {
 			if (dispose) {
 				dispose.dispose();

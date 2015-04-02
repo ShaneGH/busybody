@@ -10,6 +10,8 @@ test("addCallback", function() {
 	var arg1 = {}, arg2 = {};
 	var subject = new (obsjs.utils.executeCallbacks.extend(function () {this._super();}))();
 	subject.addCallback(function (a1, a2) {
+		ok(subject);
+		
 		strictEqual(a1, arg1);
 		strictEqual(a2, arg2);
 		
@@ -22,9 +24,11 @@ test("addCallback", function() {
 		subject._execute = ex;
 		subject.dispose();
 		
-		subject.throttleExecution();
-		start();	// using as an assert, should not be called twice
+		subject.execute();
+		
+		subject = null;	// using as flag
 	});
+	
 	var ex = subject._execute = function () {
 		return {
 			arguments: [arg1, arg2]
@@ -32,10 +36,7 @@ test("addCallback", function() {
 	};
 	
 	// act
-	subject.throttleExecution();
-	subject.throttleExecution();
-	subject.throttleExecution();
-	stop();
+	subject.execute();
 	
 	// assert
 });

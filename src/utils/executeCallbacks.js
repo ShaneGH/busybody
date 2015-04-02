@@ -16,17 +16,6 @@ Class("obsjs.utils.executeCallbacks", function () {
 		
 		return op;
 	};
-    
-    executeCallbacks.prototype.throttleExecution = function () {
-		
-		if (this.__executePending != null)
-			clearTimeout(this.__executePending);
-        
-        this.__executePending = setTimeout((function () {
-            delete this.__executePending;
-            this.execute();
-        }).bind(this));
-    };
         
     executeCallbacks.prototype._execute = function() {
 		throw "Abstract methods must be implemented";
@@ -37,7 +26,7 @@ Class("obsjs.utils.executeCallbacks", function () {
 		var args = this._execute();
 		
 		if (args && !args.cancel)
-			enumerateArr(this.callbacks, function (cb) {
+			enumerateArr(this.callbacks.slice(), function (cb) {
 				cb.apply(null, args.arguments || []);
 			});
     };
