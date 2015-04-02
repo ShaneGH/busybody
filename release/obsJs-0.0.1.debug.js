@@ -494,17 +494,6 @@ Class("obsjs.utils.executeCallbacks", function () {
 		
 		return op;
 	};
-    
-    executeCallbacks.prototype.throttleExecution = function () {
-		
-		if (this.__executePending != null)
-			clearTimeout(this.__executePending);
-        
-        this.__executePending = setTimeout((function () {
-            delete this.__executePending;
-            this.execute();
-        }).bind(this));
-    };
         
     executeCallbacks.prototype._execute = function() {
 		throw "Abstract methods must be implemented";
@@ -515,7 +504,7 @@ Class("obsjs.utils.executeCallbacks", function () {
 		var args = this._execute();
 		
 		if (args && !args.cancel)
-			enumerateArr(this.callbacks, function (cb) {
+			enumerateArr(this.callbacks.slice(), function (cb) {
 				cb.apply(null, args.arguments || []);
 			});
     };
@@ -1857,16 +1846,16 @@ Class("obsjs.observeTypes.computed", function () {
 		
 		var found;
 		if (found = getArrayItems.exec(this.callbackString.substr(index + pathName.length))) {
-			found = found[0].substr(found[0].indexOf("]") + 1).replace(/\s/g, "")
+			found = found[0].substr(found[0].indexOf("]") + 1).replace(/\s/g, "");
 			return (found[0] === "." ? found.substring(1) : found);
 		}
 	};
 	
     computed.prototype.addPathWatchFor = function(variable, path) {
-		var path = new obsjs.observeTypes.pathObserver(variable, path, this.throttleExecution, this);
+		var path = new obsjs.observeTypes.pathObserver(variable, path, this.execute, this);
 		
 		var dispose;
-		var te = this.throttleExecution.bind(this);
+		var te = this.execute.bind(this);
 		path.onValueChanged(function(oldVal, newVal) {
 			if (dispose) {
 				dispose.dispose();
@@ -1966,7 +1955,7 @@ Class("obsjs.observeTypes.pathObserver", function () {
                 var args = [current, (function (i) {
                     return function(oldVal, newVal) {
                         _this.buildObservableChain(i);
-						_this.throttleExecution();
+						_this.execute();
                     };
                 }(i))];
                 
@@ -1983,7 +1972,7 @@ Class("obsjs.observeTypes.pathObserver", function () {
         // observe last item in path
         if (obsjs.canObserve(current))
             this.__pathDisposables[i] = obsjs.tryObserve(current, this.path[i], function (oldVal, newVal) {
-                this.throttleExecution();
+                this.execute();
             }, this);
     };
         
