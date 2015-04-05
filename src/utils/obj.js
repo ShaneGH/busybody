@@ -145,7 +145,8 @@ Class("obsjs.utils.obj", function () {
         if (propertyName.length > 1)
             context = _getObject(propertyName.splice(0, propertyName.length -1), context);
         
-        context[propertyName[0]] = value;
+		if (context)
+        	context[propertyName[0]] = value;
     };	
 
     function addWithDispose(callbackArray, callback) {

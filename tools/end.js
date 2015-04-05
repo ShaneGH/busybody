@@ -88,12 +88,33 @@
         
         return false;
     };
+    
+    obsjs.tryBind = function (object1, property1, object2, property2) {
+        
+		var target1 = obsjs.getObserver(object1);
+		var target2 = obsjs.getObserver(object2);
+		
+		if (target1)
+			return target1.bind(property1, target2 || object2, property2);
+		else if (target2)
+			return target2.bind(property2, object1, property1);
+		else
+			obsjs.utils.obj.setObject(property2, object2, obsjs.utils.obj.getObject(property1, object1));
+    };
+    
+    obsjs.bind = function (object1, property1, object2, property2) {
+		
+		obsjs.makeObservable(object1);
+		obsjs.makeObservable(object2);
+		
+		return target.tryBind(object1, property1, object2, property2);
+    };
 
     obsjs.canObserve = function (object) {
         
 			//TODO: test array bit
         return object instanceof obsjs.array || !!obsjs.getObserver(object);
-    };
+    }; 
 
     obsjs.del = function (object, property) {
         

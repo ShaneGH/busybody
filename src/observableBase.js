@@ -72,6 +72,10 @@ Class("obsjs.observableBase", function () {
     observableBase.prototype.captureChanges = function (logic, callback) {
         throw "Abstract methods must be overridden";
     };
+    
+    observableBase.prototype.bind = function (property, otherObject, otherPropoerty) {
+        throw "Not implemented";
+    };
 
     observableBase.prototype.observeArray = function (property, callback, context, options) {
         var d2, d1 = this.observe(property, function (oldValue, newValue) {
