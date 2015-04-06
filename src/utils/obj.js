@@ -124,11 +124,27 @@ Class("obsjs.utils.obj", function () {
         return _getObject(splitPropertyName(propertyName), context);
     };
     
-    function _getObject(splitPropertyName, context) {
-        ///<summary>Get an object from string</summary>
-        ///<param name="splitPropertyName" type="Array">The property name split into parts, including numbers for array parts</param>
+    var getPartialObject = function(propertyName, context, index) {
+        ///<summary>Get an object from part of a string</summary>
+        ///<param name="propertyName" type="String">A pointer to the object to get</param>
         ///<param name="context" type="Any" optional="true">The root context. Defaults to window</param>
+        ///<param name="index" type="Number" optional="true">Decide how many parts to evaluate. A value of 0 indicates evaluate all, a value less than 0 indicates that you do not evaluate the last elements, a value greater than 0 indicates that you only evaluate the first elements</param>
         ///<returns type="Any">The object</returns>
+		
+		var output = {};
+		
+		propertyName = splitPropertyName(propertyName);
+		if (index <= 0)
+			output.remainder = propertyName.splice(propertyName.length + index, index * -1);
+		else
+			output.remainder = propertyName.splice(index, propertyName.length - index);
+		
+		output.object = _getObject(propertyName, context, index);
+		return output;
+    };
+    
+    function _getObject(splitPropertyName, context) {
+		
         if(!context) context = window;
         
         for (var i = 0, ii = splitPropertyName.length; i <ii; i++) {
@@ -204,6 +220,7 @@ Class("obsjs.utils.obj", function () {
     obj.enumerateArr = enumerateArr;
     obj.enumerateObj = enumerateObj;
     obj.getObject = getObject;
+    obj.getPartialObject = getPartialObject;
     obj.setObject = setObject;
     obj.splitPropertyName = splitPropertyName;
     obj.joinPropertyName = joinPropertyName;
