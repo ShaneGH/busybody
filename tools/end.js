@@ -6,13 +6,6 @@
             (object.$observer instanceof obsjs.observableBase ? object.$observer : null);
     };
     
-    obsjs._captureChanges = function (forObject, logic, callback, captureType) {
-                
-        captureType.observe(forObject, callback);
-        logic();
-        captureType.unobserve(forObject, callback);
-    };
-    
     obsjs.captureArrayChanges = function (forObject, logic, callback) {
         if (!(forObject instanceof obsjs.array))
             throw "Only obsjs.array objects can have changes captured";
@@ -21,10 +14,10 @@
     };
     
     obsjs.captureChanges = function (forObject, logic, callback) {
-        obsjs.makeObservable(forObject);
-        var target = obsjs.getObserver(forObject);
+        forObject = obsjs.getObserver(forObject);
         
-        return target.captureChanges(logic, callback);
+		if (forObject)
+        	return forObject.captureChanges(logic, callback);
     };
 
     obsjs.makeObservable = function (object) {
@@ -88,18 +81,45 @@
         
         return false;
     };
-    
-    obsjs.tryBind = function (object1, property1, object2, property2) {
-        
-		var target1 = obsjs.getObserver(object1);
-		var target2 = obsjs.getObserver(object2);
+	
+	var index = (function () {
+		var i = 0;
+		return function () {
+			return ++i;
+		};
+	}());
+	
+    function bindingChange (bindingChanges, change, fromObject, timeout) {
 		
-		if (target1)
-			return target1.bind(property1, target2 || object2, property2);
-		else if (target2)
-			return target2.bind(property2, object1, property1);
-		else
-			obsjs.utils.obj.setObject(property2, object2, obsjs.utils.obj.getObject(property1, object1));
+		if (arguments.length < 2)
+			timeout = 100;
+		
+		var i = index();
+		bindingChanges[i] = {change: change, fromObject: fromObject};
+		setTimeout(function () {
+			delete bindingChanges[i];
+		}, timeout);
+	}
+
+    obsjs.tryBind = function (object1, property1, object2, property2) {
+		
+		throw "Not implememted";
+		obsjs.tryObserve(object1, property1, function (changes) {
+			
+			var observer2 = obsjs.getObserver(object2);
+			
+			if (observer2) {
+				var observer1 = obsjs.getObserver(object1);
+				if (observer1.$bindingChanges)
+					for (var i in observer1.$bindingChanges)
+						if (object2 === observer1.$bindingChanges[change].forObject
+							&& changes[changes.length - 1] === observer1.$bindingChanges[change].change)
+							return;
+			}
+			
+			if (observer2)
+			obsjs.utils.obj.setObject(property2, object2, obsjs.getObject(property1, object1));
+		}, null, {useRawChages: true});
     };
     
     obsjs.bind = function (object1, property1, object2, property2) {

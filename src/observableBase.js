@@ -74,7 +74,7 @@ Class("obsjs.observableBase", function () {
     };
     
     observableBase.prototype.bind = function (property, otherObject, otherPropoerty) {
-        throw "Not implemented";
+		return obsjs.bind(this, property, otherObject, otherPropoerty);
     };
 
     observableBase.prototype.observeArray = function (property, callback, context, options) {
