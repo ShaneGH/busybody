@@ -11,11 +11,11 @@ function testMe (moduleName, buildSubject) {
     testUtils.testWithUtils("captureChanges", null, false, function(methods, classes, subject, invoker) {
         
         // arrange
-        var subject = buildSubject();
-        obsjs.observe(subject, "aaa", function(){});
-        obsjs.observe(subject, "bbb", function(){});
-        obsjs.observe(subject, "ccc", function(){});
-        obsjs.observe(subject, "ddd", function(){});
+        var subject = obsjs.makeObservable(buildSubject());
+        //obsjs.observe(subject, "aaa", function(){});
+        //obsjs.observe(subject, "bbb", function(){});
+        //obsjs.observe(subject, "ccc", function(){});
+        //obsjs.observe(subject, "ddd", function(){});
         
         stop(obsjs.useObjectObserve ? 1 : 3);
         
@@ -51,6 +51,46 @@ function testMe (moduleName, buildSubject) {
         });
         
         subject.ddd = "fff";
+    });
+    
+    testUtils.testWithUtils("captureChanges", "to property", false, function(methods, classes, subject, invoker) {
+		
+        // arrange
+        var subject = buildSubject();
+		obsjs.makeObservable(subject);
+        
+        stop();
+        
+        obsjs.captureChanges(subject, function () {
+            subject.aaa = "111";
+            subject.bbb = "222";
+        }, function (ch) {
+			strictEqual(ch.length, 1);
+			strictEqual(ch[0].name, "aaa");
+            start();
+        }, "aaa");
+    });
+	
+    testUtils.testWithUtils("captureChanges", "to complex property", false, function(methods, classes, subject, invoker) {
+		
+        // arrange
+        var subject = buildSubject();
+		obsjs.makeObservable(subject);
+		subject.aaa = buildSubject();
+		obsjs.makeObservable(subject.aaa);
+        
+        stop();
+        
+        obsjs.captureChanges(subject, function () {
+            subject.aaa.xxx = "111";
+            subject.aaa.yyy = "222";
+            subject["aaa.xxx"] = "333";
+        }, function (ch) {
+			strictEqual(ch.length, 1);
+			strictEqual(ch[0].name, "xxx");
+			strictEqual(ch[0].object, subject.aaa);
+            start();
+        }, "aaa.xxx");
     });
     
     testUtils.testWithUtils("observe", "activate immediately", false, function(methods, classes, subject, invoker) {

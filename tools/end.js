@@ -13,11 +13,11 @@
         return forObject.captureArrayChanges(logic, callback);
     };
     
-    obsjs.captureChanges = function (forObject, logic, callback) {
+    obsjs.captureChanges = function (forObject, logic, callback, property) {
         forObject = obsjs.getObserver(forObject);
         
 		if (forObject)
-        	return forObject.captureChanges(logic, callback);
+        	return forObject.captureChanges(logic, callback, property);
     };
 
     obsjs.makeObservable = function (object) {

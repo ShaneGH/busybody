@@ -69,9 +69,22 @@ Class("obsjs.observableBase", function () {
         throw "Abstract methods must be overridden";
     };
     
-    observableBase.prototype.captureChanges = function (logic, callback) {
-        throw "Abstract methods must be overridden";
+    observableBase.prototype.captureChanges = function (logic, callback, toProperty) {
+			
+		if (toProperty && (toProperty = obsjs.utils.obj.splitPropertyName(toProperty)).length > 1) {
+			return obsjs.captureChanges(
+				obsjs.utils.obj.getObject(toProperty.slice(0, toProperty.length - 1).join("."), this.$forObject || this), 
+				logic, 
+				callback, 
+				toProperty[toProperty.length - 1]);
+		}
+		
+		return this._captureChanges(logic, callback, toProperty && toProperty.length ? toProperty[0] : undefined);
     };
+    
+    observableBase.prototype._captureChanges = function (logic, callback, toProperty) {
+        throw "Abstract methods must be overridden";
+	};
     
     observableBase.prototype.bind = function (property, otherObject, otherPropoerty) {
 		return obsjs.bind(this, property, otherObject, otherPropoerty);
