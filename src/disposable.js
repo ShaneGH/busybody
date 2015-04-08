@@ -15,7 +15,7 @@ Class("obsjs.disposable", function () {
         else if (disposableOrDisposeFunction instanceof Function)
             this.registerDisposeCallback(disposableOrDisposeFunction);
         else
-            this.registerDispose(disposableOrDisposeFunction);
+            this.registerDisposable(disposableOrDisposeFunction);
     });
     
     disposable.prototype.disposeOf = function(key) {
