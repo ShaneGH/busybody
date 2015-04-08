@@ -23,18 +23,8 @@ var observable = useObjectObserve ?
             Object.observe(this.$forObject || this, cb);
         };
 
-        observable.prototype._captureChanges = function (logic, callback, toProperty) {
+        observable.prototype._captureChanges = function (logic, callback) {
 			
-			var cb = toProperty ? function (changes) {
-				var ch = [];
-				enumerateArr(changes, function (change) {
-					if (change.name == toProperty)
-						ch.push(change);
-				});
-				
-				callback(ch);
-			} : callback.bind(this);
-
 			Object.observe(this.$forObject || this, cb);
 			logic();
 			Object.unobserve(this.$forObject || this, cb);
@@ -74,11 +64,9 @@ var observable = useObjectObserve ?
 
         observable.prototype._captureChanges = function (logic, callback) {
 
-            // make unique callback
-            var cb = function () { callback.apply(this, arguments) };
-            this.$captureCallbacks.push(cb);
+            this.$captureCallbacks.push(callback);
             logic();
-            this.$captureCallbacks.splice(this.$captureCallbacks.indexOf(cb), 1);
+            this.$captureCallbacks.splice(this.$captureCallbacks.indexOf(callback), 1);
         };
 
         function getObserver(forObject) { return forObject.$observer || forObject; }

@@ -70,7 +70,7 @@ Class("obsjs.observableBase", function () {
     };
     
     observableBase.prototype.captureChanges = function (logic, callback, toProperty) {
-			
+		
 		if (toProperty && (toProperty = obsjs.utils.obj.splitPropertyName(toProperty)).length > 1) {
 			return obsjs.captureChanges(
 				obsjs.utils.obj.getObject(toProperty.slice(0, toProperty.length - 1).join("."), this.$forObject || this), 
@@ -79,7 +79,21 @@ Class("obsjs.observableBase", function () {
 				toProperty[toProperty.length - 1]);
 		}
 		
-		return this._captureChanges(logic, callback, toProperty && toProperty.length ? toProperty[0] : undefined);
+		toProperty = toProperty && toProperty.length ? toProperty[0] : undefined;
+		var cb = toProperty ? function (changes) {
+			var ch = [];
+			enumerateArr(changes, function (change) {
+				if (change.name == toProperty)
+					ch.push(change);
+			});
+
+			callback(ch);
+		} : callback.bind(this);
+		
+		if (toProperty)
+        	this._init(toProperty);
+		
+		return this._captureChanges(logic, cb);
     };
     
     observableBase.prototype._captureChanges = function (logic, callback, toProperty) {

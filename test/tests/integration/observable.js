@@ -12,10 +12,10 @@ function testMe (moduleName, buildSubject) {
         
         // arrange
         var subject = obsjs.makeObservable(buildSubject());
-        //obsjs.observe(subject, "aaa", function(){});
-        //obsjs.observe(subject, "bbb", function(){});
-        //obsjs.observe(subject, "ccc", function(){});
-        //obsjs.observe(subject, "ddd", function(){});
+        obsjs.observe(subject, "aaa", function(){});
+        obsjs.observe(subject, "bbb", function(){});
+        obsjs.observe(subject, "ccc", function(){});
+        obsjs.observe(subject, "ddd", function(){});
         
         stop(obsjs.useObjectObserve ? 1 : 3);
         
@@ -60,7 +60,7 @@ function testMe (moduleName, buildSubject) {
 		obsjs.makeObservable(subject);
         
         stop();
-        
+		
         obsjs.captureChanges(subject, function () {
             subject.aaa = "111";
             subject.bbb = "222";
