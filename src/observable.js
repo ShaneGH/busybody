@@ -25,9 +25,9 @@ var observable = useObjectObserve ?
 
         observable.prototype._captureChanges = function (logic, callback) {
 			
-			Object.observe(this.$forObject || this, cb);
+			Object.observe(this.$forObject || this, callback);
 			logic();
-			Object.unobserve(this.$forObject || this, cb);
+			Object.unobserve(this.$forObject || this, callback);
         };
 
         observable.prototype._init = function () {
