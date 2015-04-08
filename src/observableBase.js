@@ -124,7 +124,7 @@ Class("obsjs.observableBase", function () {
 
     observableBase.prototype.observe = function (property, callback, context, options) {
         
-		// options: evaluateOnEachChange, evaluateIfValueHasNotChanged
+		// options: evaluateOnEachChange, evaluateIfValueHasNotChanged, useRawChanges
 		
         if (/[\.\[]/.test(property)) {
             var pw = new obsjs.observeTypes.pathObserver(this.$forObject || this, property, callback, context);

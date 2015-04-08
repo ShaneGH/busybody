@@ -207,6 +207,57 @@ function testMe (moduleName, buildSubject) {
         stop(2);
     });
 
+    testUtils.testWithUtils("observe", "useRawChanges, single", false, function(methods, classes, subject, invoker) {
+		
+        // arrange    
+        var subject = buildSubject();
+        subject.val = "aaa";
+        
+		var i = 0;
+        var disp = obsjs.observe(subject, "val", function(change) {
+			if (i === 0)
+				strictEqual(change.oldValue, "aaa");
+			else if (i === 1)
+				strictEqual(change.oldValue, "bbb");
+			else
+				ok(false);
+				
+			i++;
+            start();
+        }, null, {useRawChanges: true, evaluateOnEachChange:true});
+
+        // act
+		subject.val = "bbb";
+		subject.val = "ccc";
+		disp.dispose(true);
+		subject.val = "ddd";
+
+        stop(2);
+    });
+
+    testUtils.testWithUtils("observe", "useRawChanges, multiple", false, function(methods, classes, subject, invoker) {
+		
+        // arrange    
+        var subject = buildSubject();
+        subject.val = "aaa";
+        
+        var disp = obsjs.observe(subject, "val", function(changes) {
+			strictEqual(changes.length, 2);
+			strictEqual(changes[0].oldValue, "aaa");
+			strictEqual(changes[1].oldValue, "bbb");
+			
+            start();
+        }, null, {useRawChanges: true});
+
+        // act
+		subject.val = "bbb";
+		subject.val = "ccc";
+		disp.dispose(true);
+		subject.val = "ddd";
+
+        stop();
+    });
+
     testUtils.testWithUtils("observe", "disposal", false, function(methods, classes, subject, invoker) {
         // arrange
         var subject = buildSubject();
