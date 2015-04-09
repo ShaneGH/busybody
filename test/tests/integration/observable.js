@@ -139,7 +139,7 @@ function testMe (moduleName, buildSubject) {
 		
         // arrange
         var subject1 = obsjs.makeObservable(buildSubject());
-        var subject2 = obsjs.makeObservable(buildSubject())
+        var subject2 = obsjs.makeObservable(buildSubject());
         subject1.aaa = obsjs.makeObservable(buildSubject());
         subject2.bbb = obsjs.makeObservable(buildSubject());
         
