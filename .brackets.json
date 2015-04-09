@@ -1,0 +1,6 @@
+{
+    "jscodehints.detectedExclusions": [
+        "C:/Dev/Apps/obsjs/bower_components/",
+        "C:/Dev/Apps/obsjs/node_modules/"
+    ]
+}
