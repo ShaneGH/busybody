@@ -91,15 +91,12 @@
 		};
 	}());
 
-	obsjs.tryBind = function (object1, property1, object2, property2, twoWay) {
+	function createBindingEvaluator (object1, property1, object2, property2) {
 		
-		//var p1 = obsjs.utils.obj.getObject(property1, object1);
-		//if (p1 instanceof Array)
-		
-		var d1 = obsjs.tryObserve(object1, property1, function (changes) {
+		return function (changes) {
 			
 			var observer1 = obsjs.getObserver(object1);
-			if (observer1.$bindingChanges)
+			if (changes && observer1.$bindingChanges)
 				for (var i in observer1.$bindingChanges)
 					if (object2 === observer1.$bindingChanges[i].fromObject
 						&& changes[changes.length - 1] === observer1.$bindingChanges[i].change)
@@ -128,11 +125,20 @@
 					}
 				});
 			});
-		}, null, {useRawChanges: true});
+		}
+	}
+
+	obsjs.tryBind = function (object1, property1, object2, property2, twoWay, doNotSet) {
+			
+		var evaluator = createBindingEvaluator(object1, property1, object2, property2);
+		var d1 = obsjs.tryObserve(object1, property1, evaluator, null, {useRawChanges: true});
+		
+		if (!doNotSet)
+			evaluator();
 		
 		if (!twoWay) return d1;
 		
-		var d2 = obsjs.tryBind(object2, property2, object1, property1);
+		var d2 = obsjs.tryBind(object2, property2, object1, property1, false, true);
 		
 		if (d1 && d2) {
 			var dispose = new obsjs.disposable(d1);
