@@ -92,6 +92,94 @@ function testMe (moduleName, buildSubject) {
             start();
         }, "aaa.xxx");
     });
+	
+    testUtils.testWithUtils("bind", "left to right", false, function(methods, classes, subject, invoker) {
+		
+        // arrange
+        var subject1 = buildSubject();
+        var subject2 = buildSubject();
+        
+        stop();
+		
+        obsjs.bind(subject1, "aaa", subject2, "bbb");
+		
+		obsjs.observe(subject2, "bbb", function (oldVal, newVal) {
+			strictEqual(newVal, 345);
+			start();
+		});
+		
+		subject1.aaa = 345;
+		obsjs.observe(subject1, "aaa", function (oldVal, newVal) {
+			ok(false, "This should not be triggered again");
+		}, {evaluateOnEachChange: true, evaluateIfValueHasNotChanged: true});
+    });
+	
+    testUtils.testWithUtils("bind", "right to left", false, function(methods, classes, subject, invoker) {
+		
+        // arrange
+        var subject1 = buildSubject();
+        var subject2 = buildSubject();
+        
+        stop();
+		
+        obsjs.bind(subject1, "aaa", subject2, "bbb");
+		
+		obsjs.observe(subject1, "aaa", function (oldVal, newVal) {
+			strictEqual(newVal, 345);
+			start();
+		});
+		
+		subject2.bbb = 345;
+		obsjs.observe(subject2, "bbb", function (oldVal, newVal) {
+			ok(false, "This should not be triggered again");
+		}, {evaluateOnEachChange: true, evaluateIfValueHasNotChanged: true});
+    });
+	
+    testUtils.testWithUtils("bind", "complex, left to right", false, function(methods, classes, subject, invoker) {
+		
+        // arrange
+        var subject1 = obsjs.makeObservable(buildSubject());
+        var subject2 = obsjs.makeObservable(buildSubject())
+        subject1.aaa = obsjs.makeObservable(buildSubject());
+        subject2.bbb = obsjs.makeObservable(buildSubject());
+        
+        stop();
+		
+        obsjs.bind(subject1, "aaa.xxx", subject2, "bbb.yyy");
+		
+		obsjs.observe(subject2, "bbb.yyy", function (oldVal, newVal) {
+			strictEqual(newVal, 345);
+			start();
+		});
+		
+		subject1.aaa.xxx = 345;
+		obsjs.observe(subject1, "aaa.xxx", function (oldVal, newVal) {
+			ok(false, "This should not be triggered again");
+		}, {evaluateOnEachChange: true, evaluateIfValueHasNotChanged: true});
+    });
+	
+    testUtils.testWithUtils("bind", "complex, right to left", false, function(methods, classes, subject, invoker) {
+		
+        // arrange
+        var subject1 = obsjs.makeObservable(buildSubject());
+        var subject2 = obsjs.makeObservable(buildSubject())
+        subject1.aaa = obsjs.makeObservable(buildSubject());
+        subject2.bbb = obsjs.makeObservable(buildSubject());
+        
+        stop();
+		
+        obsjs.bind(subject1, "aaa.xxx", subject2, "bbb.yyy");
+		
+		obsjs.observe(subject1, "aaa.xxx", function (oldVal, newVal) {
+			strictEqual(newVal, 345);
+			start();
+		});
+		
+		subject2.bbb.yyy = 345;
+		obsjs.observe(subject1, "bbb.yyy", function (oldVal, newVal) {
+			ok(false, "This should not be triggered again");
+		}, {evaluateOnEachChange: true, evaluateIfValueHasNotChanged: true});
+    });
     
     testUtils.testWithUtils("observe", "activate immediately", false, function(methods, classes, subject, invoker) {
 		

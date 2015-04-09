@@ -18,6 +18,8 @@
         
 		if (forObject)
         	return forObject.captureChanges(logic, callback, property);
+		else
+			logic();
     };
 
     obsjs.makeObservable = function (object) {
@@ -48,7 +50,7 @@
         return obsjs.tryObserve(object, property, callback, context, evaluateOnEachChange, evaluateIfValueHasNotChanged);
     };
 
-    obsjs.tryObserve = function (object, property, callback, context, evaluateOnEachChange, evaluateIfValueHasNotChanged) {
+    obsjs.tryObserve = function (object, property, callback, context, options) {
         
         if (object instanceof obsjs.array) {
 			if (property instanceof Function)
@@ -62,7 +64,7 @@
         var target = obsjs.getObserver(object);
         
         if (target)
-            return target.observe(property, callback, context, evaluateOnEachChange, evaluateIfValueHasNotChanged);
+            return target.observe(property, callback, context, options);
         
         return false;
     };
@@ -85,41 +87,55 @@
 	var index = (function () {
 		var i = 0;
 		return function () {
-			return ++i;
+			return "ch-" + (++i);
 		};
 	}());
-	
-    function bindingChange (bindingChanges, change, fromObject, timeout) {
+
+	function tryBind (object1, property1, object2, property2) {
 		
-		if (arguments.length < 2)
-			timeout = 100;
+		return obsjs.tryObserve(object1, property1, function (changes) {
+			
+			var observer1 = obsjs.getObserver(object1);
+			if (observer1.$bindingChanges)
+				for (var i in observer1.$bindingChanges)
+					if (object2 === observer1.$bindingChanges[i].fromObject
+						&& changes[changes.length - 1] === observer1.$bindingChanges[i].change)
+						return;
+			
+			obsjs.captureChanges(object2, function () {
+				obsjs.utils.obj.setObject(property2, object2, obsjs.utils.obj.getObject(property1, object1));
+			}, function (changes) {
+				var observer2 = obsjs.makeObservable(object2);
+				enumerateArr(changes, function (change) {
+					
+					if (!object2.$bindingChanges)
+						object2.$bindingChanges = {};
 		
-		var i = index();
-		bindingChanges[i] = {change: change, fromObject: fromObject};
-		setTimeout(function () {
-			delete bindingChanges[i];
-		}, timeout);
+					var i = index();
+					object2.$bindingChanges[i] = {change: change, fromObject: object1};
+					setTimeout(function () {
+						delete object2.$bindingChanges[i];
+						for (var j in object2.$bindingChanges)
+							return;
+						
+						delete object2.$bindingChanges;
+					}, 100);
+				});
+			});
+		}, null, {useRawChanges: true});
 	}
 
     obsjs.tryBind = function (object1, property1, object2, property2) {
+		var d1 = tryBind(object1, property1, object2, property2);
+		var d2 = tryBind(object2, property2, object1, property1);
 		
-		throw "Not implememted";
-		obsjs.tryObserve(object1, property1, function (changes) {
-			
-			var observer2 = obsjs.getObserver(object2);
-			
-			if (observer2) {
-				var observer1 = obsjs.getObserver(object1);
-				if (observer1.$bindingChanges)
-					for (var i in observer1.$bindingChanges)
-						if (object2 === observer1.$bindingChanges[change].forObject
-							&& changes[changes.length - 1] === observer1.$bindingChanges[change].change)
-							return;
-			}
-			
-			if (observer2)
-			obsjs.utils.obj.setObject(property2, object2, obsjs.getObject(property1, object1));
-		}, null, {useRawChages: true});
+		if (d1 && d2) {
+			var dispose = new obsjs.disposable(d1);
+			dispose.registerDisposable(d2);
+			return dispose;
+		}
+		
+		return d1 || d2;
     };
     
     obsjs.bind = function (object1, property1, object2, property2) {
@@ -127,7 +143,7 @@
 		obsjs.makeObservable(object1);
 		obsjs.makeObservable(object2);
 		
-		return target.tryBind(object1, property1, object2, property2);
+		return obsjs.tryBind(object1, property1, object2, property2);
     };
 
     obsjs.canObserve = function (object) {
