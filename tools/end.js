@@ -83,6 +83,25 @@
         
         return false;
     };
+
+	obsjs.tryBindArrays = function (array1, array2) {
+		
+		if ((!obsjs.observeTypes.computed.isArray(array1) && array1 != null) ||
+		   (!obsjs.observeTypes.computed.isArray(array2) && array2 != null))
+			throw "You cannot bind a value to an array. Arrays can only be bound to other arrays.";
+
+		if (array1 == null && array2 == null)
+			return;
+		
+		if (array1 == null) {
+			array2.length = 0;
+		} else if (array2 != null) {
+			if (array1 instanceof obsjs.array)
+				return array1.bind(array2);
+			else
+				obsjs.array.copyAll(array1, array2);
+		}
+	};
 	
 	var index = (function () {
 		var i = 0;
@@ -125,28 +144,43 @@
 					}
 				});
 			});
-		}
+		};
 	}
 
 	obsjs.tryBind = function (object1, property1, object2, property2, twoWay, doNotSet) {
+		// store all parts which need to be disposed
+		var disposable = new obsjs.disposable();
+				
+		var dispKey, evaluator;
+		var ev = function () {
 			
-		var evaluator = createBindingEvaluator(object1, property1, object2, property2);
-		var d1 = obsjs.tryObserve(object1, property1, evaluator, null, {useRawChanges: true});
-		
-		if (!doNotSet)
-			evaluator();
-		
-		if (!twoWay) return d1;
-		
-		var d2 = obsjs.tryBind(object2, property2, object1, property1, false, true);
-		
-		if (d1 && d2) {
-			var dispose = new obsjs.disposable(d1);
-			dispose.registerDisposable(d2);
-			return dispose;
+			if (dispKey) {
+				disposable.disposseOf(dispKey);
+				disp = null;
+			}
+			
+			var obj1 = obsjs.utils.obj.getObject(property1, object1);
+			var obj2 = obsjs.utils.obj.getObject(property2, object2);
+			
+			// if arrays are invloved, bind arrays
+			if (obsjs.observeTypes.computed.isArray(obj1) || obsjs.observeTypes.computed.isArray(obj2)) {
+				dispKey = disposable.registerDisposable(obsjs.tryBindArrays(obj1, obj2));
+			} else {
+				if (!doNotSet)
+					(evaluator || (evaluator = createBindingEvaluator(object1, property1, object2, property2))).apply(this, arguments);
+				else
+					doNotSet = undefined;	// doNotSet is for first time only
+			}
 		}
 		
-		return d1 || d2;
+		disposable.registerDisposable(obsjs.tryObserve(object1, property1, ev, null, {useRawChanges: true}));
+		
+		ev();
+		
+		if (twoWay)
+			disposable.registerDisposable(obsjs.tryBind(object2, property2, object1, property1, false, true));
+		
+		 return disposable;
 	};
     
     obsjs.bind = function (object1, property1, object2, property2, twoWay) {

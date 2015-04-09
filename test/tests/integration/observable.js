@@ -180,6 +180,89 @@ function testMe (moduleName, buildSubject) {
 			ok(false, "This should not be triggered again");
 		}, {evaluateOnEachChange: true, evaluateIfValueHasNotChanged: true});
     });
+	
+	
+    testUtils.testWithUtils("bind", "arrays, left to right", false, function(methods, classes, subject, invoker) {
+		
+        // arrange
+        var subject1 = buildSubject();
+        var subject2 = buildSubject();
+		var aaa = subject1.aaa = new obsjs.array();
+		var bbb = subject2.bbb = new obsjs.array();
+        
+        stop();
+        obsjs.bind(subject1, "aaa", subject2, "bbb", true);
+		
+		subject2.bbb.observe(function () {
+			strictEqual(subject2.bbb, bbb);
+			strictEqual(subject2.bbb.length, 1);
+			strictEqual(subject2.bbb[0], 345);
+			start();
+		});
+		
+		subject1.aaa.push(345);
+		subject1.aaa.observe(function () {
+			ok(false, "This should not be triggered again");
+		}, {evaluateOnEachChange: true, evaluateIfValueHasNotChanged: true});
+    });
+	
+    testUtils.testWithUtils("bind", "arrays, right to left", false, function(methods, classes, subject, invoker) {
+		
+        // arrange
+        var subject1 = buildSubject();
+        var subject2 = buildSubject();
+		var aaa = subject1.aaa = new obsjs.array();
+		var bbb = subject2.bbb = new obsjs.array();
+        
+        stop();
+        obsjs.bind(subject1, "aaa", subject2, "bbb", true);
+		
+		subject1.aaa.observe(function () {
+			strictEqual(subject1.aaa, aaa);
+			strictEqual(subject1.aaa.length, 1);
+			strictEqual(subject1.aaa[0], 345);
+			start();
+		});
+		
+		subject2.bbb.push(345);
+		subject2.bbb.observe(function () {
+			ok(false, "This should not be triggered again");
+		}, {evaluateOnEachChange: true, evaluateIfValueHasNotChanged: true});
+    });
+	
+    testUtils.testWithUtils("bind", "array to null to array", false, function(methods, classes, subject, invoker) {
+		
+        // arrange
+        var subject1 = buildSubject();
+        var subject2 = buildSubject();
+		var aaa = subject1.aaa = new obsjs.array();
+        
+        stop();
+        obsjs.bind(subject1, "aaa", subject2, "bbb", true);
+		
+		subject1.aaa.observe(function () {
+			
+			strictEqual(subject1.aaa, aaa);
+			strictEqual(subject1.aaa.length, 1);
+			strictEqual(subject1.aaa[0], 345);
+			start();
+		});
+		
+		subject2.bbb = [345];
+    });
+	
+    testUtils.testWithUtils("bind", "array to non array", false, function(methods, classes, subject, invoker) {
+		
+        // arrange
+        var subject1 = buildSubject();
+        var subject2 = buildSubject();
+		subject1.aaa = new obsjs.array();
+		subject2.bbb = {};
+        
+		throws(function () {
+        	obsjs.bind(subject1, "aaa", subject2, "bbb", true);
+		});
+    });
     
     testUtils.testWithUtils("observe", "activate immediately", false, function(methods, classes, subject, invoker) {
 		

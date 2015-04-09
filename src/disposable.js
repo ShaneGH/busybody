@@ -67,7 +67,7 @@ Class("obsjs.disposable", function () {
         ///<param name="disposableOrDisposableGetter" type="Function" optional="false">The function to dispose of on dispose, ar a function to get this object</param>
         ///<returns type="String">A key to dispose off this object manually</returns>
         
-        if(!disposableOrDisposableGetter) throw "Invalid disposeable object";        
+        if(!disposableOrDisposableGetter) return;
         if(disposableOrDisposableGetter.constructor === Function && !disposableOrDisposableGetter.dispose) disposableOrDisposableGetter = disposableOrDisposableGetter.call(this);        
         if(!disposableOrDisposableGetter || !(disposableOrDisposableGetter.dispose instanceof Function)) throw "The disposable object must have a dispose(...) function";
 
