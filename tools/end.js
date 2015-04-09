@@ -149,6 +149,7 @@
 
 	obsjs.tryBind = function (object1, property1, object2, property2, twoWay, doNotSet) {
 		
+		//TODO: remove this and test
 		// skip to first observable object
 		var current = object1, split = obsjs.utils.obj.splitPropertyName(property1);
 		while (current && !obsjs.getObserver(current) && split.length)

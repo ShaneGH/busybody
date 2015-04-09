@@ -180,6 +180,7 @@ Class("obsjs.utils.obj", function () {
         return dispose;
     }
     
+	//TODO: move somewhere else. This is no longer used by wipeout
 	function createBindFunction (bindToObject, bindToProperty, parser) {
         var arrayDisposeCallback;
         var output = function (oldValue, newValue) {

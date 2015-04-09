@@ -291,7 +291,7 @@ Class("obsjs.observeTypes.computed", function () {
 		return this.registerDisposable(path);
 	};
     
-    //TODO: document and expose better
+    //TODO: remove this functionality
     var nonArrayTypes = [];
     computed.isArray = function (array) {
         if (array instanceof Array) {            
