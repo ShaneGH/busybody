@@ -101,7 +101,7 @@ function testMe (moduleName, buildSubject) {
         
         stop();
 		
-        obsjs.bind(subject1, "aaa", subject2, "bbb");
+        obsjs.bind(subject1, "aaa", subject2, "bbb", true);
 		
 		obsjs.observe(subject2, "bbb", function (oldVal, newVal) {
 			strictEqual(newVal, 345);
@@ -122,7 +122,7 @@ function testMe (moduleName, buildSubject) {
         
         stop();
 		
-        obsjs.bind(subject1, "aaa", subject2, "bbb");
+        obsjs.bind(subject1, "aaa", subject2, "bbb", true);
 		
 		obsjs.observe(subject1, "aaa", function (oldVal, newVal) {
 			strictEqual(newVal, 345);
@@ -145,7 +145,7 @@ function testMe (moduleName, buildSubject) {
         
         stop();
 		
-        obsjs.bind(subject1, "aaa.xxx", subject2, "bbb.yyy");
+        obsjs.bind(subject1, "aaa.xxx", subject2, "bbb.yyy", true);
 		
 		obsjs.observe(subject2, "bbb.yyy", function (oldVal, newVal) {
 			strictEqual(newVal, 345);
@@ -168,7 +168,7 @@ function testMe (moduleName, buildSubject) {
         
         stop();
 		
-        obsjs.bind(subject1, "aaa.xxx", subject2, "bbb.yyy");
+        obsjs.bind(subject1, "aaa.xxx", subject2, "bbb.yyy", true);
 		
 		obsjs.observe(subject1, "aaa.xxx", function (oldVal, newVal) {
 			strictEqual(newVal, 345);

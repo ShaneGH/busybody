@@ -91,9 +91,12 @@
 		};
 	}());
 
-	function tryBind (object1, property1, object2, property2) {
+	obsjs.tryBind = function (object1, property1, object2, property2, twoWay) {
 		
-		return obsjs.tryObserve(object1, property1, function (changes) {
+		//var p1 = obsjs.utils.obj.getObject(property1, object1);
+		//if (p1 instanceof Array)
+		
+		var d1 = obsjs.tryObserve(object1, property1, function (changes) {
 			
 			var observer1 = obsjs.getObserver(object1);
 			if (observer1.$bindingChanges)
@@ -108,26 +111,28 @@
 				var observer2 = obsjs.makeObservable(object2);
 				enumerateArr(changes, function (change) {
 					
-					if (!object2.$bindingChanges)
-						object2.$bindingChanges = {};
-		
-					var i = index();
-					object2.$bindingChanges[i] = {change: change, fromObject: object1};
-					setTimeout(function () {
-						delete object2.$bindingChanges[i];
-						for (var j in object2.$bindingChanges)
-							return;
-						
-						delete object2.$bindingChanges;
-					}, 100);
+					var observer2 = obsjs.getObserver(object2);
+					if (observer2) {
+						if (!observer2.$bindingChanges)
+							observer2.$bindingChanges = {};
+
+						var i = index();
+						observer2.$bindingChanges[i] = {change: change, fromObject: object1};
+						setTimeout(function () {
+							delete observer2.$bindingChanges[i];
+							for (var j in observer2.$bindingChanges)
+								return;
+
+							delete observer2.$bindingChanges;
+						}, 100);
+					}
 				});
 			});
 		}, null, {useRawChanges: true});
-	}
-
-    obsjs.tryBind = function (object1, property1, object2, property2) {
-		var d1 = tryBind(object1, property1, object2, property2);
-		var d2 = tryBind(object2, property2, object1, property1);
+		
+		if (!twoWay) return d1;
+		
+		var d2 = obsjs.tryBind(object2, property2, object1, property1);
 		
 		if (d1 && d2) {
 			var dispose = new obsjs.disposable(d1);
@@ -136,14 +141,14 @@
 		}
 		
 		return d1 || d2;
-    };
+	};
     
-    obsjs.bind = function (object1, property1, object2, property2) {
+    obsjs.bind = function (object1, property1, object2, property2, twoWay) {
 		
 		obsjs.makeObservable(object1);
 		obsjs.makeObservable(object2);
 		
-		return obsjs.tryBind(object1, property1, object2, property2);
+		return obsjs.tryBind(object1, property1, object2, property2, twoWay);
     };
 
     obsjs.canObserve = function (object) {
