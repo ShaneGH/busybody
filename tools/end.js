@@ -152,7 +152,7 @@
 		var disposable = new obsjs.disposable();
 				
 		var dispKey, evaluator;
-		var ev = function () {
+		function ev () {
 			
 			if (dispKey) {
 				disposable.disposseOf(dispKey);
@@ -180,7 +180,7 @@
 		if (twoWay)
 			disposable.registerDisposable(obsjs.tryBind(object2, property2, object1, property1, false, true));
 		
-		 return disposable;
+		return disposable;
 	};
     
     obsjs.bind = function (object1, property1, object2, property2, twoWay) {

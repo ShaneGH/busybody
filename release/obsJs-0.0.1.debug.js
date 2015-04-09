@@ -478,7 +478,7 @@ Class("obsjs.disposable", function () {
         ///<param name="disposableOrDisposableGetter" type="Function" optional="false">The function to dispose of on dispose, ar a function to get this object</param>
         ///<returns type="String">A key to dispose off this object manually</returns>
         
-        if(!disposableOrDisposableGetter) throw "Invalid disposeable object";        
+        if(!disposableOrDisposableGetter) return;
         if(disposableOrDisposableGetter.constructor === Function && !disposableOrDisposableGetter.dispose) disposableOrDisposableGetter = disposableOrDisposableGetter.call(this);        
         if(!disposableOrDisposableGetter || !(disposableOrDisposableGetter.dispose instanceof Function)) throw "The disposable object must have a dispose(...) function";
 
@@ -2380,6 +2380,25 @@ Class("obsjs.utils.observeCycleHandler", function () {
         
         return false;
     };
+
+	obsjs.tryBindArrays = function (array1, array2) {
+		
+		if ((!obsjs.observeTypes.computed.isArray(array1) && array1 != null) ||
+		   (!obsjs.observeTypes.computed.isArray(array2) && array2 != null))
+			throw "You cannot bind a value to an array. Arrays can only be bound to other arrays.";
+
+		if (array1 == null && array2 == null)
+			return;
+		
+		if (array1 == null) {
+			array2.length = 0;
+		} else if (array2 != null) {
+			if (array1 instanceof obsjs.array)
+				return array1.bind(array2);
+			else
+				obsjs.array.copyAll(array1, array2);
+		}
+	};
 	
 	var index = (function () {
 		var i = 0;
@@ -2388,12 +2407,12 @@ Class("obsjs.utils.observeCycleHandler", function () {
 		};
 	}());
 
-	function tryBind (object1, property1, object2, property2) {
+	function createBindingEvaluator (object1, property1, object2, property2) {
 		
-		return obsjs.tryObserve(object1, property1, function (changes) {
+		return function (changes) {
 			
 			var observer1 = obsjs.getObserver(object1);
-			if (observer1.$bindingChanges)
+			if (changes && observer1.$bindingChanges)
 				for (var i in observer1.$bindingChanges)
 					if (object2 === observer1.$bindingChanges[i].fromObject
 						&& changes[changes.length - 1] === observer1.$bindingChanges[i].change)
@@ -2405,42 +2424,68 @@ Class("obsjs.utils.observeCycleHandler", function () {
 				var observer2 = obsjs.makeObservable(object2);
 				enumerateArr(changes, function (change) {
 					
-					if (!object2.$bindingChanges)
-						object2.$bindingChanges = {};
-		
-					var i = index();
-					object2.$bindingChanges[i] = {change: change, fromObject: object1};
-					setTimeout(function () {
-						delete object2.$bindingChanges[i];
-						for (var j in object2.$bindingChanges)
-							return;
-						
-						delete object2.$bindingChanges;
-					}, 100);
+					var observer2 = obsjs.getObserver(object2);
+					if (observer2) {
+						if (!observer2.$bindingChanges)
+							observer2.$bindingChanges = {};
+
+						var i = index();
+						observer2.$bindingChanges[i] = {change: change, fromObject: object1};
+						setTimeout(function () {
+							delete observer2.$bindingChanges[i];
+							for (var j in observer2.$bindingChanges)
+								return;
+
+							delete observer2.$bindingChanges;
+						}, 100);
+					}
 				});
 			});
-		}, null, {useRawChanges: true});
+		};
 	}
 
-    obsjs.tryBind = function (object1, property1, object2, property2) {
-		var d1 = tryBind(object1, property1, object2, property2);
-		var d2 = tryBind(object2, property2, object1, property1);
-		
-		if (d1 && d2) {
-			var dispose = new obsjs.disposable(d1);
-			dispose.registerDisposable(d2);
-			return dispose;
+	obsjs.tryBind = function (object1, property1, object2, property2, twoWay, doNotSet) {
+		// store all parts which need to be disposed
+		var disposable = new obsjs.disposable();
+				
+		var dispKey, evaluator;
+		function ev () {
+			
+			if (dispKey) {
+				disposable.disposseOf(dispKey);
+				disp = null;
+			}
+			
+			var obj1 = obsjs.utils.obj.getObject(property1, object1);
+			var obj2 = obsjs.utils.obj.getObject(property2, object2);
+			
+			// if arrays are invloved, bind arrays
+			if (obsjs.observeTypes.computed.isArray(obj1) || obsjs.observeTypes.computed.isArray(obj2)) {
+				dispKey = disposable.registerDisposable(obsjs.tryBindArrays(obj1, obj2));
+			} else {
+				if (!doNotSet)
+					(evaluator || (evaluator = createBindingEvaluator(object1, property1, object2, property2))).apply(this, arguments);
+				else
+					doNotSet = undefined;	// doNotSet is for first time only
+			}
 		}
 		
-		return d1 || d2;
-    };
+		disposable.registerDisposable(obsjs.tryObserve(object1, property1, ev, null, {useRawChanges: true}));
+		
+		ev();
+		
+		if (twoWay)
+			disposable.registerDisposable(obsjs.tryBind(object2, property2, object1, property1, false, true));
+		
+		return disposable;
+	};
     
-    obsjs.bind = function (object1, property1, object2, property2) {
+    obsjs.bind = function (object1, property1, object2, property2, twoWay) {
 		
 		obsjs.makeObservable(object1);
 		obsjs.makeObservable(object2);
 		
-		return obsjs.tryBind(object1, property1, object2, property2);
+		return obsjs.tryBind(object1, property1, object2, property2, twoWay);
     };
 
     obsjs.canObserve = function (object) {
