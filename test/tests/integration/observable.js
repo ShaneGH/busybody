@@ -181,26 +181,6 @@ function testMe (moduleName, buildSubject) {
 		}, {evaluateOnEachChange: true, evaluateIfValueHasNotChanged: true});
     });
 	
-    testUtils.testWithUtils("bind", "first is non observable", false, function(methods, classes, subject, invoker) {
-		
-        // arrange
-        var subject1 = {};
-        var subject2 = obsjs.makeObservable(buildSubject());
-        subject1.aaa = obsjs.makeObservable(buildSubject());
-        subject2.bbb = obsjs.makeObservable(buildSubject());
-        
-        stop();
-		
-        obsjs.tryBind(subject1, "aaa.xxx", subject2, "bbb.yyy", true);
-		
-		obsjs.observe(subject2, "bbb.yyy", function (oldVal, newVal) {
-			strictEqual(newVal, 345);
-			start();
-		});
-		
-		subject1.aaa.xxx = 345;
-    });
-	
     testUtils.testWithUtils("bind", "arrays, left to right", false, function(methods, classes, subject, invoker) {
 		
         // arrange

@@ -149,17 +149,6 @@
 
 	obsjs.tryBind = function (object1, property1, object2, property2, twoWay, doNotSet) {
 		
-		//TODO: remove this and test
-		// skip to first observable object
-		var current = object1, split = obsjs.utils.obj.splitPropertyName(property1);
-		while (current && !obsjs.getObserver(current) && split.length)
-			current = current[split.splice(0, 1)[0]];
-		
-		if (current && split.length > 0) {
-			object1 = current;
-			property1 = obsjs.utils.obj.joinPropertyName(split);
-		}
-		
 		// store all parts which need to be disposed
 		var disposable = new obsjs.disposable();
 				
