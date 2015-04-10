@@ -378,7 +378,7 @@ testUtils.testWithUtils("bind", "bind and dispose", false, function(methods, cla
     var obj = {}, prop = {}, cb = {}, op = {
 		registerDisposable: methods.method([cb])
 	};
-    classes.mock("obsjs.utils.obj.createBindFunction", function (o, p) {
+    classes.mock("obsjs.observeTypes.computed.createBindFunction", function (o, p) {
         methods.method([obj, prop])(o, p);
         return cb;
     }, 1);
@@ -403,4 +403,56 @@ testUtils.testWithUtils("onValueChanged", null, false, function(methods, classes
     // assert
     strictEqual(op, output);
 	
+});
+
+testUtils.testWithUtils("createBindFunction", "bind arrays", true, function(methods, classes, subject, invoker) {
+    // arrange
+    var obj = {prop: []}, prop = "prop", newVal = [{},{},{}];
+    subject = invoker(obj, prop);
+    
+    // act
+    subject(null, newVal);
+    
+    // assert
+    notStrictEqual(obj[prop], newVal);
+    deepEqual(obj[prop], newVal);
+});
+
+testUtils.testWithUtils("createBindFunction", "bind null to array", true, function(methods, classes, subject, invoker) {
+    // arrange
+    var obj = {prop: [1,2,3]}, prop = "prop";
+    subject = invoker(obj, prop);
+    
+    // act
+    subject(null, null);
+    
+    // assert
+    strictEqual(obj[prop].length, 0);
+});
+
+testUtils.testWithUtils("createBindFunction", "bind observable arrays", true, function(methods, classes, subject, invoker) {
+    // arrange
+    var obj = {prop: new obsjs.array()}, prop = "prop", newVal = new obsjs.array([{},{},{}]);
+    newVal.bind = methods.method([obj[prop]]);
+    
+    subject = invoker(obj, prop);
+    
+    // act
+    subject(null, newVal);
+    
+    // assert
+});
+
+testUtils.testWithUtils("createBindFunction", "dispose", true, function(methods, classes, subject, invoker) {
+    // arrange
+    var obj = {prop: new obsjs.array()}, prop = "prop", newVal = new obsjs.array([{},{},{}]);
+    newVal.bind = methods.method([obj[prop]], {dispose: methods.method([], null, "dispose was not called") });
+    
+    subject = invoker(obj, prop);
+    
+    // act
+    subject(null, newVal)
+    subject.dispose();
+    
+    // assert
 });

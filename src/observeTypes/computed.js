@@ -107,7 +107,7 @@ Class("obsjs.observeTypes.computed", function () {
     
     computed.prototype.bind = function (object, property) {
 		
-        var callback = obsjs.utils.obj.createBindFunction(object, property);
+        var callback = computed.createBindFunction(object, property);
 		var output = this.onValueChanged(callback, true);
         output.registerDisposable(callback);
 		
@@ -290,6 +290,32 @@ Class("obsjs.observeTypes.computed", function () {
 		
 		return this.registerDisposable(path);
 	};
+	
+	computed.createBindFunction = function (bindToObject, bindToProperty) {
+        var arrayDisposeCallback;
+        var output = function (oldValue, newValue) {
+			
+            var existingVal = obsjs.utils.obj.getObject(bindToProperty, bindToObject);
+            if (newValue === existingVal)
+                return;
+			
+            output.dispose();
+			
+			if (newValue instanceof Array || existingVal instanceof Array)
+				arrayDisposeCallback = obsjs.tryBindArrays(newValue, existingVal);
+            else
+				obsjs.utils.obj.setObject(bindToProperty, bindToObject, newValue);
+        };
+        
+        output.dispose = function () {
+            if (arrayDisposeCallback) {
+                arrayDisposeCallback.dispose();
+                arrayDisposeCallback = null;
+            }
+        };
+        
+        return output;
+    };
     
     return computed;
 });

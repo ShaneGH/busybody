@@ -1,8 +1,6 @@
 {
     "jscodehints.detectedExclusions": [
         "C:/Dev/Apps/obsjs/bower_components/",
-        "C:/Dev/Apps/obsjs/node_modules/",
-        "C:/Dev/Apps/obsjs/tools/end.js",
-        "C:/Dev/Apps/obsjs/test/tests/unit/observeTypes/computed.js"
+        "C:/Dev/Apps/obsjs/node_modules/"
     ]
 }

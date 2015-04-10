@@ -179,44 +179,9 @@ Class("obsjs.utils.obj", function () {
 
         return dispose;
     }
-    
-	//TODO: move somewhere else. This is no longer used by wipeout
-	function createBindFunction (bindToObject, bindToProperty, parser) {
-        var arrayDisposeCallback;
-        var output = function (oldValue, newValue) {
-            
-            if (parser) newValue = parser(newValue);
-            
-            var existingVal = obsjs.utils.obj.getObject(bindToProperty, bindToObject);
-            if (newValue === existingVal)
-                return;
-            
-            output.dispose();
-
-			if (existingVal instanceof Array && newValue == null) {
-				existingVal.length = 0;
-			} else if (!(newValue instanceof Array) || !(existingVal instanceof Array)) {
-                obsjs.utils.obj.setObject(bindToProperty, bindToObject, newValue);
-            } else if (newValue instanceof obsjs.array) {                                        
-                arrayDisposeCallback = newValue.bind(existingVal);
-            } else {
-                obsjs.array.copyAll(newValue, bindToObject[bindToProperty]);
-            }
-        };
         
-        output.dispose = function () {
-            if (arrayDisposeCallback) {
-                arrayDisposeCallback.dispose();
-                arrayDisposeCallback = null;
-            }
-        };
-        
-        return output;
-    };
-    
     var obj = function obj() { };
     obj.trim = trim;
-	obj.createBindFunction = createBindFunction;
     obj.addWithDispose = addWithDispose;
     obj.enumerateArr = enumerateArr;
     obj.enumerateObj = enumerateObj;
