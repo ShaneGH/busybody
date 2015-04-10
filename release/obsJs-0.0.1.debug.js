@@ -360,43 +360,9 @@ Class("obsjs.utils.obj", function () {
 
         return dispose;
     }
-    
-	function createBindFunction (bindToObject, bindToProperty, parser) {
-        var arrayDisposeCallback;
-        var output = function (oldValue, newValue) {
-            
-            if (parser) newValue = parser(newValue);
-            
-            var existingVal = obsjs.utils.obj.getObject(bindToProperty, bindToObject);
-            if (newValue === existingVal)
-                return;
-            
-            output.dispose();
-
-			if (obsjs.observeTypes.computed.isArray(existingVal) && newValue == null) {
-				existingVal.length = 0;
-			} else if (!obsjs.observeTypes.computed.isArray(newValue) || !obsjs.observeTypes.computed.isArray(existingVal)) {
-                obsjs.utils.obj.setObject(bindToProperty, bindToObject, newValue);
-            } else if (newValue instanceof obsjs.array) {                                        
-                arrayDisposeCallback = newValue.bind(existingVal);
-            } else {
-                obsjs.array.copyAll(newValue, bindToObject[bindToProperty]);
-            }
-        };
         
-        output.dispose = function () {
-            if (arrayDisposeCallback) {
-                arrayDisposeCallback.dispose();
-                arrayDisposeCallback = null;
-            }
-        };
-        
-        return output;
-    };
-    
     var obj = function obj() { };
     obj.trim = trim;
-	obj.createBindFunction = createBindFunction;
     obj.addWithDispose = addWithDispose;
     obj.enumerateArr = enumerateArr;
     obj.enumerateObj = enumerateObj;
@@ -1736,7 +1702,7 @@ Class("obsjs.observeTypes.computed", function () {
     
     computed.prototype.bind = function (object, property) {
 		
-        var callback = obsjs.utils.obj.createBindFunction(object, property);
+        var callback = computed.createBindFunction(object, property);
 		var output = this.onValueChanged(callback, true);
         output.registerDisposable(callback);
 		
@@ -1919,25 +1885,31 @@ Class("obsjs.observeTypes.computed", function () {
 		
 		return this.registerDisposable(path);
 	};
-    
-    //TODO: document and expose better
-    var nonArrayTypes = [];
-    computed.isArray = function (array) {
-        if (array instanceof Array) {            
-            for (var i = 0, ii = nonArrayTypes.length; i < ii; i++)
-                if (array instanceof nonArrayTypes[i])
-                    return false;
-            
-            return true;
-        }
+	
+	computed.createBindFunction = function (bindToObject, bindToProperty) {
+        var arrayDisposeCallback;
+        var output = function (oldValue, newValue) {
+			
+            var existingVal = obsjs.utils.obj.getObject(bindToProperty, bindToObject);
+            if (newValue === existingVal)
+                return;
+			
+            output.dispose();
+			
+			if (newValue instanceof Array || existingVal instanceof Array)
+				arrayDisposeCallback = obsjs.tryBindArrays(newValue, existingVal);
+            else
+				obsjs.utils.obj.setObject(bindToProperty, bindToObject, newValue);
+        };
         
-        return false;
-    };
-    
-    computed.nonArrayType = function (type) {
-        if (!(type instanceof Function)) throw "The type argument must be a function or constructor";
+        output.dispose = function () {
+            if (arrayDisposeCallback) {
+                arrayDisposeCallback.dispose();
+                arrayDisposeCallback = null;
+            }
+        };
         
-        if (nonArrayTypes.indexOf(type) === -1) nonArrayTypes.push(type);
+        return output;
     };
     
     return computed;
@@ -2383,8 +2355,8 @@ Class("obsjs.utils.observeCycleHandler", function () {
 
 	obsjs.tryBindArrays = function (array1, array2) {
 		
-		if ((!obsjs.observeTypes.computed.isArray(array1) && array1 != null) ||
-		   (!obsjs.observeTypes.computed.isArray(array2) && array2 != null))
+		if ((!(array1 instanceof Array) && array1 != null) ||
+		   (!(array2 instanceof Array) && array2 != null))
 			throw "You cannot bind a value to an array. Arrays can only be bound to other arrays.";
 
 		if (array1 == null && array2 == null)
@@ -2446,16 +2418,6 @@ Class("obsjs.utils.observeCycleHandler", function () {
 
 	obsjs.tryBind = function (object1, property1, object2, property2, twoWay, doNotSet) {
 		
-		// skip to first observable object
-		var current = object1, split = obsjs.utils.obj.splitPropertyName(property1);
-		while (current && !obsjs.getObserver(current) && split.length)
-			current = current[split.splice(0, 1)[0]];
-		
-		if (current && split.length > 0) {
-			object1 = current;
-			property1 = obsjs.utils.obj.joinPropertyName(split);
-		}
-		
 		// store all parts which need to be disposed
 		var disposable = new obsjs.disposable();
 				
@@ -2471,7 +2433,7 @@ Class("obsjs.utils.observeCycleHandler", function () {
 			var obj2 = obsjs.utils.obj.getObject(property2, object2);
 			
 			// if arrays are invloved, bind arrays
-			if (obsjs.observeTypes.computed.isArray(obj1) || obsjs.observeTypes.computed.isArray(obj2)) {
+			if (obj1 instanceof Array || obj2 instanceof Array) {
 				dispKey = disposable.registerDisposable(obsjs.tryBindArrays(obj1, obj2));
 			} else {
 				if (!doNotSet)
