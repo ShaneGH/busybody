@@ -291,25 +291,5 @@ Class("obsjs.observeTypes.computed", function () {
 		return this.registerDisposable(path);
 	};
     
-    //TODO: remove this functionality
-    var nonArrayTypes = [];
-    computed.isArray = function (array) {
-        if (array instanceof Array) {            
-            for (var i = 0, ii = nonArrayTypes.length; i < ii; i++)
-                if (array instanceof nonArrayTypes[i])
-                    return false;
-            
-            return true;
-        }
-        
-        return false;
-    };
-    
-    computed.nonArrayType = function (type) {
-        if (!(type instanceof Function)) throw "The type argument must be a function or constructor";
-        
-        if (nonArrayTypes.indexOf(type) === -1) nonArrayTypes.push(type);
-    };
-    
     return computed;
 });

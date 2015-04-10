@@ -404,16 +404,3 @@ testUtils.testWithUtils("onValueChanged", null, false, function(methods, classes
     strictEqual(op, output);
 	
 });
-
-testUtils.testWithUtils("isArray and nonArrayType", null, true, function(methods, classes, subject, invoker) {
-    // arrange
-    var array = objjs.object.extend.call(Array, function(){});
-    var nonArray = objjs.object.extend.call(Array, function(){});
-    computed.nonArrayType(nonArray);
-    
-    // act
-    // assert
-    ok(computed.isArray([]));
-    ok(computed.isArray(new array()));
-    ok(!computed.isArray(new nonArray()));
-});

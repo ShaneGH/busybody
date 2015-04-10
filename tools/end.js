@@ -86,8 +86,8 @@
 
 	obsjs.tryBindArrays = function (array1, array2) {
 		
-		if ((!obsjs.observeTypes.computed.isArray(array1) && array1 != null) ||
-		   (!obsjs.observeTypes.computed.isArray(array2) && array2 != null))
+		if ((!(array1 instanceof Array) && array1 != null) ||
+		   (!(array2 instanceof Array) && array2 != null))
 			throw "You cannot bind a value to an array. Arrays can only be bound to other arrays.";
 
 		if (array1 == null && array2 == null)
@@ -164,7 +164,7 @@
 			var obj2 = obsjs.utils.obj.getObject(property2, object2);
 			
 			// if arrays are invloved, bind arrays
-			if (obsjs.observeTypes.computed.isArray(obj1) || obsjs.observeTypes.computed.isArray(obj2)) {
+			if (obj1 instanceof Array || obj2 instanceof Array) {
 				dispKey = disposable.registerDisposable(obsjs.tryBindArrays(obj1, obj2));
 			} else {
 				if (!doNotSet)

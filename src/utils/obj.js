@@ -193,9 +193,9 @@ Class("obsjs.utils.obj", function () {
             
             output.dispose();
 
-			if (obsjs.observeTypes.computed.isArray(existingVal) && newValue == null) {
+			if (existingVal instanceof Array && newValue == null) {
 				existingVal.length = 0;
-			} else if (!obsjs.observeTypes.computed.isArray(newValue) || !obsjs.observeTypes.computed.isArray(existingVal)) {
+			} else if (!(newValue instanceof Array) || !(existingVal instanceof Array)) {
                 obsjs.utils.obj.setObject(bindToProperty, bindToObject, newValue);
             } else if (newValue instanceof obsjs.array) {                                        
                 arrayDisposeCallback = newValue.bind(existingVal);
