@@ -7,9 +7,8 @@
 // (c) Shane Connon 2015
 // http://www.opensource.org/licenses/mit-license.php
 (function () {
-	var orienteer = {}
 
-var object = orienteer.object = function object() {
+function orienteer() {
 	///<summary>The object class is the base class for all objects. It has base functionality for inheritance and parent methods</summary>
 };
 
@@ -18,7 +17,7 @@ var cachedSuperMethods = {
 	children:[]
 };
 
-object.clearVirtualCache = function(forMethod /*optional*/) {
+orienteer.clearVirtualCache = function(forMethod /*optional*/) {
 	///<summary>Lookup results for _super methods are cached. This could cause problems in the rare cases when a class prototype is altered after one of its methods are called. Clearing the cache will solve this</summary>
 	///<param name="forMethod" type="Function" optional="true">A method to clear from the cache</param>
 	
@@ -37,9 +36,9 @@ object.clearVirtualCache = function(forMethod /*optional*/) {
 };
 
 // The virtual cache caches overridden methods for quick lookup later. It is not safe to use if two function prototypes which are not related share the same function, or function prototypes are modified after an application initilisation stage
-object.useVirtualCache = true;
+orienteer.useVirtualCache = true;
 
-object.prototype._super = function() {        
+orienteer.prototype._super = function() {        
 	///<summary>Call the current method or constructor of the parent class with arguments</summary>
 	///<returns type="Any">Whatever the overridden method returns</returns>
 	
@@ -47,7 +46,7 @@ object.prototype._super = function() {
 	
 	// try to find a cached version to skip lookup of parent class method
 	var cached = null;
-	if(object.useVirtualCache) {
+	if(orienteer.useVirtualCache) {
 		var superIndex = cachedSuperMethods.children.indexOf(currentFunction);
 		if(superIndex !== -1)
 			cached = cachedSuperMethods.parents[superIndex];
@@ -88,7 +87,7 @@ object.prototype._super = function() {
 			}
 				
 			if (cached) {
-				if(object.useVirtualCache) {
+				if(orienteer.useVirtualCache) {
 					// map the current method to the method it overrides
 					cachedSuperMethods.children.push(currentFunction);
 					cachedSuperMethods.parents.push(cached);
@@ -107,7 +106,7 @@ object.prototype._super = function() {
 };
 
 var validFunctionCharacters = /^[a-zA-Z_][a-zA-Z_0-9]*$/;
-object.extend = function (childClass) {
+orienteer.extend = function (childClass) {
 	///<summary>Use prototype inheritance to inherit from this class. Supports "instanceof" checks</summary>
 	///<param name="childClass" type="Function" optional="false">The constructor of a class to create. Name the constructor function to get better debugger information</param>
 	///<returns type="Function">The newly created class</returns>
@@ -137,7 +136,7 @@ object.extend = function (childClass) {
 	
 	// static functions
 	for (var p in this)
-		if (this.hasOwnProperty(p) && this[p] && this[p].constructor === Function && this[p] !== object.clearVirtualCache && childClass.constructor[p] === undefined)
+		if (this.hasOwnProperty(p) && this[p] && this[p].constructor === Function && this[p] !== orienteer.clearVirtualCache && this[p] !== orienteer.getInheritanceChain && childClass.constructor[p] === undefined)
 			childClass.constructor[p] = this[p];
 	 
 	var prototypeTracker = function() { this.constructor = childClass.constructor; }     
@@ -160,7 +159,7 @@ object.extend = function (childClass) {
 	return childClass.constructor;
 };
 
-object.getInheritanceChain = function(forClass) {
+orienteer.getInheritanceChain = function(forClass) {
 	var chain = [];
 		
 	while (forClass) {            
@@ -384,7 +383,7 @@ Class("busybody.disposable", function () {
 		if (!disp.$disposables) disp.$disposables = {};
 	}
 	
-    var disposable = orienteer.object.extend(function disposable(disposableOrDisposeFunction) {
+    var disposable = orienteer.extend(function disposable(disposableOrDisposeFunction) {
         ///<summary>An object which can be disposed</summary>
         
         this._super();
@@ -790,7 +789,7 @@ Class("busybody.observableBase", function () {
 
 Class("busybody.callbacks.changeCallback", function () {
         
-    var changeCallback = orienteer.object.extend(function changeCallback(evaluateOnEachChange) {
+    var changeCallback = orienteer.extend(function changeCallback(evaluateOnEachChange) {
         this._super();
         
         this.evaluateOnEachChange = evaluateOnEachChange;
@@ -886,7 +885,7 @@ Class("busybody.callbacks.changeCallback", function () {
 
 Class("busybody.arrayBase", function () {
         
-    var arrayBase = orienteer.object.extend.call(Array, function arrayBase (initialValues) {
+    var arrayBase = orienteer.extend.call(Array, function arrayBase (initialValues) {
         
         Array.call(this);
         
@@ -905,8 +904,8 @@ Class("busybody.arrayBase", function () {
                 this[i] = initialValues[i]; // doing it this way as it will not publish changes
     });
     
-    arrayBase.prototype._super = orienteer.object.prototype._super;
-    arrayBase.extend = orienteer.object.extend;
+    arrayBase.prototype._super = orienteer.prototype._super;
+    arrayBase.extend = orienteer.extend;
     
     arrayBase.isValidArrayChange = function (change) {
         return change.type === "splice" || !isNaN(parseInt(change.name));

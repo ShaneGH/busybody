@@ -1,6 +1,6 @@
 Class("busybody.arrayBase", function () {
         
-    var arrayBase = orienteer.object.extend.call(Array, function arrayBase (initialValues) {
+    var arrayBase = orienteer.extend.call(Array, function arrayBase (initialValues) {
         
         Array.call(this);
         
@@ -19,8 +19,8 @@ Class("busybody.arrayBase", function () {
                 this[i] = initialValues[i]; // doing it this way as it will not publish changes
     });
     
-    arrayBase.prototype._super = orienteer.object.prototype._super;
-    arrayBase.extend = orienteer.object.extend;
+    arrayBase.prototype._super = orienteer.prototype._super;
+    arrayBase.extend = orienteer.extend;
     
     arrayBase.isValidArrayChange = function (change) {
         return change.type === "splice" || !isNaN(parseInt(change.name));
