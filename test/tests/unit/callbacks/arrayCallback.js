@@ -1,11 +1,11 @@
-module("obsjs.callbacks.arrayCallback", {
+module("bb.callbacks.arrayCallback", {
     setup: function() {
     },
     teardown: function() {
     }
 });
 
-var computed = obsjs.observeTypes.computed;
+var computed = bb.observeTypes.computed;
 
 testUtils.testWithUtils("constructor", null, false, function(methods, classes, subject, invoker) {
     // arrange

@@ -1,20 +1,20 @@
     
-    obsjs.getObserver = function (object) {
+    busybody.getObserver = function (object) {
                 
-        return object == null || object instanceof obsjs.observableBase ?
+        return object == null || object instanceof busybody.observableBase ?
             object :
-            (object.$observer instanceof obsjs.observableBase ? object.$observer : null);
+            (object.$observer instanceof busybody.observableBase ? object.$observer : null);
     };
     
-    obsjs.captureArrayChanges = function (forObject, logic, callback) {
-        if (!(forObject instanceof obsjs.array))
-            throw "Only obsjs.array objects can have changes captured";
+    busybody.captureArrayChanges = function (forObject, logic, callback) {
+        if (!(forObject instanceof busybody.array))
+            throw "Only busybody.array objects can have changes captured";
         
         return forObject.captureArrayChanges(logic, callback);
     };
     
-    obsjs.captureChanges = function (forObject, logic, callback, property) {
-        forObject = obsjs.getObserver(forObject);
+    busybody.captureChanges = function (forObject, logic, callback, property) {
+        forObject = busybody.getObserver(forObject);
         
 		if (forObject)
         	return forObject.captureChanges(logic, callback, property);
@@ -22,14 +22,14 @@
 			logic();
     };
 
-    obsjs.makeObservable = function (object) {
+    busybody.makeObservable = function (object) {
         if (!arguments.length)
             object = {};
         
-		if (object instanceof obsjs.array) {
-			if (obsjs.getObserver(object)) 
+		if (object instanceof busybody.array) {
+			if (busybody.getObserver(object)) 
 				return object;
-		} else if (obsjs.canObserve(object)) {
+		} else if (busybody.canObserve(object)) {
 			return object;
 		}
         
@@ -38,30 +38,30 @@
         Object.defineProperty(object, "$observer", {
             enumerable: false,
             configurable: false,
-            value: new obsjs.observable(object),
+            value: new busybody.observable(object),
             writable: false
         });
         
         return object;
     };
 
-    obsjs.observe = function (object, property, callback, context, evaluateOnEachChange, evaluateIfValueHasNotChanged) {
-        obsjs.makeObservable(object);
-        return obsjs.tryObserve(object, property, callback, context, evaluateOnEachChange, evaluateIfValueHasNotChanged);
+    busybody.observe = function (object, property, callback, context, evaluateOnEachChange, evaluateIfValueHasNotChanged) {
+        busybody.makeObservable(object);
+        return busybody.tryObserve(object, property, callback, context, evaluateOnEachChange, evaluateIfValueHasNotChanged);
     };
 
-    obsjs.tryObserve = function (object, property, callback, context, options) {
+    busybody.tryObserve = function (object, property, callback, context, options) {
         
-        if (object instanceof obsjs.array) {
+        if (object instanceof busybody.array) {
 			if (property instanceof Function)
             	return object.observe(arguments[1], arguments[2], arguments[3]);    // property names are misleading in this case
 			if (property === "length")
 				property = "$length";
 			
-			obsjs.makeObservable(object);	//TODO: test
+			busybody.makeObservable(object);	//TODO: test
 		}
         
-        var target = obsjs.getObserver(object);
+        var target = busybody.getObserver(object);
         
         if (target)
             return target.observe(property, callback, context, options);
@@ -69,14 +69,14 @@
         return false;
     };
 
-    obsjs.observeArray = function (object, property, callback, context, evaluateOnEachChange) {
-        obsjs.makeObservable(object);
-        return obsjs.tryObserveArray(object, property, callback, context, evaluateOnEachChange);
+    busybody.observeArray = function (object, property, callback, context, evaluateOnEachChange) {
+        busybody.makeObservable(object);
+        return busybody.tryObserveArray(object, property, callback, context, evaluateOnEachChange);
     };
     
-    obsjs.tryObserveArray = function (object, property, callback, context, evaluateOnEachChange) {
+    busybody.tryObserveArray = function (object, property, callback, context, evaluateOnEachChange) {
                 
-        var target = obsjs.getObserver(object);
+        var target = busybody.getObserver(object);
         
         if (target)
             return target.observeArray(property, callback, context, evaluateOnEachChange);
@@ -84,7 +84,7 @@
         return false;
     };
 
-	obsjs.tryBindArrays = function (array1, array2) {
+	busybody.tryBindArrays = function (array1, array2) {
 		
 		if ((!(array1 instanceof Array) && array1 != null) ||
 		   (!(array2 instanceof Array) && array2 != null))
@@ -96,10 +96,10 @@
 		if (array1 == null) {
 			array2.length = 0;
 		} else if (array2 != null) {
-			if (array1 instanceof obsjs.array)
+			if (array1 instanceof busybody.array)
 				return array1.bind(array2);
 			else
-				obsjs.array.copyAll(array1, array2);
+				busybody.array.copyAll(array1, array2);
 		}
 	};
 	
@@ -114,20 +114,20 @@
 		
 		return function (changes) {
 			
-			var observer1 = obsjs.getObserver(object1);
+			var observer1 = busybody.getObserver(object1);
 			if (changes && observer1.$bindingChanges)
 				for (var i in observer1.$bindingChanges)
 					if (object2 === observer1.$bindingChanges[i].fromObject
 						&& changes[changes.length - 1] === observer1.$bindingChanges[i].change)
 						return;
 			
-			obsjs.captureChanges(object2, function () {
-				obsjs.utils.obj.setObject(property2, object2, obsjs.utils.obj.getObject(property1, object1));
+			busybody.captureChanges(object2, function () {
+				busybody.utils.obj.setObject(property2, object2, busybody.utils.obj.getObject(property1, object1));
 			}, function (changes) {
-				var observer2 = obsjs.makeObservable(object2);
+				var observer2 = busybody.makeObservable(object2);
 				enumerateArr(changes, function (change) {
 					
-					var observer2 = obsjs.getObserver(object2);
+					var observer2 = busybody.getObserver(object2);
 					if (observer2) {
 						if (!observer2.$bindingChanges)
 							observer2.$bindingChanges = {};
@@ -147,10 +147,10 @@
 		};
 	}
 
-	obsjs.tryBind = function (object1, property1, object2, property2, twoWay, doNotSet) {
+	busybody.tryBind = function (object1, property1, object2, property2, twoWay, doNotSet) {
 		
 		// store all parts which need to be disposed
-		var disposable = new obsjs.disposable();
+		var disposable = new busybody.disposable();
 				
 		var dispKey, evaluator;
 		function ev () {
@@ -160,12 +160,12 @@
 				disp = null;
 			}
 			
-			var obj1 = obsjs.utils.obj.getObject(property1, object1);
-			var obj2 = obsjs.utils.obj.getObject(property2, object2);
+			var obj1 = busybody.utils.obj.getObject(property1, object1);
+			var obj2 = busybody.utils.obj.getObject(property2, object2);
 			
 			// if arrays are invloved, bind arrays
 			if (obj1 instanceof Array || obj2 instanceof Array) {
-				dispKey = disposable.registerDisposable(obsjs.tryBindArrays(obj1, obj2));
+				dispKey = disposable.registerDisposable(busybody.tryBindArrays(obj1, obj2));
 			} else {
 				if (!doNotSet)
 					(evaluator || (evaluator = createBindingEvaluator(object1, property1, object2, property2))).apply(this, arguments);
@@ -174,42 +174,44 @@
 			}
 		}
 		
-		disposable.registerDisposable(obsjs.tryObserve(object1, property1, ev, null, {useRawChanges: true}));
+		disposable.registerDisposable(busybody.tryObserve(object1, property1, ev, null, {useRawChanges: true}));
 		
 		ev();
 		
 		if (twoWay)
-			disposable.registerDisposable(obsjs.tryBind(object2, property2, object1, property1, false, true));
+			disposable.registerDisposable(busybody.tryBind(object2, property2, object1, property1, false, true));
 		
 		return disposable;
 	};
     
-    obsjs.bind = function (object1, property1, object2, property2, twoWay) {
+    busybody.bind = function (object1, property1, object2, property2, twoWay) {
 		
-		obsjs.makeObservable(object1);
-		obsjs.makeObservable(object2);
+		busybody.makeObservable(object1);
+		busybody.makeObservable(object2);
 		
-		return obsjs.tryBind(object1, property1, object2, property2, twoWay);
+		return busybody.tryBind(object1, property1, object2, property2, twoWay);
     };
 
-    obsjs.canObserve = function (object) {
+    busybody.canObserve = function (object) {
         
 			//TODO: test array bit
-        return object instanceof obsjs.array || !!obsjs.getObserver(object);
+        return object instanceof busybody.array || !!busybody.getObserver(object);
     }; 
 
-    obsjs.del = function (object, property) {
+    busybody.del = function (object, property) {
         
-        var target = obsjs.getObserver(object);
+        var target = busybody.getObserver(object);
         
         if (target)
             return target.del(property);
     };
     
-    obsjs.dispose = function (object) {
-        var target = obsjs.getObserver(object);
+    busybody.dispose = function (object) {
+        var target = busybody.getObserver(object);
         
         if (target)
             return target.dispose();
     };
-}());
+
+    window.bb = busybody;
+}(window.orienteer));

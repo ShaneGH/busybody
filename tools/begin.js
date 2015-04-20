@@ -1,3 +1,3 @@
-(function () {
-    window.obsjs = {};
-    var useObjectObserve = obsjs.useObjectObserve = Object.observe && (!window.hasOwnProperty("useObjectObserve") || window.useObjectObserve);
+(function (orienteer) {
+    var busybody = {};
+    var useObjectObserve = busybody.useObjectObserve = Object.observe && (!window.hasOwnProperty("useObjectObserve") || window.useObjectObserve);

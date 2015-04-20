@@ -2,7 +2,7 @@
 
 //TODO: look into esprima and falafel
 
-Class("obsjs.observeTypes.computed", function () {
+Class("busybody.observeTypes.computed", function () {
     
     var WITH = /\s*with\s*\(/g;
     var GET_ARGUMENT_NAMES = /([^\s,]+)/g;
@@ -12,7 +12,7 @@ Class("obsjs.observeTypes.computed", function () {
     var completeArg = {};
 	
     // monitor a function and change the value of a "watched" when it changes
-    var computed = obsjs.observeTypes.observeTypesBase.extend(function computed(callback, context, options) {
+    var computed = busybody.observeTypes.observeTypesBase.extend(function computed(callback, context, options) {
         
         this._super();
         
@@ -85,7 +85,7 @@ Class("obsjs.observeTypes.computed", function () {
 			}	
 			
 			var array = possibleArray.path.length ? 
-				obsjs.utils.obj.getObject(possibleArray.path, possibleArray.root) : 
+				busybody.utils.obj.getObject(possibleArray.path, possibleArray.root) : 
 				possibleArray.root;
 			
 			if (array instanceof Array) {
@@ -237,9 +237,9 @@ Class("obsjs.observeTypes.computed", function () {
         enumerateArr(found, function (item) {
             
 			// if there is a path, i.e. variable.property, subscribe to it
-            tmp = obsjs.utils.obj.splitPropertyName(item.variableName);
+            tmp = busybody.utils.obj.splitPropertyName(item.variableName);
 			if (tmp.length > 1)
-				this.addPathWatchFor(variable, obsjs.utils.obj.joinPropertyName(tmp.slice(1)));
+				this.addPathWatchFor(variable, busybody.utils.obj.joinPropertyName(tmp.slice(1)));
 			
 			// if we are looking for array elements, do more examination for this
 			if (observeArrayElements) {
@@ -249,7 +249,7 @@ Class("obsjs.observeTypes.computed", function () {
 						if (!possibleArray)
 							this.possibleArrays.push(possibleArray = {
 								root: variable,
-								path: obsjs.utils.obj.joinPropertyName(tmp.slice(1)),
+								path: busybody.utils.obj.joinPropertyName(tmp.slice(1)),
 								subPaths: [arrProps]
 							});
 						else
@@ -275,7 +275,7 @@ Class("obsjs.observeTypes.computed", function () {
 	};
 	
     computed.prototype.addPathWatchFor = function(variable, path) {
-		var path = new obsjs.observeTypes.pathObserver(variable, path, this.execute, this);
+		var path = new busybody.observeTypes.pathObserver(variable, path, this.execute, this);
 		
 		var dispose;
 		var te = this.execute.bind(this);
@@ -285,7 +285,7 @@ Class("obsjs.observeTypes.computed", function () {
 				dispose = null;
 			}
 
-			if (newVal instanceof obsjs.array)
+			if (newVal instanceof busybody.array)
 				dispose = newVal.observe(te);
 		}, true);
 		
@@ -296,16 +296,16 @@ Class("obsjs.observeTypes.computed", function () {
         var arrayDisposeCallback;
         var output = function (oldValue, newValue) {
 			
-            var existingVal = obsjs.utils.obj.getObject(bindToProperty, bindToObject);
+            var existingVal = busybody.utils.obj.getObject(bindToProperty, bindToObject);
             if (newValue === existingVal)
                 return;
 			
             output.dispose();
 			
 			if (newValue instanceof Array || existingVal instanceof Array)
-				arrayDisposeCallback = obsjs.tryBindArrays(newValue, existingVal);
+				arrayDisposeCallback = busybody.tryBindArrays(newValue, existingVal);
             else
-				obsjs.utils.obj.setObject(bindToProperty, bindToObject, newValue);
+				busybody.utils.obj.setObject(bindToProperty, bindToObject, newValue);
         };
         
         output.dispose = function () {

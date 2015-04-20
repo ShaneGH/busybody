@@ -1,11 +1,11 @@
-module("obsjs.callbacks.propertyCallback", {
+module("bb.callbacks.propertyCallback", {
     setup: function() {
     },
     teardown: function() {
     }
 });
 
-var propertyCallback = obsjs.callbacks.propertyCallback;
+var propertyCallback = bb.callbacks.propertyCallback;
 
 testUtils.testWithUtils("constructor", null, false, function(methods, classes, subject, invoker) {
     // arrange

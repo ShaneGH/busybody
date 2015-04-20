@@ -1,11 +1,11 @@
-module("obsjs.callbacks.changeCallback", {
+module("bb.callbacks.changeCallback", {
     setup: function() {
     },
     teardown: function() {
     }
 });
 
-var changeCallback = obsjs.callbacks.changeCallback;
+var changeCallback = bb.callbacks.changeCallback;
 
 testUtils.testWithUtils("constructor", null, false, function(methods, classes, subject, invoker) {
     // arrange

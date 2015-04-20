@@ -109,7 +109,7 @@ $.extend(testUtils, (function() {
                     testSubject += "." + method;
                 }
                 
-                testSubject = obsjs.utils.obj.getObject(testSubject);
+                testSubject = bb.utils.obj.getObject(testSubject);
                 function invoker() {                    
                     return testSubject.apply(subject, arguments);                   
                 };

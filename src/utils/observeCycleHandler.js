@@ -1,8 +1,8 @@
 // name is subject to change
 //TODO: before/after observe cycle for specific object
-Class("obsjs.utils.observeCycleHandler", function () {
+Class("busybody.utils.observeCycleHandler", function () {
         
-    var observeCycleHandler = obsjs.observable.extend(function observeCycleHandler () {
+    var observeCycleHandler = busybody.observable.extend(function observeCycleHandler () {
         this._super();
         
         this.$afterObserveCycles = [];
@@ -50,12 +50,12 @@ Class("obsjs.utils.observeCycleHandler", function () {
 
     observeCycleHandler.prototype.afterObserveCycle = function (callback) {
 
-        return obsjs.utils.obj.addWithDispose(this.$afterObserveCycles, callback);
+        return busybody.utils.obj.addWithDispose(this.$afterObserveCycles, callback);
     };
 
     observeCycleHandler.prototype.befreObserveCycle = function (callback) {
 
-        return obsjs.utils.obj.addWithDispose(this.$beforeObserveCycles, callback);
+        return busybody.utils.obj.addWithDispose(this.$beforeObserveCycles, callback);
     };
 
     observeCycleHandler.prototype.dispose = function () {

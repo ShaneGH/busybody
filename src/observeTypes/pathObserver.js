@@ -1,10 +1,10 @@
 // name is subject to change
 
-Class("obsjs.observeTypes.pathObserver", function () {
+Class("busybody.observeTypes.pathObserver", function () {
         
-    var pathObserver = obsjs.observeTypes.observeTypesBase.extend(function pathObserver (forObject, property, callback, context) {
+    var pathObserver = busybody.observeTypes.observeTypesBase.extend(function pathObserver (forObject, property, callback, context) {
         ///<summary>Observe a property for change. Should be "call()"ed with this being a "watched"</summary>
-        ///<param name="forObject" type="obsjs.observable" optional="false">The object to watch</param>
+        ///<param name="forObject" type="busybody.observable" optional="false">The object to watch</param>
         ///<param name="property" type="String" optional="false">The property</param>
         ///<param name="callback" type="Function" optional="true">A callback for property change</param>
         ///<param name="context" type="Any" optional="true">The context of the callback</param>
@@ -14,7 +14,7 @@ Class("obsjs.observeTypes.pathObserver", function () {
         this.forObject = forObject;
         this.property = property;
         
-        this.path = obsjs.utils.obj.splitPropertyName(property);
+        this.path = busybody.utils.obj.splitPropertyName(property);
         
         this.__pathDisposables = new Array(this.path.length);
         this.execute();
@@ -56,7 +56,7 @@ Class("obsjs.observeTypes.pathObserver", function () {
         
         // get the last item in the path subscribing to changes along the way
         for (; current && i < this.path.length - 1; i++) {
-            if ((obsjs.canObserve(current) || current instanceof obsjs.array) && current[this.path[i]] && i >= begin) {
+            if ((busybody.canObserve(current) || current instanceof busybody.array) && current[this.path[i]] && i >= begin) {
                 
                 var args = [current, (function (i) {
                     return function(oldVal, newVal) {
@@ -69,15 +69,15 @@ Class("obsjs.observeTypes.pathObserver", function () {
                     args.splice(1, 0, this.path[i]);
                 }
                 
-                this.__pathDisposables[i] = obsjs.tryObserve.apply(null, args);
+                this.__pathDisposables[i] = busybody.tryObserve.apply(null, args);
             }
 
             current = current[this.path[i]];
         }
         
         // observe last item in path
-        if (obsjs.canObserve(current))
-            this.__pathDisposables[i] = obsjs.tryObserve(current, this.path[i], function (oldVal, newVal) {
+        if (busybody.canObserve(current))
+            this.__pathDisposables[i] = busybody.tryObserve(current, this.path[i], function (oldVal, newVal) {
                 this.execute();
             }, this);
     };

@@ -1,6 +1,6 @@
-Class("obsjs.arrayBase", function () {
+Class("busybody.arrayBase", function () {
         
-    var arrayBase = objjs.object.extend.call(Array, function arrayBase (initialValues) {
+    var arrayBase = orienteer.object.extend.call(Array, function arrayBase (initialValues) {
         
         Array.call(this);
         
@@ -19,8 +19,8 @@ Class("obsjs.arrayBase", function () {
                 this[i] = initialValues[i]; // doing it this way as it will not publish changes
     });
     
-    arrayBase.prototype._super = objjs.object.prototype._super;
-    arrayBase.extend = objjs.object.extend;
+    arrayBase.prototype._super = orienteer.object.prototype._super;
+    arrayBase.extend = orienteer.object.extend;
     
     arrayBase.isValidArrayChange = function (change) {
         return change.type === "splice" || !isNaN(parseInt(change.name));
@@ -40,8 +40,8 @@ Class("obsjs.arrayBase", function () {
         var changeBatch = this.$changeBatch.slice();
         this.$changeBatch.length = 0;
 
-        obsjs.utils.observeCycleHandler.instance.execute(this, (function () {
-        	enumerateArr(obsjs.observableBase.processChanges(this.$callbacks, changeBatch), function (c) { c(); });
+        busybody.utils.observeCycleHandler.instance.execute(this, (function () {
+        	enumerateArr(busybody.observableBase.processChanges(this.$callbacks, changeBatch), function (c) { c(); });
 		}).bind(this));
     };
     
@@ -52,7 +52,7 @@ Class("obsjs.arrayBase", function () {
             if (!arrayBase.isValidArrayChange(changes[i]))
                 changes.splice(i, 1);
         
-        return obsjs.observableBase.prototype.registerChangeBatch.call(this, changes);
+        return busybody.observableBase.prototype.registerChangeBatch.call(this, changes);
     };
             
     function changeIndex(index) {
@@ -105,10 +105,10 @@ Class("obsjs.arrayBase", function () {
         if (typeof arguments[0] === "string") {			
             var args = Array.prototype.slice.call(arguments);
             args.splice(0, 0, this);
-            return obsjs.observe.apply(null, args);
+            return busybody.observe.apply(null, args);
         }
 		
-		return this.addCallback(new obsjs.callbacks.arrayCallback(callback, context, options));
+		return this.addCallback(new busybody.callbacks.arrayCallback(callback, context, options));
     };
 	
 	arrayBase.prototype.disposableFor = function (changeCallback) {
@@ -130,7 +130,7 @@ Class("obsjs.arrayBase", function () {
 		return dispose;
 	};
     
-	var boundArrayStopKey = "obsjs-do-not-apply-to";
+	var boundArrayStopKey = "busybody-do-not-apply-to";
     arrayBase.prototype.alteringArray = function(method, args) {
         if (this.__alteringArray)
             throw "Calls to alteringArray must be synchronus and not nested.";
@@ -179,10 +179,10 @@ Class("obsjs.arrayBase", function () {
 		
 		this.$boundArrays.push(anotherArray);
         
-        if (!(anotherArray instanceof obsjs.array) || anotherArray.$boundArrays.indexOf(this) === -1)
+        if (!(anotherArray instanceof busybody.array) || anotherArray.$boundArrays.indexOf(this) === -1)
             arrayBase.copyAll(this, anotherArray);
 		
-		return new obsjs.disposable((function () {
+		return new busybody.disposable((function () {
 			if (!anotherArray) return;
 			var i;
 			if ((i = this.$boundArrays.indexOf(anotherArray)) !== -1)

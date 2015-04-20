@@ -1,11 +1,11 @@
 
-Class("obsjs.disposable", function () {
+Class("busybody.disposable", function () {
     
 	function init (disp) {
 		if (!disp.$disposables) disp.$disposables = {};
 	}
 	
-    var disposable = objjs.object.extend(function disposable(disposableOrDisposeFunction) {
+    var disposable = orienteer.object.extend(function disposable(disposableOrDisposeFunction) {
         ///<summary>An object which can be disposed</summary>
         
         this._super();

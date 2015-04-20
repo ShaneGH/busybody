@@ -1,6 +1,6 @@
 // name is subject to change
 
-Class("obsjs.utils.compiledArrayChange", function () {
+Class("busybody.utils.compiledArrayChange", function () {
     
     function compiledArrayChange(changes, beginAt, endAt) {
         this.beginAt = beginAt;

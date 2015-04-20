@@ -1,12 +1,12 @@
 {
-  "name": "obsjs",
+  "name": "busybody",
   "version": "0.0.1",
-  "homepage": "https://github.com/ShaneGH/obsjs",
+  "homepage": "https://github.com/ShaneGH/busybody",
   "authors": [
     "Shane Connon <shane.connon@gmail.com>"
   ],
   "description": "Object observe functionality, polyfills and enhancements",
-  "main": ["release/obsjs-0.0.1.debug.js", "release/obsjs-0.0.1.js"],
+  "main": ["release/busybody-0.0.1.debug.js", "release/busybody-0.0.1.js"],
   "license": "MIT",
   "private": true,
   "ignore": [
@@ -17,6 +17,6 @@
     "tests"
   ],
   "dependencies": {
-    "objjs": "ShaneGH/objjs#v-0.1.0"
+    "orienteer": "ShaneGH/orienteer#v-0.1.0"
   }
 }

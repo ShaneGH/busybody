@@ -1,7 +1,7 @@
 
-Class("obsjs.callbacks.changeCallback", function () {
+Class("busybody.callbacks.changeCallback", function () {
         
-    var changeCallback = objjs.object.extend(function changeCallback(evaluateOnEachChange) {
+    var changeCallback = orienteer.object.extend(function changeCallback(evaluateOnEachChange) {
         this._super();
         
         this.evaluateOnEachChange = evaluateOnEachChange;

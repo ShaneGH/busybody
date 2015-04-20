@@ -1,7 +1,7 @@
 
-Class("obsjs.observeTypes.observeTypesBase", function () {
+Class("busybody.observeTypes.observeTypesBase", function () {
 	
-	var observeTypesBase = obsjs.utils.executeCallbacks.extend(function observeTypesBase() {
+	var observeTypesBase = busybody.utils.executeCallbacks.extend(function observeTypesBase() {
 		if (this.constructor === observeTypesBase) throw "You cannot create an instance of an abstract class";
 		
 		this._super();

@@ -1,6 +1,6 @@
 (function () {
     
-    var array = obsjs.array;
+    var array = busybody.array;
     
     array.prototype.replace = function(index, replacement) {        
         this.splice(index, index >= this.length ? 0 : 1, replacement);

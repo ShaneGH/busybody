@@ -1,19 +1,19 @@
-module("obsjs.observeTypes.computed, integration", {
+module("bb.observeTypes.computed, integration", {
     setup: function() {
-        obsjs.utils.observeCycleHandler.instance.clear();
+        bb.utils.observeCycleHandler.instance.clear();
     },
     teardown: function() {
     }
 });
 
-var computed = obsjs.observeTypes.computed;
+var computed = bb.observeTypes.computed;
 
 testUtils.testWithUtils("integration test", "very simple change", false, function(methods, classes, subject, invoker) {
     // arrange
-    var subject = new obsjs.observable();
+    var subject = new bb.observable();
     subject.val3 = "hello world";
 
-    var comp = new obsjs.observeTypes.computed(function() {
+    var comp = new bb.observeTypes.computed(function() {
         return this.val3;
     }, subject);
     
@@ -34,13 +34,13 @@ testUtils.testWithUtils("integration test", "very simple change", false, functio
 
 testUtils.testWithUtils("monitor array contents", "without [i]", false, function(methods, classes, subject, invoker) {
     // arrange
-    var subject = new obsjs.observable();
-	subject.people = new obsjs.array([
-		obsjs.makeObservable({ age: 33 }),
-		obsjs.makeObservable({ age: 55 })
+    var subject = new bb.observable();
+	subject.people = new bb.array([
+		bb.makeObservable({ age: 33 }),
+		bb.makeObservable({ age: 55 })
 	]);
 
-    var comp = new obsjs.observeTypes.computed(function() {
+    var comp = new bb.observeTypes.computed(function() {
 		return this.people[1].age;
     }, subject);
     
@@ -63,14 +63,14 @@ testUtils.testWithUtils("monitor array contents", "without [i]", false, function
 testUtils.testWithUtils("monitor array contents", "simple", false, function(methods, classes, subject, invoker) {
 	
 	// arrange
-    var subject = new obsjs.observable();
-	subject.prop = new obsjs.observable();
-	subject.prop.people = new obsjs.array([
-		obsjs.makeObservable({ age: 33 }),
-		obsjs.makeObservable({ age: 55 })
+    var subject = new bb.observable();
+	subject.prop = new bb.observable();
+	subject.prop.people = new bb.array([
+		bb.makeObservable({ age: 33 }),
+		bb.makeObservable({ age: 55 })
 	]);
 	
-    var comp = new obsjs.observeTypes.computed(function() {
+    var comp = new bb.observeTypes.computed(function() {
 		var op = 0;
 		for (var i = 0, ii = this.prop.people.length; i < ii; i++)
 			op += this.prop.people[i].age;
@@ -96,12 +96,12 @@ testUtils.testWithUtils("monitor array contents", "simple", false, function(meth
 testUtils.testWithUtils("monitor array contents", "enumerate over this", false, function(methods, classes, subject, invoker) {
 	
 	// arrange
-    var subject = new obsjs.array([
-		obsjs.makeObservable({ age: 33 }),
-		obsjs.makeObservable({ age: 55 })
+    var subject = new bb.array([
+		bb.makeObservable({ age: 33 }),
+		bb.makeObservable({ age: 55 })
 	]);
 
-	var comp = new obsjs.observeTypes.computed(function() {
+	var comp = new bb.observeTypes.computed(function() {
 		var op = 0;
 		for (var i = 0, ii = this.length; i < ii; i++)
 			op += this[i].age;
@@ -127,14 +127,14 @@ testUtils.testWithUtils("monitor array contents", "enumerate over this", false, 
 testUtils.testWithUtils("monitor array contents", "$ in property name", false, function(methods, classes, subject, invoker) {
 	
 	// arrange
-    var subject = new obsjs.observable();
-	subject.$prop = new obsjs.observable();
-	subject.$prop.people = new obsjs.array([
-		obsjs.makeObservable({ age: 33 }),
-		obsjs.makeObservable({ age: 55 })
+    var subject = new bb.observable();
+	subject.$prop = new bb.observable();
+	subject.$prop.people = new bb.array([
+		bb.makeObservable({ age: 33 }),
+		bb.makeObservable({ age: 55 })
 	]);
 
-    var comp = new obsjs.observeTypes.computed(function() {
+    var comp = new bb.observeTypes.computed(function() {
 		var op = 0;
 		for (var i = 0, ii = this.$prop.people.length; i < ii; i++)
 			op += this.$prop.people[i].age;
@@ -160,14 +160,14 @@ testUtils.testWithUtils("monitor array contents", "$ in property name", false, f
 testUtils.testWithUtils("monitor array contents", "get value from array index", false, function(methods, classes, subject, invoker) {
 	
 	// arrange
-    var subject = new obsjs.observable();
-	subject.prop = new obsjs.observable();
-	subject.prop.people = new obsjs.array([
-		new obsjs.array([0,1,33]),
-		new obsjs.array([0,1,55])
+    var subject = new bb.observable();
+	subject.prop = new bb.observable();
+	subject.prop.people = new bb.array([
+		new bb.array([0,1,33]),
+		new bb.array([0,1,55])
 	]);
 
-    var comp = new obsjs.observeTypes.computed(function() {
+    var comp = new bb.observeTypes.computed(function() {
 		var op = 0;
 		for (var i = 0, ii = this.prop.people.length; i < ii; i++)
 			op += this.prop.people[i][2];
@@ -193,14 +193,14 @@ testUtils.testWithUtils("monitor array contents", "get value from array index", 
 testUtils.testWithUtils("monitor array contents", "get initial array from array index", false, function(methods, classes, subject, invoker) {
 	
 	// arrange
-    var subject = new obsjs.observable();
-	subject.prop = new obsjs.array();
-	subject.prop[1] = new obsjs.array([
-		obsjs.makeObservable({ age: 33 }),
-		obsjs.makeObservable({ age: 55 })
+    var subject = new bb.observable();
+	subject.prop = new bb.array();
+	subject.prop[1] = new bb.array([
+		bb.makeObservable({ age: 33 }),
+		bb.makeObservable({ age: 55 })
 	]);
 
-    var comp = new obsjs.observeTypes.computed(function() {
+    var comp = new bb.observeTypes.computed(function() {
 		var op = 0;
 		for (var i = 0, ii = this.prop[1].length; i < ii; i++)
 			op += this.prop[1][i].age;
@@ -226,14 +226,14 @@ testUtils.testWithUtils("monitor array contents", "get initial array from array 
 testUtils.testWithUtils("monitor array contents", "2 observed properties", false, function(methods, classes, subject, invoker) {
 	
 	// arrange
-    var subject = new obsjs.observable();
-	subject.prop = new obsjs.observable();
-	subject.prop.people = new obsjs.array([
-		obsjs.makeObservable({ age1: 1, age2: 2 }),
-		obsjs.makeObservable({ age1: 3, age2: 4 })
+    var subject = new bb.observable();
+	subject.prop = new bb.observable();
+	subject.prop.people = new bb.array([
+		bb.makeObservable({ age1: 1, age2: 2 }),
+		bb.makeObservable({ age1: 3, age2: 4 })
 	]);
 
-    var comp = new obsjs.observeTypes.computed(function() {
+    var comp = new bb.observeTypes.computed(function() {
 		var op = 0;
 		for (var i = 0, ii = this.prop.people.length; i < ii; i++)
 			op += this.prop.people[i].age1 + this.prop.people[i].age2;
@@ -267,8 +267,8 @@ testUtils.testWithUtils("monitor array contents", "2 observed properties", false
 
 testUtils.testWithUtils("bind non array to array", null, false, function(methods, classes, subject, invoker) {
     // arrange
-    var subject = new obsjs.observable();
-    subject.comp = new obsjs.array([1,2,3]);
+    var subject = new bb.observable();
+    subject.comp = new bb.array([1,2,3]);
 	
     subject.comp.observe(function(oldVal, newVal) {
         strictEqual(subject.comp.length, 0);
@@ -277,7 +277,7 @@ testUtils.testWithUtils("bind non array to array", null, false, function(methods
         start();
     });
 
-    var comp = new obsjs.observeTypes.computed(function() {
+    var comp = new bb.observeTypes.computed(function() {
         return null;
     }, subject);
     
@@ -289,12 +289,12 @@ testUtils.testWithUtils("bind non array to array", null, false, function(methods
 
 testUtils.testWithUtils("integration test", "simple change", false, function(methods, classes, subject, invoker) {
     // arrange
-    var subject = new obsjs.observable();
-    subject.val1 = new obsjs.observable();
+    var subject = new bb.observable();
+    subject.val1 = new bb.observable();
     subject.val1.val2 = "hello";
     subject.val3 = "world";
 
-    new obsjs.observeTypes.computed(function() {
+    new bb.observeTypes.computed(function() {
         return this.val1.val2 + " " + this.val3;
     }, subject).bind(subject, "comp");
 
@@ -311,13 +311,13 @@ testUtils.testWithUtils("integration test", "simple change", false, function(met
 
 testUtils.testWithUtils("integration test", "multi property change", false, function(methods, classes, subject, invoker) {
     // arrange
-    var subject = new obsjs.observable();
-    subject.val1 = new obsjs.observable();
+    var subject = new bb.observable();
+    subject.val1 = new bb.observable();
     subject.val1.val2 = "hello";
     subject.val3 = "world";
-    subject.something = new obsjs.observable();
+    subject.something = new bb.observable();
 
-    new obsjs.observeTypes.computed(function() {
+    new bb.observeTypes.computed(function() {
         return this.val1.val2 + " " + this.val3;
     }, subject).bind(subject, "something.comp");
 
@@ -334,12 +334,12 @@ testUtils.testWithUtils("integration test", "multi property change", false, func
 
 testUtils.testWithUtils("integration test", "complex change", false, function(methods, classes, subject, invoker) {
     // arrange
-    var subject = new obsjs.observable();
-    subject.val1 = new obsjs.observable();
+    var subject = new bb.observable();
+    subject.val1 = new bb.observable();
     subject.val1.val2 = "hello";
     subject.val3 = "world";
 
-    new obsjs.observeTypes.computed(function() {            
+    new bb.observeTypes.computed(function() {            
         return this.val1.val2 + " " + this.val3;
     }, subject).bind(subject, "comp");
 
@@ -357,11 +357,11 @@ testUtils.testWithUtils("integration test", "complex change", false, function(me
 testUtils.testWithUtils("integration test", "array", false, function(methods, classes, subject, invoker) {
     
     // arrange
-    var subject = new obsjs.observable();
-    var val1 = subject.val1 = new obsjs.array([0,1,2]);
+    var subject = new bb.observable();
+    var val1 = subject.val1 = new bb.array([0,1,2]);
     var comp = subject.comp = [];
 
-    new obsjs.observeTypes.computed(function() { 
+    new bb.observeTypes.computed(function() { 
         return this.val1;
     }, subject).bind(subject, "comp");
 
@@ -378,10 +378,10 @@ testUtils.testWithUtils("integration test", "array", false, function(methods, cl
     assert();
     stop();
     
-    obsjs.observable.afterNextObserveCycle(function() {
+    bb.observable.afterNextObserveCycle(function() {
         assert();
         val1.push(345);
-        obsjs.observable.afterNextObserveCycle(function() {
+        bb.observable.afterNextObserveCycle(function() {
             assert();
             start();
         }, true);
@@ -393,10 +393,10 @@ testUtils.testWithUtils("integration test", "array", false, function(methods, cl
 testUtils.testWithUtils("integration test", "array total", false, function(methods, classes, subject, invoker) {
     
     // arrange
-    var subject = new obsjs.observable();
-    subject.val1 = new obsjs.array([0,1,2]);
+    var subject = new bb.observable();
+    subject.val1 = new bb.array([0,1,2]);
 
-    new obsjs.observeTypes.computed(function() { 
+    new bb.observeTypes.computed(function() { 
         var tmp = 0;
         for(var i = 0, ii = this.val1.length; i < ii; i++)
             tmp += this.val1[i];
@@ -434,12 +434,12 @@ testUtils.testWithUtils("integration test", "array total", false, function(metho
 
 testUtils.testWithUtils("integration test", "two changes", false, function(methods, classes, subject, invoker) {
     // arrange
-    var subject = new obsjs.observable();
-    subject.val1 = new obsjs.observable();
+    var subject = new bb.observable();
+    subject.val1 = new bb.observable();
     subject.val1.val2 = "hello";
     subject.val3 = "world";
 
-    new obsjs.observeTypes.computed(function() {
+    new bb.observeTypes.computed(function() {
         return this.val1.val2 + " " + this.val3;
     }, subject).bind(subject, "comp");
 
@@ -458,10 +458,10 @@ testUtils.testWithUtils("integration test", "two changes", false, function(metho
 
 testUtils.testWithUtils("integration test", "strings", false, function(methods, classes, subject, invoker) {
     // arrange
-    var subject = new obsjs.observable();
+    var subject = new bb.observable();
     subject.val1 = 1;
 
-    new obsjs.observeTypes.computed(function() {
+    new bb.observeTypes.computed(function() {
         return "this.val1";
     }, subject).bind(subject, "comp");
 
@@ -480,12 +480,12 @@ testUtils.testWithUtils("integration test", "strings", false, function(methods, 
 
 testUtils.testWithUtils("integration test", "dispose", false, function(methods, classes, subject, invoker) {
     // arrange
-    var subject = new obsjs.observable();
-    subject.val1 = new obsjs.observable();
+    var subject = new bb.observable();
+    subject.val1 = new bb.observable();
     subject.val1.val2 = "hello";
     subject.val3 = "world";
 
-    var disp = new obsjs.observeTypes.computed(function() {
+    var disp = new bb.observeTypes.computed(function() {
         return this.val1.val2 + " " + this.val3;
     }, subject).bind(subject, "comp");
 
@@ -506,13 +506,13 @@ testUtils.testWithUtils("integration test", "dispose", false, function(methods, 
 
 testUtils.testWithUtils("integration test", "variable change, with $", false, function(methods, classes, subject, invoker) {
     // arrange
-    var subject = new obsjs.observable();
-    var $var1 = new obsjs.observable();
-    $var1.val1 = new obsjs.observable();
+    var subject = new bb.observable();
+    var $var1 = new bb.observable();
+    $var1.val1 = new bb.observable();
     $var1.val1.val2 = "hello";
     $var1.val3 = "world";
 
-    new obsjs.observeTypes.computed(function() {
+    new bb.observeTypes.computed(function() {
         return $var1.val1.val2 + " " + $var1.val3;
     }, subject, {
         watchVariables: {
@@ -533,16 +533,16 @@ testUtils.testWithUtils("integration test", "variable change, with $", false, fu
 
 testUtils.testWithUtils("integration test", "variable name vs property name", false, function(methods, classes, subject, invoker) {
     // arrange
-    subject = new obsjs.observable();
-    var var1 = obsjs.makeObservable({
-        var2: obsjs.makeObservable({
+    subject = new bb.observable();
+    var var1 = bb.makeObservable({
+        var2: bb.makeObservable({
             var3: 44
         })
     });
     
-    var var2 = new obsjs.observable();
+    var var2 = new bb.observable();
 
-    new obsjs.observeTypes.computed(function() {
+    new bb.observeTypes.computed(function() {
         return var1.
         var2.var3;
     }, subject, {
@@ -565,11 +565,11 @@ testUtils.testWithUtils("integration test", "variable name vs property name", fa
 
 testUtils.testWithUtils("integration test", "variable name with character before", false, function(methods, classes, subject, invoker) {
     // arrange
-    subject = new obsjs.observable();
-    var var1 = obsjs.makeObservable({val: 2});    
-    var avar1 = obsjs.makeObservable({val: 3});
+    subject = new bb.observable();
+    var var1 = bb.makeObservable({val: 2});    
+    var avar1 = bb.makeObservable({val: 3});
 
-    new obsjs.observeTypes.computed(function() {
+    new bb.observeTypes.computed(function() {
         return avar1.val;
     }, subject, {
         var1: var1
@@ -591,11 +591,11 @@ testUtils.testWithUtils("integration test", "variable name with character before
 
 testUtils.testWithUtils("integration test", "variable name with character after", false, function(methods, classes, subject, invoker) {
     // arrange
-    subject = new obsjs.observable();
-    var var1 = obsjs.makeObservable({val: 2});    
-    var var1a = obsjs.makeObservable({val: 3});
+    subject = new bb.observable();
+    var var1 = bb.makeObservable({val: 2});    
+    var var1a = bb.makeObservable({val: 3});
 
-    new obsjs.observeTypes.computed(function() {
+    new bb.observeTypes.computed(function() {
         return var1a.val;
     }, {
         var1: var1
@@ -617,10 +617,10 @@ testUtils.testWithUtils("integration test", "variable name with character after"
 
 testUtils.testWithUtils("integration test", "with args", false, function(methods, classes, subject, invoker) {
     // arrange
-    subject = new obsjs.observable();
-    var var1 = obsjs.makeObservable({val: 2});  
+    subject = new bb.observable();
+    var var1 = bb.makeObservable({val: 2});  
 
-    new obsjs.observeTypes.computed(function(var1) {
+    new bb.observeTypes.computed(function(var1) {
         return var1.val;
     }, subject, {
         watchVariables: {
@@ -641,11 +641,11 @@ testUtils.testWithUtils("integration test", "with args", false, function(methods
 
 testUtils.testWithUtils("integration test", "with args, arg not added as watched arg", false, function(methods, classes, subject, invoker) {
     // arrange
-    subject = new obsjs.observable();
-    var var1 = obsjs.makeObservable({val: 2});  
+    subject = new bb.observable();
+    var var1 = bb.makeObservable({val: 2});  
 
     throws(function() {
-        new obsjs.observeTypes.computed(function(var1) {
+        new bb.observeTypes.computed(function(var1) {
             return var1.val;
         }, subject).bind(subject, "comp");
     });

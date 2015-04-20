@@ -1,7 +1,7 @@
 useObjectObserve ?
-Class("obsjs.array", function () {
+Class("busybody.array", function () {
     
-    var array = obsjs.arrayBase.extend(function array (initialValues) {
+    var array = busybody.arrayBase.extend(function array (initialValues) {
         
         this._super.apply(this, arguments);
     });
@@ -11,7 +11,7 @@ Class("obsjs.array", function () {
         var cb = (function (changes) {
             if (!cb) return;
             for (var i = 0, ii = changes.length; i < ii; i++) {
-                if (obsjs.arrayBase.isValidArrayChange(changes[i])) {    
+                if (busybody.arrayBase.isValidArrayChange(changes[i])) {    
                     Array.unobserve(this, cb);
                     cb = null;
                     callback(changes[i]);
@@ -28,7 +28,7 @@ Class("obsjs.array", function () {
         var cb = function (changes) {
             changes = changes.slice();
             for (var i = changes.length - 1; i >= 0; i--)
-                if (!obsjs.arrayBase.isValidArrayChange(changes[i]))
+                if (!busybody.arrayBase.isValidArrayChange(changes[i]))
                     changes.splice(i, 1);
 
             callback(changes);
@@ -57,9 +57,9 @@ Class("obsjs.array", function () {
     
     return array;
 }) :
-Class("obsjs.array", function () {
+Class("busybody.array", function () {
     
-    var array = obsjs.arrayBase.extend(function array (initialValues) {
+    var array = busybody.arrayBase.extend(function array (initialValues) {
         
         this._super.apply(this, arguments);
         
@@ -72,7 +72,7 @@ Class("obsjs.array", function () {
         var cb = function (changes) {
             changes = changes.slice();
             for (var i = changes.length - 1; i >= 0; i--)
-                if (!obsjs.arrayBase.isValidArrayChange(changes[i]))
+                if (!busybody.arrayBase.isValidArrayChange(changes[i]))
                     changes.splice(i, 1);
 
             callback(changes);
@@ -85,7 +85,7 @@ Class("obsjs.array", function () {
     
     array.prototype.registerChangeBatch = function (changes) {
         for (var i = 0, ii = changes.length; i < ii; i++) {
-            if (obsjs.arrayBase.isValidArrayChange(changes[i])) {
+            if (busybody.arrayBase.isValidArrayChange(changes[i])) {
                 enumerateArr(this.$onNextArrayChanges.splice(0, this.$onNextArrayChanges.length), function (cb) {
                     cb(changes[i]);
                 });

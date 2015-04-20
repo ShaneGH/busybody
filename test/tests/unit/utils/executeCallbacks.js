@@ -1,4 +1,4 @@
-module("obsjs.utils.executeCallbacks", {
+module("bb.utils.executeCallbacks", {
     setup: function() {
     },
     teardown: function() {
@@ -10,7 +10,7 @@ testUtils.testWithUtils("addCallback", null, false, function(methods, classes, s
 	var op = {}, input = {};
 	subject.callbacks = [];
 	subject.registerDisposable = methods.method([op]);
-	classes.mock("obsjs.utils.obj.addWithDispose", function (a, b) {
+	classes.mock("bb.utils.obj.addWithDispose", function (a, b) {
 		methods.method([a, b])(subject.callbacks, input);
 		return op;
 	}, 1);

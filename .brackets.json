@@ -1,6 +1,9 @@
 {
     "jscodehints.detectedExclusions": [
-        "C:/Dev/Apps/obsjs/bower_components/",
-        "C:/Dev/Apps/obsjs/node_modules/"
+        "C:/Dev/Apps/busybody/bower_components/",
+        "C:/Dev/Apps/busybody/node_modules/",
+        "C:/Dev/Apps/busybody/tools/closeWrapper.js",
+        "C:/Dev/Apps/busybody/tools/end.js",
+        "C:/Dev/Apps/busybody/Gruntfile.js"
     ]
 }

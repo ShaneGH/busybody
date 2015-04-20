@@ -1,11 +1,11 @@
-module("obsjs.utils.obj", {
+module("bb.utils.obj", {
     setup: function() {
     },
     teardown: function() {
     }
 });
 
-var obj = obsjs.utils.obj;
+var obj = bb.utils.obj;
 
 testUtils.testWithUtils("enumerateArr", null, true, function(methods, classes, subject, invoker) {
     // arrange

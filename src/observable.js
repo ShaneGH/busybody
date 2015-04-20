@@ -1,7 +1,7 @@
     
 var observable = useObjectObserve ?
-    Class("obsjs.observable", function () {
-        var observable = obsjs.observableBase.extend(function observable(forObject) {
+    Class("busybody.observable", function () {
+        var observable = busybody.observableBase.extend(function observable(forObject) {
             this._super(forObject);
         });
 
@@ -48,8 +48,8 @@ var observable = useObjectObserve ?
 
         return observable;
     }) :
-    Class("obsjs.observable", function () {
-        var observable = obsjs.observableBase.extend(function observable(forObject) {
+    Class("busybody.observable", function () {
+        var observable = busybody.observableBase.extend(function observable(forObject) {
             this._super(forObject);
 
             this.$observed = {};

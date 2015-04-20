@@ -1,11 +1,11 @@
-module("obsjs.utils.compiledArrayChange", {
+module("bb.utils.compiledArrayChange", {
     setup: function() {
     },
     teardown: function() {
     }
 });
 
-var compiledArrayChange = obsjs.utils.compiledArrayChange;
+var compiledArrayChange = bb.utils.compiledArrayChange;
 
 testUtils.testWithUtils("constructor, build and build indexes", null, false, function(methods, classes, subject, invoker) {
     // arrange

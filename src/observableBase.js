@@ -1,7 +1,7 @@
 
-Class("obsjs.observableBase", function () {
+Class("busybody.observableBase", function () {
         
-    var observableBase = obsjs.disposable.extend(function observableBase(forObject) {
+    var observableBase = busybody.disposable.extend(function observableBase(forObject) {
         ///<summary>An object whose properties can be subscribed to</summary>
 
         this._super();
@@ -30,7 +30,7 @@ Class("obsjs.observableBase", function () {
         
         this.$changeBatch.length = 0;
 
-        obsjs.utils.observeCycleHandler.instance.execute(this.$forObject || this, (function () {
+        busybody.utils.observeCycleHandler.instance.execute(this.$forObject || this, (function () {
 			var evaluateMultiple = [];
 			enumerateObj(splitChanges, function (changes, name) {
 				if (this.$callbacks[name])
@@ -71,9 +71,9 @@ Class("obsjs.observableBase", function () {
     
     observableBase.prototype.captureChanges = function (logic, callback, toProperty) {
 		
-		if (toProperty && (toProperty = obsjs.utils.obj.splitPropertyName(toProperty)).length > 1) {
-			return obsjs.captureChanges(
-				obsjs.utils.obj.getObject(toProperty.slice(0, toProperty.length - 1).join("."), this.$forObject || this), 
+		if (toProperty && (toProperty = busybody.utils.obj.splitPropertyName(toProperty)).length > 1) {
+			return busybody.captureChanges(
+				busybody.utils.obj.getObject(toProperty.slice(0, toProperty.length - 1).join("."), this.$forObject || this), 
 				logic, 
 				callback, 
 				toProperty[toProperty.length - 1]);
@@ -101,7 +101,7 @@ Class("obsjs.observableBase", function () {
 	};
     
     observableBase.prototype.bind = function (property, otherObject, otherPropoerty) {
-		return obsjs.bind(this, property, otherObject, otherPropoerty);
+		return busybody.bind(this, property, otherObject, otherPropoerty);
     };
 
     observableBase.prototype.observeArray = function (property, callback, context, options) {
@@ -124,19 +124,19 @@ Class("obsjs.observableBase", function () {
             if (options && options.evaluateOnEachChange) {
                 callback.call(context, change);
             } else {
-                var cec = new obsjs.utils.compiledArrayChange([change], 0, 1);
+                var cec = new busybody.utils.compiledArrayChange([change], 0, 1);
                 callback.call(context, cec.getRemoved(), cec.getAdded(), cec.getIndexes());
             }
             
-            if (newValue instanceof obsjs.array)
+            if (newValue instanceof busybody.array)
                 d2 = this.registerDisposable(newValue.observe(callback, context, options));
         }, this);
         
         var tmp;
-        if ((tmp = obsjs.utils.obj.getObject(property, this.$forObject || this)) instanceof obsjs.array)
+        if ((tmp = busybody.utils.obj.getObject(property, this.$forObject || this)) instanceof busybody.array)
             d2 = this.registerDisposable(tmp.observe(callback, context, options));
         
-        return new obsjs.disposable(function () {
+        return new busybody.disposable(function () {
             if (d2) {
                 this.disposeOf(d2);
                 d2 = null;
@@ -154,14 +154,14 @@ Class("obsjs.observableBase", function () {
 		// options: evaluateOnEachChange, evaluateIfValueHasNotChanged, useRawChanges
 		
         if (/[\.\[]/.test(property)) {
-            var pw = new obsjs.observeTypes.pathObserver(this.$forObject || this, property, callback, context);
+            var pw = new busybody.observeTypes.pathObserver(this.$forObject || this, property, callback, context);
             this.registerDisposable(pw);
             return pw;
         }
         
         this._init(property);
 
-        var cb = new obsjs.callbacks.propertyCallback(callback, context, options);
+        var cb = new busybody.callbacks.propertyCallback(callback, context, options);
         if (!this.$callbacks[property]) this.$callbacks[property] = [];
         this.$callbacks[property].push(cb);
 
@@ -206,7 +206,7 @@ Class("obsjs.observableBase", function () {
     
     observableBase.prototype.computed = function (property, callback, options) {
         
-        var computed = new obsjs.observeTypes.computed(callback, this, options);
+        var computed = new busybody.observeTypes.computed(callback, this, options);
         computed.bind(this.$forObject || this, property);
         this.registerDisposable(computed);
         return computed;        
@@ -218,21 +218,21 @@ Class("obsjs.observableBase", function () {
     };
         
     observableBase.afterObserveCycle = function(callback) {
-        return obsjs.utils.observeCycleHandler.instance.afterObserveCycle(callback);
+        return busybody.utils.observeCycleHandler.instance.afterObserveCycle(callback);
     };
 
     observableBase.beforeObserveCycle = function(callback) {
-        return obsjs.utils.observeCycleHandler.instance.beforeObserveCycle(callback);
+        return busybody.utils.observeCycleHandler.instance.beforeObserveCycle(callback);
     };
 
     observableBase.afterNextObserveCycle = function (callback, waitForNextCycleToStart) {
 
-        if (obsjs.utils.observeCycleHandler.instance.length === 0 && !waitForNextCycleToStart) {
+        if (busybody.utils.observeCycleHandler.instance.length === 0 && !waitForNextCycleToStart) {
             callback();
             return;
         }
 
-        var dispose = obsjs.utils.observeCycleHandler.instance.afterObserveCycle(function () {
+        var dispose = busybody.utils.observeCycleHandler.instance.afterObserveCycle(function () {
             dispose.dispose();
             callback();
         });
@@ -242,7 +242,7 @@ Class("obsjs.observableBase", function () {
 
     observableBase.beforeNextObserveCycle = function (callback) {
 
-        var dispose = obsjs.utils.observeCycleHandler.instance.beforeObserveCycle(function () {
+        var dispose = busybody.utils.observeCycleHandler.instance.beforeObserveCycle(function () {
             dispose.dispose();
             callback();
         });

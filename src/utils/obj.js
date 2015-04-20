@@ -30,7 +30,7 @@ var enumerateObj = function(enumerate, action, context) {
 };
 
 var Class = function(classFullName, accessorFunction) {
-    ///<summary>Create an obsjs class</summary>
+    ///<summary>Create an busybody class</summary>
     ///<param name="classFullName" type="String">The name of the class</param>
     ///<param name="accessorFunction" type="Function">A function which returns the class</param>
     
@@ -46,16 +46,16 @@ var Class = function(classFullName, accessorFunction) {
 };
 
 var Extend = function(namespace, extendWith) {
-    ///<summary>Similar to $.extend but with a namespace string which must begin with "obsjs"</summary>
+    ///<summary>Similar to $.extend but with a namespace string which must begin with "busybody"</summary>
     ///<param name="namespace" type="String">The namespace to add to</param>
     ///<param name="extendWith" type="Object">The object to add to the namespace</param>
     
     namespace = namespace.split(".");
     
-    if(namespace[0] !== "obsjs") throw "Root must be \"obsjs\".";
+    if(namespace[0] !== "busybody") throw "Root must be \"busybody\".";
     namespace.splice(0, 1);
     
-    var current = obsjs;
+    var current = busybody;
     enumerateArr(namespace, function(nsPart) {
         current = current[nsPart] || (current[nsPart] = {});
     });
@@ -75,7 +75,7 @@ var trim = function(string) {
     return string ? string.replace(_trimString, '') : string;
 };
 
-Class("obsjs.utils.obj", function () {
+Class("busybody.utils.obj", function () {
         
     var arrayMatch = /\[\s*\d\s*\]$/g;
     var splitPropertyName = function(propertyName) {
@@ -83,11 +83,11 @@ Class("obsjs.utils.obj", function () {
         
         var tmp;
         for (var i = 0; i < propertyName.length; i++) {
-            propertyName[i] = obsjs.utils.obj.trim(propertyName[i]);
+            propertyName[i] = busybody.utils.obj.trim(propertyName[i]);
             var match = propertyName[i].match(arrayMatch);
             if (match && match.length) {
-                if (tmp = obsjs.utils.obj.trim(propertyName[i].replace(arrayMatch, ""))) {
-                    propertyName[i] = obsjs.utils.obj.trim(propertyName[i].replace(arrayMatch, ""));
+                if (tmp = busybody.utils.obj.trim(propertyName[i].replace(arrayMatch, ""))) {
+                    propertyName[i] = busybody.utils.obj.trim(propertyName[i].replace(arrayMatch, ""));
                 } else {
                     propertyName.splice(i, 1);
                     i--;
@@ -168,7 +168,7 @@ Class("obsjs.utils.obj", function () {
     function addWithDispose(callbackArray, callback) {
 
         callbackArray.push(callback);
-        var dispose = new obsjs.disposable(function () {
+        var dispose = new busybody.disposable(function () {
             if (!dispose) return;
             dispose = null;
 

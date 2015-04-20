@@ -1,8 +1,8 @@
 // name is subject to change
 
-Class("obsjs.utils.executeCallbacks", function () {
+Class("busybody.utils.executeCallbacks", function () {
 	
-	var executeCallbacks = obsjs.disposable.extend(function executeCallbacks() {
+	var executeCallbacks = busybody.disposable.extend(function executeCallbacks() {
 		if (this.constructor === executeCallbacks) throw "You cannot create an instance of an abstract class";
 		
 		this._super();
@@ -11,7 +11,7 @@ Class("obsjs.utils.executeCallbacks", function () {
 	});
 	
 	executeCallbacks.prototype.addCallback = function (callback) {
-		var op = obsjs.utils.obj.addWithDispose(this.callbacks, callback);
+		var op = busybody.utils.obj.addWithDispose(this.callbacks, callback);
 		this.registerDisposable(op);
 		
 		return op;

@@ -1,4 +1,4 @@
-module("obsjs.utils.executeCallbacks, integration", {
+module("bb.utils.executeCallbacks, integration", {
     setup: function() {
     },
     teardown: function() {
@@ -8,7 +8,7 @@ module("obsjs.utils.executeCallbacks, integration", {
 test("addCallback", function() {
 	// arrange
 	var arg1 = {}, arg2 = {};
-	var subject = new (obsjs.utils.executeCallbacks.extend(function () {this._super();}))();
+	var subject = new (bb.utils.executeCallbacks.extend(function () {this._super();}))();
 	subject.addCallback(function (a1, a2) {
 		ok(subject);
 		

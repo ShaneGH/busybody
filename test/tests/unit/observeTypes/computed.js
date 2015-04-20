@@ -1,11 +1,11 @@
-module("obsjs.observeTypes.computed", {
+module("bb.observeTypes.computed", {
     setup: function() {
     },
     teardown: function() {
     }
 });
 
-var computed = obsjs.observeTypes.computed;
+var computed = bb.observeTypes.computed;
 
 testUtils.testWithUtils("testForWith", "ok, with variable name", true, function(methods, classes, subject, invoker) {
     // arrange
@@ -95,7 +95,7 @@ testUtils.testWithUtils("constructor", null, false, function(methods, classes, s
     var callback = {}, context = {}, options = { watchVariables: {arg1: {}}, allowWith: false }, stripedCallback = "(arg1)";
     subject._super = methods.method();
     subject.execute = methods.method();
-    classes.mock("obsjs.observeTypes.computed.stripFunction", function () {
+    classes.mock("bb.observeTypes.computed.stripFunction", function () {
         methods.method([callback])(arguments[0]);
         return stripedCallback;
     }, 1);
@@ -378,7 +378,7 @@ testUtils.testWithUtils("bind", "bind and dispose", false, function(methods, cla
     var obj = {}, prop = {}, cb = {}, op = {
 		registerDisposable: methods.method([cb])
 	};
-    classes.mock("obsjs.observeTypes.computed.createBindFunction", function (o, p) {
+    classes.mock("bb.observeTypes.computed.createBindFunction", function (o, p) {
         methods.method([obj, prop])(o, p);
         return cb;
     }, 1);
@@ -432,7 +432,7 @@ testUtils.testWithUtils("createBindFunction", "bind null to array", true, functi
 
 testUtils.testWithUtils("createBindFunction", "bind observable arrays", true, function(methods, classes, subject, invoker) {
     // arrange
-    var obj = {prop: new obsjs.array()}, prop = "prop", newVal = new obsjs.array([{},{},{}]);
+    var obj = {prop: new bb.array()}, prop = "prop", newVal = new bb.array([{},{},{}]);
     newVal.bind = methods.method([obj[prop]]);
     
     subject = invoker(obj, prop);
@@ -445,7 +445,7 @@ testUtils.testWithUtils("createBindFunction", "bind observable arrays", true, fu
 
 testUtils.testWithUtils("createBindFunction", "dispose", true, function(methods, classes, subject, invoker) {
     // arrange
-    var obj = {prop: new obsjs.array()}, prop = "prop", newVal = new obsjs.array([{},{},{}]);
+    var obj = {prop: new bb.array()}, prop = "prop", newVal = new bb.array([{},{},{}]);
     newVal.bind = methods.method([obj[prop]], {dispose: methods.method([], null, "dispose was not called") });
     
     subject = invoker(obj, prop);

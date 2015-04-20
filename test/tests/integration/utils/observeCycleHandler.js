@@ -1,5 +1,5 @@
 
-module("obsjs.utils.observeCycleHandler, integration", {
+module("bb.utils.observeCycleHandler, integration", {
 	setup: function() {
 	},
 	teardown: function() {
@@ -10,7 +10,7 @@ testUtils.testWithUtils("placeholder", null, false, function(methods, classes, s
 	// arrange
 	stop(5);
 	
-	var subject = new obsjs.utils.observeCycleHandler(), sequence = 0;
+	var subject = new bb.utils.observeCycleHandler(), sequence = 0;
 	subject.befreObserveCycle(function () {
 		start();
 		strictEqual(sequence, 0);

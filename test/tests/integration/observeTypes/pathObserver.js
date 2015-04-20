@@ -1,17 +1,17 @@
-module("obsjs.observeTypes.pathObserver, integration", {
+module("bb.observeTypes.pathObserver, integration", {
     setup: function() {
     },
     teardown: function() {
     }
 });
 
-var pathObserver = obsjs.observeTypes.pathObserver;
+var pathObserver = bb.observeTypes.pathObserver;
 
 testUtils.testWithUtils("observe", "path, last element changed", false, function(methods, classes, subject, invoker) {
     // arrange
-    var subject = new obsjs.observable;
-    subject.aa = new obsjs.observable;
-    subject.aa.bb = new obsjs.observable();
+    var subject = new bb.observable;
+    subject.aa = new bb.observable;
+    subject.aa.bb = new bb.observable();
     subject.aa.bb.cc = 11;
 
     var dispose = new pathObserver(subject, "aa.bb.cc", function(oldVal, newVal) {
@@ -29,9 +29,9 @@ testUtils.testWithUtils("observe", "path, last element changed", false, function
 testUtils.testWithUtils("observe", "path, last element changed, has array", false, function(methods, classes, subject, invoker) {
     
     // arrange
-    var subject = new obsjs.observable();
-    subject.aa = new obsjs.observable();
-    subject.aa.bb = new obsjs.array([{}, new obsjs.observable()]);
+    var subject = new bb.observable();
+    subject.aa = new bb.observable();
+    subject.aa.bb = new bb.array([{}, new bb.observable()]);
     subject.aa.bb[1].cc = 11;
 
     var dispose = new pathObserver(subject, "aa.bb[1].cc", function(oldVal, newVal) {
@@ -49,9 +49,9 @@ testUtils.testWithUtils("observe", "path, last element changed, has array", fals
 testUtils.testWithUtils("observe", "path, array element changed, has array", false, function(methods, classes, subject, invoker) {
     
     // arrange
-    var subject = new obsjs.observable();
-    subject.aa = new obsjs.observable();
-    subject.aa.bb = new obsjs.array([{}, new obsjs.observable()]);
+    var subject = new bb.observable();
+    subject.aa = new bb.observable();
+    subject.aa.bb = new bb.array([{}, new bb.observable()]);
     subject.aa.bb[1].cc = 11;
 
     var dispose = new pathObserver(subject, "aa.bb[1].cc", function(oldVal, newVal) {
@@ -68,9 +68,9 @@ testUtils.testWithUtils("observe", "path, array element changed, has array", fal
 /* not valid casse right now
 testUtils.testWithUtils("observe", "path, last element is array", false, function(methods, classes, subject, invoker) {
     // arrange
-    var subject = new obsjs.observable();
-    subject.aa = new obsjs.observable();
-    subject.aa.bb = new obsjs.array([11]);
+    var subject = new bb.observable();
+    subject.aa = new bb.observable();
+    subject.aa.bb = new bb.array([11]);
 
     var dispose = new pathWatch(subject, "aa.bb", function(removed, added) {
         strictEqual(removed.length, 0);
@@ -89,9 +89,9 @@ testUtils.testWithUtils("observe", "path, last element is array", false, functio
 
 testUtils.testWithUtils("observe", "path, last element changed, has non observable in path", false, function(methods, classes, subject, invoker) {
     // arrange
-    var subject = new obsjs.observable();
+    var subject = new bb.observable();
     subject.aa = {};
-    subject.aa.bb = new obsjs.observable();
+    subject.aa.bb = new bb.observable();
     subject.aa.bb.cc = 11;
 
     var dispose = new pathObserver(subject, "aa.bb.cc", function(oldVal, newVal) {
@@ -107,9 +107,9 @@ testUtils.testWithUtils("observe", "path, last element changed, has non observab
 
 testUtils.testWithUtils("observe", "path, mid element nulled then last element changed", false, function(methods, classes, subject, invoker) {
     // arrange
-    var subject = new obsjs.observable();
-    var aa = subject.aa = new obsjs.observable();
-    subject.aa.bb = new obsjs.observable();
+    var subject = new bb.observable();
+    var aa = subject.aa = new bb.observable();
+    subject.aa.bb = new bb.observable();
     subject.aa.bb.cc = 11;
 
     var dispose = new pathObserver(subject, "aa.bb.cc", function(oldVal, newVal) {
@@ -130,9 +130,9 @@ testUtils.testWithUtils("observe", "path, mid element nulled then last element c
 
 testUtils.testWithUtils("observe", "path, mid element changed, null val", false, function(methods, classes, subject, invoker) {
     // arrange
-    var subject = new obsjs.observable();
-    subject.aa = new obsjs.observable();
-    subject.aa.bb = new obsjs.observable();
+    var subject = new bb.observable();
+    subject.aa = new bb.observable();
+    subject.aa.bb = new bb.observable();
     subject.aa.bb.cc = 11;
 
     new pathObserver(subject, "aa.bb.cc", function(oldVal, newVal) {
@@ -149,16 +149,16 @@ testUtils.testWithUtils("observe", "path, mid element changed, null val", false,
 
 testUtils.testWithUtils("observe", "path, mid element and last element changed", false, function(methods, classes, subject, invoker) {
     // arrange
-    var subject = new obsjs.observable();
-    subject.aa = new obsjs.observable();
-    var bb = subject.aa.bb = new obsjs.observable();
-    subject.aa.bb.cc = 11;
+    var subject = new bb.observable();
+    subject.aa = new bb.observable();
+    var bbb = subject.aa.bbb = new bb.observable();
+    subject.aa.bbb.cc = 11;
 
-    var newVal = new obsjs.observable();
-    newVal.bb = new obsjs.observable();
-    newVal.bb.cc = 22;
+    var newVal = new bb.observable();
+    newVal.bbb = new bb.observable();
+    newVal.bbb.cc = 22;
 
-    new pathObserver(subject, "aa.bb.cc", function(oldVal, newVal) {
+    new pathObserver(subject, "aa.bbb.cc", function(oldVal, newVal) {
         strictEqual(oldVal, 11);
         strictEqual(newVal, 22);
         start();
@@ -168,18 +168,18 @@ testUtils.testWithUtils("observe", "path, mid element and last element changed",
     stop();
     
     subject.aa = newVal;
-    bb.cc = 33;
+    bbb.cc = 33;
 });
 
 testUtils.testWithUtils("observe", "path, mid element changed, after disposal", false, function(methods, classes, subject, invoker) {
     // arrange
-    var subject = new obsjs.observable();
-    subject.aa = new obsjs.observable();
-    subject.aa.bb = new obsjs.observable();
+    var subject = new bb.observable();
+    subject.aa = new bb.observable();
+    subject.aa.bb = new bb.observable();
     subject.aa.bb.cc = 11;
 
-    var newVal = new obsjs.observable();
-    newVal.bb = new obsjs.observable();
+    var newVal = new bb.observable();
+    newVal.bb = new bb.observable();
     newVal.bb.cc = 22;
 
     var dispose = new pathObserver(subject, "aa.bb.cc", function(oldVal, newVal) {

@@ -1,5 +1,5 @@
 
-module("obsjs.utils.observeCycleHandler", {
+module("bb.utils.observeCycleHandler", {
 	setup: function() {
 	},
 	teardown: function() {

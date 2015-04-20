@@ -1,7 +1,7 @@
 
-Class("obsjs.callbacks.propertyCallback", function () {
+Class("busybody.callbacks.propertyCallback", function () {
         
-    var propertyCallback = obsjs.callbacks.changeCallback.extend(function propertyCallback(callback, context, options) {
+    var propertyCallback = busybody.callbacks.changeCallback.extend(function propertyCallback(callback, context, options) {
         
 		// options: evaluateOnEachChange, evaluateIfValueHasNotChanged, useRawChanges
 		

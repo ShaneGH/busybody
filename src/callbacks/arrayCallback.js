@@ -1,7 +1,7 @@
 
-Class("obsjs.callbacks.arrayCallback", function () {
+Class("busybody.callbacks.arrayCallback", function () {
         
-    var arrayCallback = obsjs.callbacks.changeCallback.extend(function arrayCallback(callback, context, options) {
+    var arrayCallback = busybody.callbacks.changeCallback.extend(function arrayCallback(callback, context, options) {
         
         this._super(options && options.evaluateOnEachChange);
         
@@ -34,7 +34,7 @@ Class("obsjs.callbacks.arrayCallback", function () {
         }
         
         if (!result)
-            changes.compiled.push(result = new obsjs.utils.compiledArrayChange(changes, beginAt, endAt));
+            changes.compiled.push(result = new busybody.utils.compiledArrayChange(changes, beginAt, endAt));
         
         this._evaluateArrayMultiple(result);
     };
