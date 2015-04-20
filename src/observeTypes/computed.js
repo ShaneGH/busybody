@@ -59,7 +59,8 @@ Class("obsjs.observeTypes.computed", function () {
             }
         }
         
-        this.execute();
+		if (!options.delayExecution)
+        	this.execute();
     });
     
     computed.testForWith = function (input) {
