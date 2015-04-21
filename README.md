@@ -21,24 +21,14 @@ myObject.myProperty = false;
 ####busybody.observe arguments
 |Name|Type|Description|Optional |
 | --- | --- | --- | --- |
-|property|property|property|property|
-
-
-
-
-		///<summary>Observe changes to a property </summary>
-		///<param name="property" type="String">The property</param>
-		///<param name="callback" type="Function">The callback to execute</param>
-		///<param name="context" type="Any" optional="true">The "this" in the callback</param>
-		///<param name="options" type="Object" optional="true">Options for the callback</param>
-		///<param name="options.useRawChanges" type="Boolean">Default: false. Use the change objects from the Array.observe as arguments</param>
-		///<param name="options.evaluateOnEachChange" type="Boolean">Default: false. Evaluate once for each change rather than on an amalgamation of changes</param>
-		///<param name="options.evaluateIfValueHasNotChanged" type="Boolean">Default: false. Evaluate if the oldValue and the newValue are the same</param>
-		///<param name="options.activateImmediately" type="Boolean">Default: false. Activate the callback now, meaning it could get changes which were applied before the callback was created</param>
-
-
-
-
+|property|String|The property|No|
+|callback|property|The callback to execute|No|
+|context|Function|The "this" in the callback|No|
+|options|Object|Options for the callback|Yes|
+|options.useRawChanges|Boolean|Default: false. Use the change objects from the Array.observe as arguments|Yes|
+|options.evaluateOnEachChange|Boolean|Default: false. Evaluate once for each change rather than on an amalgamation of changes|Yes|
+|options.evaluateIfValueHasNotChanged|Boolean|Default: false. Evaluate if the oldValue and the newValue are the same|Yes|
+|options.activateImmediately|Boolean|Default: false. Activate the callback now, meaning it could get changes which were applied before the callback was created|Yes|
 
 ###Observing a path
 ```javascript
