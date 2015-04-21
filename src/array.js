@@ -2,11 +2,15 @@ useObjectObserve ?
 Class("busybody.array", function () {
     
     var array = busybody.arrayBase.extend(function array (initialValues) {
+		///<summary>An observable array</summary>
+		///<param name="initialValues" type="[Any]">Initial values for the array</param>
         
         this._super.apply(this, arguments);
     });
          
     array.prototype.onNextArrayChange = function (callback) {
+		///<summary>Fire a callback once, the next array change</summary>
+		///<param name="callback" type="Function">The callback</param>
 
         var cb = (function (changes) {
             if (!cb) return;
@@ -24,6 +28,9 @@ Class("busybody.array", function () {
     };
     
     array.prototype.captureArrayChanges = function (logic, callback) {
+		///<summary>Capture all of the changes to the array perpetrated by the logic</summary>
+		///<param name="logic" type="Function">The function which will change the array</param>
+		///<param name="callback" type="Function">The callback (function (changes) { })</param>
         
         var cb = function (changes) {
             changes = changes.slice();
@@ -40,6 +47,8 @@ Class("busybody.array", function () {
     };
 
     array.prototype._init = function () {
+		///<summary>Begin observing</summary>
+		
         if (this.__subscription) return;
         
         this.__subscription = this.registerChangeBatch.bind(this);
@@ -47,6 +56,8 @@ Class("busybody.array", function () {
     };
     
     array.prototype.dispose = function () {
+		///<summary>Dispose of this</summary>
+		
         this._super();        
         
         if (this.__subscription) {
@@ -54,12 +65,17 @@ Class("busybody.array", function () {
             delete this.__subscription;
         }
     };
+		///<summary>Capture all of the changes to the array perpetrated by the logic</summary>
+		///<param name="logic" type="Function">The function which will change the array</param>
+		///<param name="callback" type="Function">The callback (function (changes) { })</param>
     
     return array;
 }) :
 Class("busybody.array", function () {
     
     var array = busybody.arrayBase.extend(function array (initialValues) {
+		///<summary>An observable array</summary>
+		///<param name="initialValues" type="[Any]">Initial values for the array</param>
         
         this._super.apply(this, arguments);
         
@@ -68,6 +84,9 @@ Class("busybody.array", function () {
     }); 
     
     array.prototype.captureArrayChanges = function (logic, callback) {
+		///<summary>Capture all of the changes to the array perpetrated by the logic</summary>
+		///<param name="logic" type="Function">The function which will change the array</param>
+		///<param name="callback" type="Function">The callback (function (changes) { })</param>
         
         var cb = function (changes) {
             changes = changes.slice();
@@ -84,6 +103,9 @@ Class("busybody.array", function () {
     };
     
     array.prototype.registerChangeBatch = function (changes) {
+		///<summary>Register a batch of changes to this array</summary>
+		///<param name="changes" type="[Object]">The changes</param>
+		
         for (var i = 0, ii = changes.length; i < ii; i++) {
             if (busybody.arrayBase.isValidArrayChange(changes[i])) {
                 enumerateArr(this.$onNextArrayChanges.splice(0, this.$onNextArrayChanges.length), function (cb) {
@@ -102,11 +124,15 @@ Class("busybody.array", function () {
     };
          
     array.prototype.onNextArrayChange = function (callback) {
+		///<summary>Fire a callback once, the next array change</summary>
+		///<param name="callback" type="Function">The callback</param>
 
         this.$onNextArrayChanges.push(callback);
     };
 
     array.prototype._init = function () {
+		///<summary>Begin observing</summary>
+		
         // unneeded
     };
     

@@ -79,9 +79,9 @@ Class("busybody.utils.obj", function () {
         
     var arrayMatch = /\[\s*\d\s*\]$/g;
     var splitPropertyName = function(propertyName) {
-		///<summary>Split a path into strings and numbers<summary>
-		///<param name="propertyName" type="String">The name<param>
-		///<returns type="[String|Number]">The path<param>
+		///<summary>Split a path into strings and numbers</summary>
+		///<param name="propertyName" type="String">The name</param>
+		///<returns type="[String|Number]">The path</param>
 		
         propertyName = propertyName.split(".");
         
@@ -106,9 +106,9 @@ Class("busybody.utils.obj", function () {
     };
     
     var joinPropertyName = function (propertyName) {
-		///<summary>Join a path<summary>
-		///<param name="propertyName" type="[String|Number]">The path<param>
-		///<returns type="String">The name<param>
+		///<summary>Join a path</summary>
+		///<param name="propertyName" type="[String|Number]">The path</param>
+		///<returns type="String">The name</param>
 		
         var output = [];
         enumerateArr(propertyName, function (item) {
@@ -165,10 +165,10 @@ Class("busybody.utils.obj", function () {
     };
     
     var setObject = function(propertyName, context, value) {
-		///<summary>Set an object path, if possible<summary>
-		///<param name="propertyName" type="String">The property<param>
-		///<param name="context" type="Object">The object<param>
-		///<param name="value" type="Any">The value<param>
+		///<summary>Set an object path, if possible</summary>
+		///<param name="propertyName" type="String">The property</param>
+		///<param name="context" type="Object">The object</param>
+		///<param name="value" type="Any">The value</param>
 		
         propertyName = splitPropertyName(propertyName);
         if (propertyName.length > 1)
@@ -179,10 +179,10 @@ Class("busybody.utils.obj", function () {
     };	
 
     function addWithDispose(callbackArray, item) {
-		///<summary>Add an item to an array and return a disposable which will remove it<summary>
-		///<param name="callbackArray" type="[]">The array<param>
-		///<param name="item" type="Any">The item<param>
-		///<returns type="busybody.disposable">The disposable<param>
+		///<summary>Add an item to an array and return a disposable which will remove it</summary>
+		///<param name="callbackArray" type="[]">The array</param>
+		///<param name="item" type="Any">The item</param>
+		///<returns type="busybody.disposable">The disposable</param>
 
         callbackArray.push(item);
         var dispose = new busybody.disposable(function () {

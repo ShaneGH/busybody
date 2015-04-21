@@ -11,16 +11,16 @@ Class("busybody.observeTypes.pathObserver", function () {
 		
         this._super();
         
-		///<summary type="busybody.observable">The object to observe<summary>
+		///<summary type="busybody.observable">The object to observe</summary>
         this.forObject = forObject;
 		
-		///<summary type="String">The path to observe<summary>
+		///<summary type="String">The path to observe</summary>
         this.property = property;
         
-		///<summary type="[String]">The path split into parts<summary>
+		///<summary type="[String]">The path split into parts</summary>
         this.path = busybody.utils.obj.splitPropertyName(property);
         
-		///<summary type="[busybody.observable]">The subscriptions<summary>
+		///<summary type="[busybody.observable]">The subscriptions</summary>
         this.__pathDisposables = new Array(this.path.length);
         this.execute();
         
@@ -31,10 +31,10 @@ Class("busybody.observeTypes.pathObserver", function () {
     });
     
     pathObserver.prototype.onValueChanged = function (callback, evaluateImmediately) {
-		///<summary>Add a new callback<summary>
-		///<param name="callback" type="Function">The callback<param>
-		///<param name="evaluateImmediately" type="Boolean" optional="true">If true, execute the callback now<param>
-		///<returns type="busybody.disposable">A disposable to remove the callback<param>
+		///<summary>Add a new callback</summary>
+		///<param name="callback" type="Function">The callback</param>
+		///<param name="evaluateImmediately" type="Boolean" optional="true">If true, execute the callback now</param>
+		///<returns type="busybody.disposable">A disposable to remove the callback</param>
               
 		var output = this.addCallback(callback);		
         if (evaluateImmediately)
@@ -44,8 +44,8 @@ Class("busybody.observeTypes.pathObserver", function () {
     };
     
     pathObserver.prototype.buildObservableChain = function (begin) {
-		///<summary>Rebuild the observable chain<summary>
-		///<param name="begin" type="Number" optional="true">The first element to rebuild<param>
+		///<summary>Rebuild the observable chain</summary>
+		///<param name="begin" type="Number" optional="true">The first element to rebuild</param>
 		
         begin = begin || 0;
         
@@ -93,8 +93,8 @@ Class("busybody.observeTypes.pathObserver", function () {
     };
         
     pathObserver.prototype.getValue = function() {
-		///<summary>Evaluate the path observer<summary>
-		///<returns type="Any">The value. Returns null rather than a TypeError<param>
+		///<summary>Evaluate the path observer</summary>
+		///<returns type="Any">The value. Returns null rather than a TypeError</param>
 		
         var current = this.forObject;
         
@@ -107,7 +107,7 @@ Class("busybody.observeTypes.pathObserver", function () {
     };
 	
     pathObserver.prototype.dispose = function () {
-		///<summary>Dispose of this path observer<summary>
+		///<summary>Dispose of this path observer</summary>
 		
         this._super();
         

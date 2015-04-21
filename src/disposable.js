@@ -7,6 +7,7 @@ Class("busybody.disposable", function () {
 	
     var disposable = orienteer.extend(function disposable(disposableOrDisposeFunction) {
         ///<summary>An object which can be disposed</summary>
+		///<param name="disposeableOrDisposeFunction" type="Object|Function">An initial dispose function</param>
         
         this._super();
         

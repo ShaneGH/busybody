@@ -1,6 +1,8 @@
 Class("busybody.arrayBase", function () {
         
     var arrayBase = orienteer.extend.call(Array, function arrayBase (initialValues) {
+		///<summary>A base for arrays using or not using Object.observe</summary>
+		///<param name="initialValues" type="[Any]">Initial values for the array</param>
         
         Array.call(this);
         
@@ -23,19 +25,22 @@ Class("busybody.arrayBase", function () {
     arrayBase.extend = orienteer.extend;
     
     arrayBase.isValidArrayChange = function (change) {
+		///<summary>Returns whether the change is to the array elements or an array property</summary>
+		///<param name="change" type="Object">The change</param>
+		///<returns type="Boolean">Result</returns>
+		
         return change.type === "splice" || !isNaN(parseInt(change.name));
-    };
-    
-    arrayBase.prototype.captureChanges = function (logic, callback) {
-        throw "Abstract methods must be overridden";
     };
          
     arrayBase.prototype.onNextArrayChange = function (callback) {
+		///<summary>Fire a callback once, the next array change</summary>
+		///<param name="callback" type="Function">The callback</param>
         
         throw "Abstract methods must be implemented";
     };
          
     arrayBase.prototype.processChangeBatch = function () {
+		///<summary>Process the current batch of changes</summary>
         
         var changeBatch = this.$changeBatch.slice();
         this.$changeBatch.length = 0;
@@ -46,6 +51,8 @@ Class("busybody.arrayBase", function () {
     };
     
     arrayBase.prototype.registerChangeBatch = function (changes) {
+		///<summary>Register a batch of changes to this array</summary>
+		///<param name="changes" type="[Object]">The changes</param>
         
         // not interested in property changes
         for (var i = changes.length - 1; i >= 0; i--)
@@ -96,11 +103,19 @@ Class("busybody.arrayBase", function () {
     });
 
     arrayBase.prototype._init = function () {
+		///<summary>Begin observing</summary>
+		
         throw "Abstract methods must be implemented";
     };
     
     arrayBase.prototype.observe = function (callback, context, options) {
-        // options evaluateOnEachChange and useRawChanges
+		///<summary>Observe for array changes</summary>
+		///<param name="callback" type="Function">The callback</param>
+		///<param name="context" type="Any">The "this" value in the callback</param>
+		///<param name="options" type="Object" optional="true">Options on when the callback is executed and what it's args will be</param>
+		///<param name="options.useRawChanges" type="Boolean">Default: false. Use the change objects from the Array.observe as arguments</param>
+		///<param name="options.evaluateOnEachChange" type="Boolean">Default: false. Evaluate once for each change rather than on an amalgamation of changes</param>
+		///<returns type="busybody.disposable">A disposable</returns>
 		
         if (typeof arguments[0] === "string") {			
             var args = Array.prototype.slice.call(arguments);
@@ -112,6 +127,10 @@ Class("busybody.arrayBase", function () {
     };
 	
 	arrayBase.prototype.disposableFor = function (changeCallback) {
+		///<summary>Create an object to dispose of a changeCallback</summary>
+		///<param name="changeCallback" type="busybody.callbacks.arrayCallback">The callback</param>
+		///<returns type="Object">A disposable</returns>
+		
 		var dispose = {
 			dispose: (function (allowPendingChanges) {
 
@@ -132,6 +151,10 @@ Class("busybody.arrayBase", function () {
     
 	var boundArrayStopKey = "busybody-do-not-apply-to";
     arrayBase.prototype.alteringArray = function(method, args) {
+		///<summary>Execute logic which will alter this array. Apply changes to any bound arrays.</summary>
+		///<param name="method" type="String">A method pointer which will alter the array</param>
+		///<param name="args" type="[]">The arguments to the method</param>
+				
         if (this.__alteringArray)
             throw "Calls to alteringArray must be synchronus and not nested.";
 			
@@ -158,6 +181,10 @@ Class("busybody.arrayBase", function () {
     };
 
     arrayBase.copyAll = function (from, to, convert) {
+		///<summary>Copy the contents of one array to another</summary>
+		///<param name="from" type="[]">The from array</param>
+		///<param name="to" type="[]">The to array</param>
+		///<param name="convert" type="Function">A function to convert values before copy</param>
         
         var args;
         if (convert) {
@@ -174,6 +201,9 @@ Class("busybody.arrayBase", function () {
     };
     
     arrayBase.prototype.bind = function(anotherArray) {
+		///<summary>Bind arrays</summary>
+		///<param name="anotherArray" type="[]">The other array</param>
+		///<returns type="busybody.disposable">A disposable</returns>
         
         if (!anotherArray || this.$boundArrays.indexOf(anotherArray) !== -1) return;
 		
@@ -193,6 +223,10 @@ Class("busybody.arrayBase", function () {
     };
 	
 	arrayBase.prototype.addCallback = function (callback) {
+		///<summary>Add an array callback</summary>
+		///<param name="callback" type="busybody.callbacks.arrayCallback">The callback</param>
+		///<returns type="busybody.disposable">A disposable</returns>
+		
         this._init();
 
         this.$callbacks.push(callback);
@@ -209,7 +243,8 @@ Class("busybody.arrayBase", function () {
 	};
     
     arrayBase.prototype.dispose = function() {
-        
+		///<summary>Dispose of the array</summary>
+		
         enumerateArr(this.$disposables, function (d) {
             d.dispose();
         });

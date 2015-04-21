@@ -3,6 +3,7 @@ Class("busybody.observableBase", function () {
         
     var observableBase = busybody.disposable.extend(function observableBase(forObject) {
         ///<summary>An object whose properties can be subscribed to</summary>
+		///<param name="forObject" type="Object" optional="true">Observe changes to another object</param>
 
         this._super();
 
@@ -13,6 +14,9 @@ Class("busybody.observableBase", function () {
     
 	// this function is also used by arrayBase
     observableBase.prototype.registerChangeBatch = function (changes) {
+		///<summary>Register a batch of changes to this object</summary>
+		///<param name="changes" type="[Object]">The changes</param>
+		
         if (!this.$changeBatch.length)
             setTimeout(this.processChangeBatch.bind(this));
         
@@ -20,6 +24,8 @@ Class("busybody.observableBase", function () {
     };
     
     observableBase.prototype.processChangeBatch = function () {
+		///<summary>Process the current batch of changes</summary>
+		
         var splitChanges = {};
         enumerateArr(this.$changeBatch, function(change) {
             if (!splitChanges[change.name])
@@ -42,6 +48,10 @@ Class("busybody.observableBase", function () {
     };
 
     observableBase.processChanges = function (callbacks, changes) {
+		///<summary>Process changes</summary>
+		///<param name="callbacks" type="[busybody.callbacks.chageCallback]">The callbacks</param>
+		///<returns type="[Function]">A list of items to execute after this funciton returns</returns>
+		
         var dispose = [];
         var evaluateMultiple = [];
         enumerateArr(callbacks, function (callback, i) {
@@ -66,11 +76,19 @@ Class("busybody.observableBase", function () {
     };
     
     observableBase.prototype.onNextPropertyChange = function (property, callback) {
+		///<summary>Fire a callback once, the next property change</summary>
+		///<param name="property" type="String">The property to observe</param>
+		///<param name="callback" type="Function">The callback</param>
+		
         throw "Abstract methods must be overridden";
     };
     
     observableBase.prototype.captureChanges = function (logic, callback, toProperty) {
-		
+		///<summary>Capture all of the changes to the property perpetrated by the logic</summary>
+		///<param name="logic" type="Function">The function which will change the array</param>
+		///<param name="callback" type="Function">The callback (function (changes) { })</param>
+		///<param name="toProperty" type="String">The property</param>
+				
 		if (toProperty && (toProperty = busybody.utils.obj.splitPropertyName(toProperty)).length > 1) {
 			return busybody.captureChanges(
 				busybody.utils.obj.getObject(toProperty.slice(0, toProperty.length - 1).join("."), this.$forObject || this), 
@@ -97,14 +115,26 @@ Class("busybody.observableBase", function () {
     };
     
     observableBase.prototype._captureChanges = function (logic, callback, toProperty) {
+		///<summary>Capture all of the changes to the property perpetrated by the logic</summary>
+		///<param name="logic" type="Function">The function which will change the array</param>
+		///<param name="callback" type="Function">The callback (function (changes) { })</param>
+		///<param name="toProperty" type="String">The property</param>
+		
         throw "Abstract methods must be overridden";
 	};
     
     observableBase.prototype.bind = function (property, otherObject, otherPropoerty) {
+		///<summary>Bind a property to another objects property</summary>
+		///<param name="property" type="String">The property</param>
+		///<param name="otherObject" type="Object">The other object</param>
+		///<param name="otherProperty" type="String">The other property</param>
+		
 		return busybody.bind(this, property, otherObject, otherPropoerty);
     };
 
     observableBase.prototype.observeArray = function (property, callback, context, options) {
+		///<summary>Observe another array. See busybody.array.observe for args and return value</summary>
+		
         var d2, d1 = this.observe(property, function (oldValue, newValue) {
             
             if (d2) {
@@ -150,8 +180,15 @@ Class("busybody.observableBase", function () {
     }
 
     observableBase.prototype.observe = function (property, callback, context, options) {
-        
-		// options: evaluateOnEachChange, evaluateIfValueHasNotChanged, useRawChanges
+		///<summary>Observe changes to a property </summary>
+		///<param name="property" type="String">The property</param>
+		///<param name="callback" type="Function">The callback to execute</param>
+		///<param name="context" type="Any" optional="true">The "this" in the callback</param>
+		///<param name="options" type="Object" optional="true">Options for the callback</param>
+		///<param name="options.useRawChanges" type="Boolean">Default: false. Use the change objects from the Array.observe as arguments</param>
+		///<param name="options.evaluateOnEachChange" type="Boolean">Default: false. Evaluate once for each change rather than on an amalgamation of changes</param>
+		///<param name="options.evaluateIfValueHasNotChanged" type="Boolean">Default: false. Evaluate if the oldValue and the newValue are the same</param>
+		///<param name="options.activateImmediately" type="Boolean">Default: false. Activate the callback now, meaning it could get changes which were applied before the callback was created</param>
 		
         if (/[\.\[]/.test(property)) {
             var pw = new busybody.observeTypes.pathObserver(this.$forObject || this, property, callback, context);
@@ -193,10 +230,15 @@ Class("busybody.observableBase", function () {
     };
 
     observableBase.prototype._init = function (forProperty) {
+		///<summary>Begin observing a property</summary>
+		///<param name="forProperty" type="String">The property</param>
+		
         throw "Abstract methods must be implemented";
     };
 
     observableBase.prototype.dispose = function () {
+		///<summary>Dispose fo this</summary>
+		
         this._super();
         
         delete this.$forObject;
@@ -205,6 +247,11 @@ Class("busybody.observableBase", function () {
     };
     
     observableBase.prototype.computed = function (property, callback, options) {
+		///<summary>Create a computed which bind's a property. The context of the callback will be this observable.</summary>
+		///<param name="property" type="String">The property</param>
+		///<param name="callback" type="Function">The computed logic.</param>
+		///<param name="options" type="Object" optional="true">See busybody.observeTypes.computed for options</param>
+		///<returns type="busybody.observeTypes.computed">The computed</param>
         
         var computed = new busybody.observeTypes.computed(callback, this, options);
         computed.bind(this.$forObject || this, property);
@@ -212,22 +259,37 @@ Class("busybody.observableBase", function () {
         return computed;        
     };
     
+	//TODM
     observableBase.prototype.del = function (property) {
+		///<summary>Delete a property and publish changes.</summary>
+		///<param name="property" type="String">The property</param>
         
         delete (this.$forObject || this)[property];
     };
         
     observableBase.afterObserveCycle = function(callback) {
+		///<summary>Execute a callback after each observe cycle.</summary>
+		///<param name="callback" type="Function">The callback.</param>
+		///<returns type="busybody.disposable">A dispose callback</param>
+		
         return busybody.utils.observeCycleHandler.instance.afterObserveCycle(callback);
     };
 
     observableBase.beforeObserveCycle = function(callback) {
+		///<summary>Execute a callback before each observe cycle.</summary>
+		///<param name="callback" type="Function">The callback.</param>
+		///<returns type="busybody.disposable">A dispose callback</param>
+		
         return busybody.utils.observeCycleHandler.instance.beforeObserveCycle(callback);
     };
 
     observableBase.afterNextObserveCycle = function (callback, waitForNextCycleToStart) {
+		///<summary>Execute a callback after the next observe cycle.</summary>
+		///<param name="callback" type="Function">The callback.</param>
+		///<param name="waitForNextCycleToStart" type="Boolean" options="true">If false and there is no observe cycle running, will execute the callback immediately.</param>
+		///<returns type="busybody.disposable">A dispose callback</param>
 
-        if (busybody.utils.observeCycleHandler.instance.length === 0 && !waitForNextCycleToStart) {
+        if (!waitForNextCycleToStart && busybody.utils.observeCycleHandler.instance.length === 0) {
             callback();
             return;
         }
@@ -241,6 +303,9 @@ Class("busybody.observableBase", function () {
     };
 
     observableBase.beforeNextObserveCycle = function (callback) {
+		///<summary>Execute a callback before the next observe cycle.</summary>
+		///<param name="callback" type="Function">The callback.</param>
+		///<returns type="busybody.disposable">A dispose callback</param>
 
         var dispose = busybody.utils.observeCycleHandler.instance.beforeObserveCycle(function () {
             dispose.dispose();

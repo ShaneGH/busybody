@@ -2,10 +2,16 @@
 var observable = useObjectObserve ?
     Class("busybody.observable", function () {
         var observable = busybody.observableBase.extend(function observable(forObject) {
+			///<summary>An object whose properties can be subscribed to</summary>
+			///<param name="forObject" type="Object" optional="true">Observe changes to another object</param>
+			
             this._super(forObject);
         });
 
         observable.prototype.onNextPropertyChange = function (property, callback) {
+			///<summary>Fire a callback once, the next property change</summary>
+			///<param name="property" type="String">The property to observe</param>
+			///<param name="callback" type="Function">The callback</param>
 
             var cb = (function (changes) {
                 if (!cb) return;
@@ -24,6 +30,10 @@ var observable = useObjectObserve ?
         };
 
         observable.prototype._captureChanges = function (logic, callback) {
+			///<summary>Capture all of the changes to the property perpetrated by the logic</summary>
+			///<param name="logic" type="Function">The function which will change the array</param>
+			///<param name="callback" type="Function">The callback (function (changes) { })</param>
+			///<param name="toProperty" type="String">The property</param>
 			
 			Object.observe(this.$forObject || this, callback);
 			logic();
@@ -31,6 +41,9 @@ var observable = useObjectObserve ?
         };
 
         observable.prototype._init = function () {
+			///<summary>Begin observing a property</summary>
+			///<param name="forProperty" type="String">The property</param>
+			
             if (this.__subscribeCallback) return;
 
             this.__subscribeCallback = this.registerChangeBatch.bind(this);
@@ -38,6 +51,8 @@ var observable = useObjectObserve ?
         };
 
         observable.prototype.dispose = function () {
+			///<summary>Dispose</summary>
+			
             this._super();
 
             if (this.__subscribeCallback) {
@@ -50,6 +65,9 @@ var observable = useObjectObserve ?
     }) :
     Class("busybody.observable", function () {
         var observable = busybody.observableBase.extend(function observable(forObject) {
+			///<summary>An object whose properties can be subscribed to</summary>
+			///<param name="forObject" type="Object" optional="true">Observe changes to another object</param>
+			
             this._super(forObject);
 
             this.$observed = {};
@@ -58,19 +76,29 @@ var observable = useObjectObserve ?
         });
 
         observable.prototype.onNextPropertyChange = function (property, callback) {
+			///<summary>Fire a callback once, the next property change</summary>
+			///<param name="property" type="String">The property to observe</param>
+			///<param name="callback" type="Function">The callback</param>
 
             (this.$onNextPropertyChanges[property] || (this.$onNextPropertyChanges[property] = [])).push(callback);
         };
 
         observable.prototype._captureChanges = function (logic, callback) {
+			///<summary>Capture all of the changes to the property perpetrated by the logic</summary>
+			///<param name="logic" type="Function">The function which will change the array</param>
+			///<param name="callback" type="Function">The callback (function (changes) { })</param>
+			///<param name="toProperty" type="String">The property</param>
 
             this.$captureCallbacks.push(callback);
             logic();
             this.$captureCallbacks.splice(this.$captureCallbacks.indexOf(callback), 1);
         };
 
+		//TODO: prototype
         function getObserver(forObject) { return forObject.$observer || forObject; }
         observable.prototype._init = function (forProperty) {
+			///<summary>Begin observing a property</summary>
+			///<param name="forProperty" type="String">The property</param>
 
             if (this.$observed.hasOwnProperty(forProperty)) return;
 
@@ -110,6 +138,8 @@ var observable = useObjectObserve ?
         };
         
         observable.prototype.addChange = function (change) {
+			///<summary>Add a change to the batch</summary>
+			///<param name="change" type="Object">The change</param>
             
             if (!this.__changeToken) {
                 this.__changeToken = [];
@@ -127,12 +157,16 @@ var observable = useObjectObserve ?
         };
     
         observable.prototype.del = function (property) {
+			///<summary>Delete a property and publish changes.</summary>
+			///<param name="property" type="String">The property</param>
 
             (this.$forObject || this)[property] = undefined;
             this._super(property);
         }
 
         observable.prototype.dispose = function () {
+			///<summary>Dispose.</summary>
+			
             this._super();
             for (var i in this.$onNextPropertyChanges)
                 delete this.$onNextPropertyChanges[i];

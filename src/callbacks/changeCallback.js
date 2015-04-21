@@ -2,12 +2,12 @@
 Class("busybody.callbacks.changeCallback", function () {
         
     var changeCallback = orienteer.extend(function changeCallback(evaluateOnEachChange) {
-		///<summary>Base class for change callback handlers<summary>
-		///<param name="evaluateOnEachChange" type="Boolean">Default: false. Evaluate once for each change rather than on an amalgamation of changes<param>
+		///<summary>Base class for change callback handlers</summary>
+		///<param name="evaluateOnEachChange" type="Boolean">Default: false. Evaluate once for each change rather than on an amalgamation of changes</param>
 		
         this._super();
         
-		///<summary type="Boolean">Default: false. Evaluate once for each change rather than on an amalgamation of changes<summary>
+		///<summary type="Boolean">Default: false. Evaluate once for each change rather than on an amalgamation of changes</summary>
         this.evaluateOnEachChange = evaluateOnEachChange;
     });
     
@@ -15,8 +15,8 @@ Class("busybody.callbacks.changeCallback", function () {
     changeCallback.dispose = {};
     
     changeCallback.prototype.activate = function (activatingChange) {
-		///<summary>Activate this callback<summary>
-		///<param name="activatingChange" type="Object" optional="true">The first change to execute on<param>
+		///<summary>Activate this callback</summary>
+		///<param name="activatingChange" type="Object" optional="true">The first change to execute on</param>
 		
         if (this._activated || this._activatingChange)
             throw "This callback has been activated";
@@ -30,8 +30,8 @@ Class("busybody.callbacks.changeCallback", function () {
     };
     
     changeCallback.prototype.deactivate = function (deactivatingChange) {
-		///<summary>Deactivate this callback<summary>
-		///<param name="deactivatingChange" type="Object" optional="true">The first change to deactivate on<param>
+		///<summary>Deactivate this callback</summary>
+		///<param name="deactivatingChange" type="Object" optional="true">The first change to deactivate on</param>
 		
         if (this._deactivatingChange)
             throw "This callback has a deactivate pending";
@@ -45,10 +45,10 @@ Class("busybody.callbacks.changeCallback", function () {
     };
 
     changeCallback.prototype.evaluateSingle = function (changes, changeIndex) {
-		///<summary>Evaluate a single change<summary>
-		///<param name="changes" type="[Object]">A list of all changes in the batch<param>
-		///<param name="index" type="Number">The index of the change to execute<param>
-		///<returns type="Any">The return value of the callback<param>
+		///<summary>Evaluate a single change</summary>
+		///<param name="changes" type="[Object]">A list of all changes in the batch</param>
+		///<param name="index" type="Number">The index of the change to execute</param>
+		///<returns type="Any">The return value of the callback</param>
         
         if (!this.evaluateOnEachChange) return;
 
@@ -69,18 +69,18 @@ Class("busybody.callbacks.changeCallback", function () {
     };
     
     changeCallback.prototype._evaluateSingle = function (changes, changeIndex) {
-		///<summary>Abstract. Evaluate a single change<summary>
-		///<param name="changes" type="[Object]">A list of all changes in the batch<param>
-		///<param name="index" type="Number">The index of the change to execute<param>
-		///<returns type="Any">The return value of the callback<param>
+		///<summary>Abstract. Evaluate a single change</summary>
+		///<param name="changes" type="[Object]">A list of all changes in the batch</param>
+		///<param name="index" type="Number">The index of the change to execute</param>
+		///<returns type="Any">The return value of the callback</param>
 		
         throw "Abstract methods must be implemented";
     };
 
     changeCallback.prototype.evaluateMultiple = function (changes) {
-		///<summary>Evaluate on batch of changes<summary>
-		///<param name="changes" type="[Object]">A list of all changes in the batch<param>
-		///<returns type="Any">The return value of the callback<param>
+		///<summary>Evaluate on batch of changes</summary>
+		///<param name="changes" type="[Object]">A list of all changes in the batch</param>
+		///<returns type="Any">The return value of the callback</param>
 		
         if (this.evaluateOnEachChange || !changes.length) return;
 
@@ -116,11 +116,11 @@ Class("busybody.callbacks.changeCallback", function () {
     };
     
     changeCallback.prototype._evaluateMultiple = function (changes, beginAt, endAt) {
-		///<summary>Evaluate on batch of changes<summary>
-		///<param name="changes" type="[Object]">A list of all changes in the batch<param>
-		///<param name="beginAt" type="Number">The index of the first change to execute<param>
-		///<param name="endAt" type="Number">The index of the change after the last change to execute<param>
-		///<returns type="Any">The return value of the callback<param>
+		///<summary>Evaluate on batch of changes</summary>
+		///<param name="changes" type="[Object]">A list of all changes in the batch</param>
+		///<param name="beginAt" type="Number">The index of the first change to execute</param>
+		///<param name="endAt" type="Number">The index of the change after the last change to execute</param>
+		///<returns type="Any">The return value of the callback</param>
 		
         throw "Abstract methods must be implemented";
     };

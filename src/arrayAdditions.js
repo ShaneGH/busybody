@@ -2,12 +2,19 @@
     
     var array = busybody.array;
     
-    array.prototype.replace = function(index, replacement) {        
-        this.splice(index, index >= this.length ? 0 : 1, replacement);
+    array.prototype.replace = function(index, replacement) {
+		///<summary>Replace an element in the array and notify the change handler</summary>
+		///<param name="index" type="Number">The index</param>
+		///<param name="replacement" type="Any">The replacement</param>
+		///<returns type="Any">The replacement</returns>
+		
+		this.splice(index, index >= this.length ? 0 : 1, replacement);
         return replacement;
     };
 
     array.prototype.pop = function() {
+		///<summary>Remove and return the last element of the array</summary>
+		///<returns type="Any">The value</returns>
 
         if (!useObjectObserve)
             if (this.length)
@@ -23,6 +30,8 @@
     };
 
     array.prototype.shift = function() {
+		///<summary>Remove and return the first element in the array</summary>
+		///<returns type="Any">The value</returns>
 
         if (!useObjectObserve)
             if (this.length)
@@ -38,13 +47,22 @@
     };
 
     array.prototype.remove = function(item) {
+		///<summary>Remove an item from the array and reduce the length by 1</summary>
+		///<param name="item" type="Any">The item</param>
+		///<returns type="Boolean">Whether the array contained the element or not</returns>
 
         var i;
-        if ((i = this.indexOf(item)) !== -1)
+        if ((i = this.indexOf(item)) !== -1) {
             this.splice(i, 1);
+			return true;
+		}
+		
+		return false;
     };
 
     array.prototype.push = function() {
+		///<summary>Add all of the arguments to the end of this array</summary>
+		///<returns type="Number">The new length</returns>
 
         if (!useObjectObserve)
             this.registerChangeBatch([{
@@ -58,7 +76,8 @@
         return this.alteringArray("push", arguments);
     };
 
-    array.prototype.reverse = function(item) {
+    array.prototype.reverse = function() {
+		///<summary>Reverse the contents of this array</summary>
 
 		var length = this.length;
 		if (length < 2) return;
@@ -90,7 +109,10 @@
         return this.alteringArray("reverse");
     };
 
-    array.prototype.sort = function() {
+    array.prototype.sort = function(sortFunction) {
+		///<summary>Sort the elements in the array</summary>
+		///<param name="sortFunction" type="Function">A function to compare items</param>
+		///<returns type="[]">this</returns>
 		
         if (!useObjectObserve) {
                 
@@ -114,6 +136,11 @@
     };
 
     array.prototype.splice = function(index, removeCount, addItems) {
+		///<summary>Add and remove items from an array</summary>
+		///<param name="index" type="Number">The point in the array to begin</param>
+		///<param name="removeCount" type="Number">The number of items to remove</param>
+		///<param name="addItems" type="Any" optional="true">All other arguments will be added to the array</param>
+		
         if (!useObjectObserve) {
             var removed = [];
             for(var i = index, ii = removeCount + index > this.length ? this.length : removeCount + index; 
