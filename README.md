@@ -28,8 +28,8 @@ myObject.myProperty = false;
 | --- | --- | --- | --- |
 |object|Object|The object which contains the property to observe|No|
 |property|String|The property|No|
-|callback|property|The callback to execute|No|
-|context|Function|The "this" in the callback|Yes|
+|callback|Function|The callback to execute|No|
+|context|Object|The "this" in the callback|Yes|
 |options|Object|Options for the callback|Yes|
 |options.useRawChanges|Boolean|Default: false. Use the change objects from the Object.observe as arguments|Yes|
 |options.evaluateOnEachChange|Boolean|Default: false. Evaluate once for each change rather than on an amalgamation of changes|Yes|
