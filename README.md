@@ -65,7 +65,7 @@ busybody.tryObserve(myObject, "myProperty", function (oldValue, newValue) {
 myObject.myProperty = false;
 ```
 ####busybody.tryObserve arguments
-busybody.tryObserve arguments are the same as [busybody.observe arguments](busybodyobserve-arguments)
+busybody.tryObserve arguments are the same as [busybody.observe arguments](#busybodyobserve-arguments)
 
 
 ###Observe a path
