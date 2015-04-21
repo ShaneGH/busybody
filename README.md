@@ -18,7 +18,7 @@ busybody.observe(myObject, "myProperty", function (oldValue, newValue) {
 
 myObject.myProperty = false;
 ```
-####busybody.observe arguments
+<h4 id="busybodyObserveArguments">busybody.observe arguments</h4>
 |Name|Type|Description|Optional |
 | --- | --- | --- | --- |
 |property|String|The property|No|
@@ -29,6 +29,36 @@ myObject.myProperty = false;
 |options.evaluateOnEachChange|Boolean|Default: false. Evaluate once for each change rather than on an amalgamation of changes|Yes|
 |options.evaluateIfValueHasNotChanged|Boolean|Default: false. Evaluate if the oldValue and the newValue are the same|Yes|
 |options.activateImmediately|Boolean|Default: false. Activate the callback now, meaning it could get changes which were applied before the callback was created|Yes|
+
+###Attempting to observe a value
+```javascript
+var myObject = {
+	myProperty: true
+};
+
+busybody.tryObserve(myObject, "myProperty", function (oldValue, newValue) {
+	console.log("myProperty has changed from: " + oldValue + " to " + newValue + ".")
+});
+
+myObject.myProperty = false;
+```
+
+In this case, the value will not be observed, as `myObject` is not observable. In order to observe it correctly use the following code:
+```javascript
+var myObject = {
+	myProperty: true
+};
+
+busybody.makeObservable(myObject);
+busybody.tryObserve(myObject, "myProperty", function (oldValue, newValue) {
+	console.log("myProperty has changed from: " + oldValue + " to " + newValue + ".")
+});
+
+myObject.myProperty = false;
+```
+####busybody.tryObserve arguments
+busybody.tryObserve arguments are the same as <a href="#busybodyObserveArguments">busybody.observe arguments</a>
+
 
 ###Observing a path
 ```javascript
