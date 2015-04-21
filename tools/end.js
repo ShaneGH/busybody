@@ -100,6 +100,17 @@
         return false;
     };
 
+    busybody.computed = function (object, property, callback, options) {
+		///<summary>Create a computed which bind's to a property. The context of the callback will be the object.</summary>
+		///<param name="object" type="Object">The object</param>
+		///<param name="property" type="String">The property</param>
+		///<param name="callback" type="Function">The computed logic.</param>
+		///<param name="options" type="Object" optional="true">See busybody.observeTypes.computed for options</param>
+		///<returns type="busybody.observeTypes.computed">The computed</param>
+        
+		return busybody.getObserver(busybody.makeObservable(object)).computed(property, callback, options);
+    };
+
     busybody.observeArray = function (object, property, callback, context, options) {
 		///<summary>Observe an array property of an object for changes</summary>
 		///<param name="object" type="Object">The object</param>

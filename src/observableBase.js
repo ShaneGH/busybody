@@ -252,13 +252,13 @@ Class("busybody.observableBase", function () {
     };
     
     observableBase.prototype.computed = function (property, callback, options) {
-		///<summary>Create a computed which bind's a property. The context of the callback will be this observable.</summary>
+		///<summary>Create a computed which bind's to a property. The context of the callback will be this observable.</summary>
 		///<param name="property" type="String">The property</param>
 		///<param name="callback" type="Function">The computed logic.</param>
 		///<param name="options" type="Object" optional="true">See busybody.observeTypes.computed for options</param>
 		///<returns type="busybody.observeTypes.computed">The computed</param>
         
-        var computed = new busybody.observeTypes.computed(callback, this, options);
+        var computed = new busybody.observeTypes.computed(callback, this.$forObject || this, options);
         computed.bind(this.$forObject || this, property);
         this.registerDisposable(computed);
         return computed;        

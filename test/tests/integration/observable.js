@@ -583,16 +583,12 @@ function testMe (moduleName, buildSubject) {
     testUtils.testWithUtils("computed", "simple change, complex functions are in computed.js", false, function(methods, classes, subject, invoker) {
         // arrange
         var subject = buildSubject();
-        if (!subject.computed) {
-            ok(true, "test not valid for this object");
-            return;
-        }
         
         subject.val1 = buildSubject();
         subject.val1.val2 = "hello";
         subject.val3 = "world";
 
-        var disp = subject.computed("comp", function() {
+        var disp = busybody.computed(subject, "comp", function() {
             return this.val1.val2 + " " + this.val3;
         });
 
