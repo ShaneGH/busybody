@@ -3,9 +3,9 @@
 busybody supports non Object.observe environments as far back as IE 9
 
 ##Index
-* <a href="#ObservingAValue">Observe</a>
+* [Observe](observing-a-value)
 * <a href="#ObserveAPath">Observe a path</a>
-* <a href="#observablearrays">Observable Arrays</a>
+* <a href="#observable-arrays">Observable Arrays</a>
 * <a href="#ComputedObservables">Computed Observables</a>
 * <a href="#PerformanceGains">Performance gains</a>
 * <a href="#CoreFunctionList">Core function list</a>
