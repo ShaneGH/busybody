@@ -67,7 +67,7 @@ busybody.tryObserve arguments are the same as <a href="#busybodyObserveArguments
 Observing paths is the same as observing properties
 ```javascript
 
-// objects which are not observalbe in a path cannot be observed.
+// objects which are not observable in a path cannot be observed.
 // makeObservable(...) will make an object observable without altering it
 var myObject = {
 	myProperty1: busybody.makeObservable({
@@ -91,6 +91,7 @@ myObject.myProperty1.myProperty2 = false;
 ####Valid paths:
 * property1.property2
 * property1[3].property2
+
 ####Invalid paths:
 * property1["property2"]
 * property1[aValue]
