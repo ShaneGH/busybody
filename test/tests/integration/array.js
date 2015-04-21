@@ -6,6 +6,17 @@ module("busybody.array, integration", {
     }
 });
 
+testUtils.testWithUtils("constructor", "non \"new\"", false, function(methods, classes, subject, invoker) {
+    // arrange
+	// act
+    var subject = busybody.array([22]);
+
+    // assert
+	ok(subject instanceof busybody.array);
+	strictEqual(subject.length, 1);
+	strictEqual(subject[0], 22);
+});
+
 testUtils.testWithUtils("observe", "length", false, function(methods, classes, subject, invoker) {
     // arrange
     var subject = new busybody.array([1]);

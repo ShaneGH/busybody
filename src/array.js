@@ -4,7 +4,10 @@ Class("busybody.array", function () {
     var array = busybody.arrayBase.extend(function array (initialValues) {
 		///<summary>An observable array</summary>
 		///<param name="initialValues" type="[Any]">Initial values for the array</param>
-        
+		
+		if (this === busybody)
+			return new array(initialValues);
+		
         this._super.apply(this, arguments);
     });
          
@@ -76,6 +79,9 @@ Class("busybody.array", function () {
     var array = busybody.arrayBase.extend(function array (initialValues) {
 		///<summary>An observable array</summary>
 		///<param name="initialValues" type="[Any]">Initial values for the array</param>
+		
+		if (this === busybody)
+			return new array(initialValues);
         
         this._super.apply(this, arguments);
         
