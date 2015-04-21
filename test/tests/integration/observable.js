@@ -11,21 +11,21 @@ function testMe (moduleName, buildSubject) {
     testUtils.testWithUtils("captureChanges", null, false, function(methods, classes, subject, invoker) {
         
         // arrange
-        var subject = bb.makeObservable(buildSubject());
-        bb.observe(subject, "aaa", function(){});
-        bb.observe(subject, "bbb", function(){});
-        bb.observe(subject, "ccc", function(){});
-        bb.observe(subject, "ddd", function(){});
+        var subject = busybody.makeObservable(buildSubject());
+        busybody.observe(subject, "aaa", function(){});
+        busybody.observe(subject, "bbb", function(){});
+        busybody.observe(subject, "ccc", function(){});
+        busybody.observe(subject, "ddd", function(){});
         
-        stop(bb.useObjectObserve ? 1 : 3);
+        stop(busybody.useObjectObserve ? 1 : 3);
         
         var changes = [], i = 0;
-        bb.captureChanges(subject, function () {
+        busybody.captureChanges(subject, function () {
             subject.aaa = "bbb";
             subject.bbb = "ccc";
             subject.ccc = "ddd";
         }, function (ch) {
-            if (bb.useObjectObserve) {
+            if (busybody.useObjectObserve) {
                 strictEqual(ch.length, 3);
                 
                 strictEqual(ch[0].name, "aaa");
@@ -57,11 +57,11 @@ function testMe (moduleName, buildSubject) {
 		
         // arrange
         var subject = buildSubject();
-		bb.makeObservable(subject);
+		busybody.makeObservable(subject);
         
         stop();
 		
-        bb.captureChanges(subject, function () {
+        busybody.captureChanges(subject, function () {
             subject.aaa = "111";
             subject.bbb = "222";
         }, function (ch) {
@@ -75,13 +75,13 @@ function testMe (moduleName, buildSubject) {
 		
         // arrange
         var subject = buildSubject();
-		bb.makeObservable(subject);
+		busybody.makeObservable(subject);
 		subject.aaa = buildSubject();
-		bb.makeObservable(subject.aaa);
+		busybody.makeObservable(subject.aaa);
         
         stop();
         
-        bb.captureChanges(subject, function () {
+        busybody.captureChanges(subject, function () {
             subject.aaa.xxx = "111";
             subject.aaa.yyy = "222";
             subject["aaa.xxx"] = "333";
@@ -101,15 +101,15 @@ function testMe (moduleName, buildSubject) {
         
         stop();
 		
-        bb.bind(subject1, "aaa", subject2, "bbb", true);
+        busybody.bind(subject1, "aaa", subject2, "bbb", true);
 		
-		bb.observe(subject2, "bbb", function (oldVal, newVal) {
+		busybody.observe(subject2, "bbb", function (oldVal, newVal) {
 			strictEqual(newVal, 345);
 			start();
 		});
 		
 		subject1.aaa = 345;
-		bb.observe(subject1, "aaa", function (oldVal, newVal) {
+		busybody.observe(subject1, "aaa", function (oldVal, newVal) {
 			ok(false, "This should not be triggered again");
 		}, {evaluateOnEachChange: true, evaluateIfValueHasNotChanged: true});
     });
@@ -122,15 +122,15 @@ function testMe (moduleName, buildSubject) {
         
         stop();
 		
-        bb.bind(subject1, "aaa", subject2, "bbb", true);
+        busybody.bind(subject1, "aaa", subject2, "bbb", true);
 		
-		bb.observe(subject1, "aaa", function (oldVal, newVal) {
+		busybody.observe(subject1, "aaa", function (oldVal, newVal) {
 			strictEqual(newVal, 345);
 			start();
 		});
 		
 		subject2.bbb = 345;
-		bb.observe(subject2, "bbb", function (oldVal, newVal) {
+		busybody.observe(subject2, "bbb", function (oldVal, newVal) {
 			ok(false, "This should not be triggered again");
 		}, {evaluateOnEachChange: true, evaluateIfValueHasNotChanged: true});
     });
@@ -138,22 +138,22 @@ function testMe (moduleName, buildSubject) {
     testUtils.testWithUtils("bind", "complex, left to right", false, function(methods, classes, subject, invoker) {
 		
         // arrange
-        var subject1 = bb.makeObservable(buildSubject());
-        var subject2 = bb.makeObservable(buildSubject());
-        subject1.aaa = bb.makeObservable(buildSubject());
-        subject2.bbb = bb.makeObservable(buildSubject());
+        var subject1 = busybody.makeObservable(buildSubject());
+        var subject2 = busybody.makeObservable(buildSubject());
+        subject1.aaa = busybody.makeObservable(buildSubject());
+        subject2.bbb = busybody.makeObservable(buildSubject());
         
         stop();
 		
-        bb.bind(subject1, "aaa.xxx", subject2, "bbb.yyy", true);
+        busybody.bind(subject1, "aaa.xxx", subject2, "bbb.yyy", true);
 		
-		bb.observe(subject2, "bbb.yyy", function (oldVal, newVal) {
+		busybody.observe(subject2, "bbb.yyy", function (oldVal, newVal) {
 			strictEqual(newVal, 345);
 			start();
 		});
 		
 		subject1.aaa.xxx = 345;
-		bb.observe(subject1, "aaa.xxx", function (oldVal, newVal) {
+		busybody.observe(subject1, "aaa.xxx", function (oldVal, newVal) {
 			ok(false, "This should not be triggered again");
 		}, {evaluateOnEachChange: true, evaluateIfValueHasNotChanged: true});
     });
@@ -161,22 +161,22 @@ function testMe (moduleName, buildSubject) {
     testUtils.testWithUtils("bind", "complex, right to left", false, function(methods, classes, subject, invoker) {
 		
         // arrange
-        var subject1 = bb.makeObservable(buildSubject());
-        var subject2 = bb.makeObservable(buildSubject())
-        subject1.aaa = bb.makeObservable(buildSubject());
-        subject2.bbb = bb.makeObservable(buildSubject());
+        var subject1 = busybody.makeObservable(buildSubject());
+        var subject2 = busybody.makeObservable(buildSubject())
+        subject1.aaa = busybody.makeObservable(buildSubject());
+        subject2.bbb = busybody.makeObservable(buildSubject());
         
         stop();
 		
-        bb.bind(subject1, "aaa.xxx", subject2, "bbb.yyy", true);
+        busybody.bind(subject1, "aaa.xxx", subject2, "bbb.yyy", true);
 		
-		bb.observe(subject1, "aaa.xxx", function (oldVal, newVal) {
+		busybody.observe(subject1, "aaa.xxx", function (oldVal, newVal) {
 			strictEqual(newVal, 345);
 			start();
 		});
 		
 		subject2.bbb.yyy = 345;
-		bb.observe(subject1, "bbb.yyy", function (oldVal, newVal) {
+		busybody.observe(subject1, "bbb.yyy", function (oldVal, newVal) {
 			ok(false, "This should not be triggered again");
 		}, {evaluateOnEachChange: true, evaluateIfValueHasNotChanged: true});
     });
@@ -186,11 +186,11 @@ function testMe (moduleName, buildSubject) {
         // arrange
         var subject1 = buildSubject();
         var subject2 = buildSubject();
-		var aaa = subject1.aaa = new bb.array();
-		var bbb = subject2.bbb = new bb.array();
+		var aaa = subject1.aaa = new busybody.array();
+		var bbb = subject2.bbb = new busybody.array();
         
         stop();
-        bb.bind(subject1, "aaa", subject2, "bbb", true);
+        busybody.bind(subject1, "aaa", subject2, "bbb", true);
 		
 		subject2.bbb.observe(function () {
 			strictEqual(subject2.bbb, bbb);
@@ -210,11 +210,11 @@ function testMe (moduleName, buildSubject) {
         // arrange
         var subject1 = buildSubject();
         var subject2 = buildSubject();
-		var aaa = subject1.aaa = new bb.array();
-		var bbb = subject2.bbb = new bb.array();
+		var aaa = subject1.aaa = new busybody.array();
+		var bbb = subject2.bbb = new busybody.array();
         
         stop();
-        bb.bind(subject1, "aaa", subject2, "bbb", true);
+        busybody.bind(subject1, "aaa", subject2, "bbb", true);
 		
 		subject1.aaa.observe(function () {
 			strictEqual(subject1.aaa, aaa);
@@ -234,10 +234,10 @@ function testMe (moduleName, buildSubject) {
         // arrange
         var subject1 = buildSubject();
         var subject2 = buildSubject();
-		var aaa = subject1.aaa = new bb.array();
+		var aaa = subject1.aaa = new busybody.array();
         
         stop();
-        bb.bind(subject1, "aaa", subject2, "bbb", true);
+        busybody.bind(subject1, "aaa", subject2, "bbb", true);
 		
 		subject1.aaa.observe(function () {
 			
@@ -255,11 +255,11 @@ function testMe (moduleName, buildSubject) {
         // arrange
         var subject1 = buildSubject();
         var subject2 = buildSubject();
-		subject1.aaa = new bb.array();
+		subject1.aaa = new busybody.array();
 		subject2.bbb = {};
         
 		throws(function () {
-        	bb.bind(subject1, "aaa", subject2, "bbb", true);
+        	busybody.bind(subject1, "aaa", subject2, "bbb", true);
 		});
     });
     
@@ -267,10 +267,10 @@ function testMe (moduleName, buildSubject) {
 		
         // arrange
         var subject = buildSubject();
-        bb.observe(subject, "val", function() {});
+        busybody.observe(subject, "val", function() {});
         subject.val = "aaa";
         
-        bb.observe(subject, "val", function(oldVal, newVal) {
+        busybody.observe(subject, "val", function(oldVal, newVal) {
             strictEqual(oldVal, undefined);
             strictEqual(newVal, "aaa");
             start();
@@ -287,7 +287,7 @@ function testMe (moduleName, buildSubject) {
         var subject = buildSubject();
         subject.val = "aaa";
         
-        bb.observe(subject, "val", function(oldVal, newVal) {
+        busybody.observe(subject, "val", function(oldVal, newVal) {
             strictEqual(oldVal, "aaa");
             strictEqual(newVal, "ccc");
             start();
@@ -304,17 +304,17 @@ function testMe (moduleName, buildSubject) {
         
         // arrange
         var subject = buildSubject();
-        bb.observe(subject, "val", function() {});    // invoke watch function
+        busybody.observe(subject, "val", function() {});    // invoke watch function
         
         subject.val = "www";
         subject.val = "xxx";
-        bb.observe(subject, "val", function(oldVal, newVal) {
+        busybody.observe(subject, "val", function(oldVal, newVal) {
             strictEqual(oldVal, "xxx");
             strictEqual(newVal, "yyy");
             start();
         }, null, true);
         
-        bb.observe(subject, "val", function(oldVal, newVal) {
+        busybody.observe(subject, "val", function(oldVal, newVal) {
             strictEqual(oldVal, "xxx");
             strictEqual(newVal, "yyy");
             start();
@@ -331,7 +331,7 @@ function testMe (moduleName, buildSubject) {
         // arrange
         var subject = buildSubject();
         subject.val = "xxx";
-        var disp = bb.observe(subject, "val", function(oldVal, newVal) {
+        var disp = busybody.observe(subject, "val", function(oldVal, newVal) {
             strictEqual(oldVal, "xxx");
             strictEqual(newVal, "yyy");
             start();
@@ -352,13 +352,13 @@ function testMe (moduleName, buildSubject) {
         subject.val1 = "aaa";
         subject.val2 = "bbb";
         
-        bb.observe(subject, "val1", function(oldVal, newVal) {
+        busybody.observe(subject, "val1", function(oldVal, newVal) {
             strictEqual(oldVal, "aaa");
             strictEqual(newVal, "ccc");
             start();
         });
         
-        bb.observe(subject, "val2", function(oldVal, newVal) {
+        busybody.observe(subject, "val2", function(oldVal, newVal) {
             strictEqual(oldVal, "bbb");
             strictEqual(newVal, "ddd");
             start();
@@ -376,14 +376,14 @@ function testMe (moduleName, buildSubject) {
         var subject = buildSubject();
         subject.val = "aaa";
         
-        bb.observe(subject, "val", function(oldVal, newVal) {
+        busybody.observe(subject, "val", function(oldVal, newVal) {
             strictEqual(oldVal, "aaa");
             strictEqual(newVal, undefined);
             start();
         });
 
         // act
-        bb.del(subject, "val");
+        busybody.del(subject, "val");
 
         stop();
     });
@@ -394,7 +394,7 @@ function testMe (moduleName, buildSubject) {
         subject.val = "aaa";
 
         var number = 0;
-        bb.observe(subject, "val", function(oldVal, newVal) {
+        busybody.observe(subject, "val", function(oldVal, newVal) {
             if(number === 0) {
                 strictEqual(oldVal, "aaa");
                 strictEqual(newVal, "bbb");
@@ -424,7 +424,7 @@ function testMe (moduleName, buildSubject) {
         subject.val = "aaa";
         
 		var i = 0;
-        var disp = bb.observe(subject, "val", function(change) {
+        var disp = busybody.observe(subject, "val", function(change) {
 			if (i === 0)
 				strictEqual(change.oldValue, "aaa");
 			else if (i === 1)
@@ -451,7 +451,7 @@ function testMe (moduleName, buildSubject) {
         var subject = buildSubject();
         subject.val = "aaa";
         
-        var disp = bb.observe(subject, "val", function(changes) {
+        var disp = busybody.observe(subject, "val", function(changes) {
 			strictEqual(changes.length, 2);
 			strictEqual(changes[0].oldValue, "aaa");
 			strictEqual(changes[1].oldValue, "bbb");
@@ -472,7 +472,7 @@ function testMe (moduleName, buildSubject) {
         // arrange
         var subject = buildSubject();
         subject.val = "aaa";
-        var dispose = bb.observe(subject, "val", function(oldVal, newVal) {
+        var dispose = busybody.observe(subject, "val", function(oldVal, newVal) {
             ok(false, "should not have been called");
         });
 
@@ -490,11 +490,11 @@ function testMe (moduleName, buildSubject) {
     testUtils.testWithUtils("observe", "simple change, complex functions are in pathWatch.js", false, function(methods, classes, subject, invoker) {
         // arrange
         var subject = buildSubject();
-        subject.aa = bb.makeObservable(buildSubject());
-        subject.aa.bb = bb.makeObservable(buildSubject());
+        subject.aa = busybody.makeObservable(buildSubject());
+        subject.aa.bb = busybody.makeObservable(buildSubject());
         subject.aa.bb.cc = 11;
         
-        var disp = bb.observe(subject, "aa.bb.cc", function(oldVal, newVal) {
+        var disp = busybody.observe(subject, "aa.bb.cc", function(oldVal, newVal) {
             strictEqual(oldVal, 11);
             strictEqual(newVal, 22);
             start();
@@ -503,15 +503,15 @@ function testMe (moduleName, buildSubject) {
         // act
         stop();
         subject.aa.bb.cc = 22;
-        ok(disp instanceof bb.observeTypes.pathObserver);
+        ok(disp instanceof busybody.observeTypes.pathObserver);
     });
     
     testUtils.testWithUtils("observeArray", "reverse", false, function(methods, classes, subject, invoker) {
         // arrange
         var subject = buildSubject();
         
-        subject.aa = new bb.array([1,2,3]);
-        bb.observeArray(subject, "aa", function(removed, added, moved) {
+        subject.aa = new busybody.array([1,2,3]);
+        busybody.observeArray(subject, "aa", function(removed, added, moved) {
             strictEqual(removed.length, 0);
             strictEqual(added.length, 0);
             strictEqual(moved.moved.length, 2);
@@ -534,10 +534,10 @@ function testMe (moduleName, buildSubject) {
         // arrange
         var subject = buildSubject();
         
-        var o = subject.aa = new bb.array([11,22,33]);
+        var o = subject.aa = new busybody.array([11,22,33]);
         
         var i = 0;
-        bb.observeArray(subject, "aa", function(removed, added) {
+        busybody.observeArray(subject, "aa", function(removed, added) {
             
             strictEqual(i, 0);
             i++;
@@ -550,9 +550,9 @@ function testMe (moduleName, buildSubject) {
             strictEqual(added[0], 55);
             
             // strict equals will make sure "push" will not trigger a subscription
-            bb.observable.afterNextObserveCycle(function () {
+            busybody.observable.afterNextObserveCycle(function () {
                 o.push(33);
-                bb.observable.afterNextObserveCycle(function () {
+                busybody.observable.afterNextObserveCycle(function () {
                     start();
                 });
             });
@@ -566,10 +566,10 @@ function testMe (moduleName, buildSubject) {
     testUtils.testWithUtils("observe", "array, re-assign", false, function(methods, classes, subject, invoker) {
         // arrange
         var subject = buildSubject();
-        var o = subject.aa = new bb.array([1,2,3]);
+        var o = subject.aa = new busybody.array([1,2,3]);
         var n = [];
         
-        bb.observe(subject, "aa", function(old, newVal) {
+        busybody.observe(subject, "aa", function(old, newVal) {
             strictEqual(old, o);
             strictEqual(newVal, n);
             start();
@@ -596,7 +596,7 @@ function testMe (moduleName, buildSubject) {
             return this.val1.val2 + " " + this.val3;
         });
 
-        bb.observe(subject, "comp", function(oldVal, newVal) {
+        busybody.observe(subject, "comp", function(oldVal, newVal) {
             strictEqual(oldVal, "hello world");
             strictEqual(newVal, "hello shane");
             start();
@@ -607,7 +607,7 @@ function testMe (moduleName, buildSubject) {
         subject.val3 = "shane";
         
         // assert
-        ok(disp instanceof bb.observeTypes.computed);
+        ok(disp instanceof busybody.observeTypes.computed);
     });
 
     testUtils.testWithUtils("various disposals", null, false, function(methods, classes, subject, invoker) {
@@ -616,7 +616,7 @@ function testMe (moduleName, buildSubject) {
         subject.val1 = buildSubject();
         subject.val1.val2 = "hello";
         subject.val3 = "world";
-        subject.val4 = new bb.array();
+        subject.val4 = new busybody.array();
 
         var isOk = true;
         if (subject.computed) {
@@ -628,20 +628,20 @@ function testMe (moduleName, buildSubject) {
             });
         }
 
-        bb.observe(subject, "val3", function(oldVal, newVal) {
+        busybody.observe(subject, "val3", function(oldVal, newVal) {
             ok(false, "observe property");
         });
 
-        bb.observe(subject, "val1.val2", function(oldVal, newVal) {
+        busybody.observe(subject, "val1.val2", function(oldVal, newVal) {
             ok(false, "observe path");
         });
         
-        bb.observeArray(subject, "val4", function(oldVal, newVal) {
+        busybody.observeArray(subject, "val4", function(oldVal, newVal) {
             ok(false, "observeArray");
         });
 
         // act
-        bb.dispose(subject);
+        busybody.dispose(subject);
         stop();
         
         subject.val3 = "bad";
@@ -656,5 +656,5 @@ function testMe (moduleName, buildSubject) {
     });
 }
 
-testMe("bb.observable, integration", function() { return new bb.observable(); });
-testMe("bb.observable, integration, do not use prototype", function() { return {}; });
+testMe("busybody.observable, integration", function() { return new busybody.observable(); });
+testMe("busybody.observable, integration, do not use prototype", function() { return {}; });

@@ -1,5 +1,3 @@
-// name is subject to change
-
 //TODO: look into esprima and falafel
 
 Class("busybody.observeTypes.computed", function () {
@@ -11,19 +9,35 @@ Class("busybody.observeTypes.computed", function () {
     var GET_ITEMS = "((\\s*\\.\\s*([\\w\\$]*))|(\\s*\\[\\s*\\d\\s*\\]))+"; // ".propertyName" -or- "[2]"
     var completeArg = {};
 	
-    // monitor a function and change the value of a "watched" when it changes
     var computed = busybody.observeTypes.observeTypesBase.extend(function computed(callback, context, options) {
+		///<summary>A value defined by the return value of a function. If configured correctly, a change in a value within the function will trigger a re-execution of the function<summary>
+		///<param name="callback" type="Function">The logic which returns the computed value<param>
+		///<param name="context" type="Any">The "this" value in the callback<param>
+		///<param name="options" type="Object" optional="true">Options on how the computed is composed<param>
+		///<param name="options.watchVariables" type="Object">Default: null. A dictionary of variables in the callback which are to be watched<param>
+		///<param name="options.observeArrayElements" type="Boolean">Default: false. If set to true, the computed will attempt to watch values within any array watch variables. This is useful if the computed is an aggregate function. The default is false because it is expensive computationally<param>
+		///<param name="options.allowWith" type="Boolean">Default: false. If set to true, "with (...)" statements are allowed in the computed function. Although variables accessed within the with statement cannot be observed<param>delayExecution
+		///<param name="options.delayExecution" type="Boolean">Default: false. If set to true, the computed will not be activated until it's execute function is called or a value within the computed changes<param>
         
         this._super();
         
         options = options || {};
+		
+		///<summary type="[Any]">A list of arguments to be applied to the callback function<summary>
         this.arguments = []; 
 		if (options.observeArrayElements)
 			this.possibleArrays = [];
         
+		///<summary type="[Function]">A list of callbacks which will be called when the computed value changes<summary>
 		this.callbacks = [];
+		
+		///<summary type="String">The computed logic as a string with comments and strings removed<summary>
         this.callbackString = computed.stripFunction(callback);
+		
+		///<summary type="Function">The computed logic<summary>
         this.callbackFunction = callback;
+		
+		///<summary type="Any">The "this" in the computed logic<summary>
         this.context = context;
         
         if (!options.allowWith && computed.testForWith(this.callbackString))
@@ -64,6 +78,10 @@ Class("busybody.observeTypes.computed", function () {
     });
     
     computed.testForWith = function (input) {
+		///<summary>Determine if a function string contains a "with (...)" call<summary>
+		///<param name="input" type="String">The input<param>
+		///<returns type="Boolean">The result<param>
+		
         WITH.lastIndex = 0;
         
         while (WITH.exec(input)) {
@@ -99,7 +117,11 @@ Class("busybody.observeTypes.computed", function () {
 		}, this);
 	};
         
+	// abstract
     computed.prototype.getValue = function() {
+		///<summary>Execute the computed function<summary>
+		///<returns type="Any">The result<param>
+		
 		if (this.possibleArrays)
 			this.rebuildArrays();
 		
@@ -107,6 +129,10 @@ Class("busybody.observeTypes.computed", function () {
     };
     
     computed.prototype.bind = function (object, property) {
+		///<summary>Bind the value of this computed to the property of an object<summary>
+		///<param name="object" type="Object">The object<param>
+		///<param name="property" type="String">The property<param>
+		///<returns type="busybody.disposable">A dispose object<param>
 		
         var callback = computed.createBindFunction(object, property);
 		var output = this.onValueChanged(callback, true);
@@ -116,6 +142,10 @@ Class("busybody.observeTypes.computed", function () {
     };
     
     computed.prototype.onValueChanged = function (callback, executeImmediately) {
+		///<summary>Execute a callback when the value of the computed changes<summary>
+		///<param name="callback" type="Function">The callback: function (oldValue, newValue) { }<param>
+		///<param name="executeImmediately" type="Boolean">If set to true the callback will be executed immediately with undefined as the oldValue<param>
+		///<returns type="busybody.disposable">A dispose object to remove the callback<param>
               
 		var output = this.addCallback(callback);		
         if (executeImmediately)
@@ -160,6 +190,7 @@ Class("busybody.observeTypes.computed", function () {
 		///<summary>Find all property paths of a given variable<summary>
 		///<param name="variableName" type="String">The variable name<param>
 		///<param name="complexExamination" type="Boolean">If set to true, the result will include the indexes of the property path as well as the actual text of the property paths<param>
+		///<returns type="[Object]">The results<param>
 		
 		variableName = trim(variableName);
 		if (!/^[\$\w]+$/.test(variableName))
@@ -275,6 +306,11 @@ Class("busybody.observeTypes.computed", function () {
 	};
 	
     computed.prototype.addPathWatchFor = function(variable, path) {
+		///<summary>Add a path watch object, triggering an execute(...) when something chages<summary>
+		///<param name="variable" type="Object">The path root<param>
+		///<param name="path" type="String">The path<param>
+		///<returns type="String">A disposable key. The path can be disposed by calling this.disposeOf(key)<param>
+		
 		var path = new busybody.observeTypes.pathObserver(variable, path, this.execute, this);
 		
 		var dispose;
@@ -293,6 +329,11 @@ Class("busybody.observeTypes.computed", function () {
 	};
 	
 	computed.createBindFunction = function (bindToObject, bindToProperty) {
+		///<summary>Create a functino which will bind the result of the computed to either an object property or an array<summary>
+		///<param name="bindToObject" type="Object">The object root<param>
+		///<param name="bindToProperty" type="String">The path<param>
+		///<returns type="Function">The bind function (function (oldValue, newValue) { }). The function has a dispose property which needs to be called to disposse of any array subscriptions<param>
+		
         var arrayDisposeCallback;
         var output = function (oldValue, newValue) {
 			

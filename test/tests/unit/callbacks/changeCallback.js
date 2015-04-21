@@ -1,11 +1,11 @@
-module("bb.callbacks.changeCallback", {
+module("busybody.callbacks.changeCallback", {
     setup: function() {
     },
     teardown: function() {
     }
 });
 
-var changeCallback = bb.callbacks.changeCallback;
+var changeCallback = busybody.callbacks.changeCallback;
 
 testUtils.testWithUtils("constructor", null, false, function(methods, classes, subject, invoker) {
     // arrange

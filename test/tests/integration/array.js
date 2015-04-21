@@ -1,5 +1,5 @@
 
-module("bb.array, integration", {
+module("busybody.array, integration", {
     setup: function() {
     },
     teardown: function() {
@@ -8,7 +8,7 @@ module("bb.array, integration", {
 
 testUtils.testWithUtils("observe", "length", false, function(methods, classes, subject, invoker) {
     // arrange
-    var subject = new bb.array([1]);
+    var subject = new busybody.array([1]);
 	subject[0] = 8;
 
     var val = {};
@@ -27,7 +27,7 @@ testUtils.testWithUtils("observe", "length", false, function(methods, classes, s
 
 testUtils.testWithUtils("observe", "add", false, function(methods, classes, subject, invoker) {
     // arrange
-    var subject = new bb.array();
+    var subject = new busybody.array();
 
     var val = {};
     subject.observe(function(removed, added, indexes) {
@@ -53,7 +53,7 @@ testUtils.testWithUtils("observe", "add", false, function(methods, classes, subj
 
 testUtils.testWithUtils("observe", "get raw changes", false, function(methods, classes, subject, invoker) {
     // arrange
-    subject = new bb.array([1,2,3]);
+    subject = new busybody.array([1,2,3]);
 
     var val = {};
     var d = subject.observe(function(changes) {
@@ -87,7 +87,7 @@ testUtils.testWithUtils("observe", "get raw changes", false, function(methods, c
 testUtils.testWithUtils("observe", "add duplicate", false, function(methods, classes, subject, invoker) {
     // arrange
     var val = {};
-    var subject = new bb.array([val]);
+    var subject = new busybody.array([val]);
 
     subject.observe(function(removed, added, indexes) {
         strictEqual(removed.length, 0);
@@ -112,7 +112,7 @@ testUtils.testWithUtils("observe", "add duplicate", false, function(methods, cla
 testUtils.testWithUtils("observe", "subscribe and unsubscribe", false, function(methods, classes, subject, invoker) {
 	
     // arrange
-    var subject = new bb.array();
+    var subject = new busybody.array();
 
     subject.observe(function(removed, added, indexes) {
         ok(false);
@@ -120,7 +120,7 @@ testUtils.testWithUtils("observe", "subscribe and unsubscribe", false, function(
 
     // act
     subject.push(1);
-    bb.observable.afterNextObserveCycle(function () {
+    busybody.observable.afterNextObserveCycle(function () {
         ok(true);
         start();
     }, true);
@@ -130,7 +130,7 @@ testUtils.testWithUtils("observe", "subscribe and unsubscribe", false, function(
 
 testUtils.testWithUtils("observe", "property change", false, function(methods, classes, subject, invoker) {
     // arrange
-    var subject = new bb.array();
+    var subject = new busybody.array();
     subject.val = 22;
     
     subject.observe("val", function(oldVal, newVal) {
@@ -149,7 +149,7 @@ testUtils.testWithUtils("observe", "property change", false, function(methods, c
 testUtils.testWithUtils("observe", "ensure changes before observe are not noticed. Simple", false, function(methods, classes, subject, invoker) {
 	
     // arrange
-    var subject = new bb.array(["aa","bb","cc"]);
+    var subject = new busybody.array(["aa","bb","cc"]);
     subject._init();
     
     // act
@@ -160,7 +160,7 @@ testUtils.testWithUtils("observe", "ensure changes before observe are not notice
         ok(false);
     });
     
-    bb.observable.afterNextObserveCycle(function () {
+    busybody.observable.afterNextObserveCycle(function () {
         ok(true);
         start();
     }, true);
@@ -170,7 +170,7 @@ testUtils.testWithUtils("observe", "ensure changes before observe are not notice
 
 testUtils.testWithUtils("observe", "ensure changes before observe are not noticed. Complex", false, function(methods, classes, subject, invoker) {
     // arrange
-    var subject = new bb.array();
+    var subject = new busybody.array();
     subject.push(55);
     
     subject.observe(function(removed, added, indexes) {
@@ -231,7 +231,7 @@ testUtils.testWithUtils("observe", "ensure changes before observe are not notice
 
 testUtils.testWithUtils("observe", "replace, length doesn't change", false, function(methods, classes, subject, invoker) {
     // arrange
-    var subject = new bb.array([1,2,3]);
+    var subject = new busybody.array([1,2,3]);
 
     var val = {};
     subject.observe(function(removed, added) {
@@ -252,7 +252,7 @@ testUtils.testWithUtils("observe", "replace, length doesn't change", false, func
 
 testUtils.testWithUtils("observe", "replace, length changes", false, function(methods, classes, subject, invoker) {
     // arrange
-    var subject = new bb.array([1,2,3]);
+    var subject = new busybody.array([1,2,3]);
 
     var val = {};
     subject.observe(function(removed, added) {
@@ -272,7 +272,7 @@ testUtils.testWithUtils("observe", "replace, length changes", false, function(me
 
 testUtils.testWithUtils("observe", "add then remove", false, function(methods, classes, subject, invoker) {
     // arrange
-    var subject = new bb.array();
+    var subject = new busybody.array();
 
     var val = {};
     subject.observe(function(removed, added, indexes) {
@@ -291,7 +291,7 @@ testUtils.testWithUtils("observe", "add then remove", false, function(methods, c
 
 testUtils.testWithUtils("observe", "add then splice", false, function(methods, classes, subject, invoker) {
     // arrange
-    var subject = new bb.array();
+    var subject = new busybody.array();
 
     var val0 = {}, val1 = {};
     subject.observe(function(removed, added, indexes) {
@@ -318,7 +318,7 @@ testUtils.testWithUtils("observe", "add then splice", false, function(methods, c
 
 testUtils.testWithUtils("observe", "add then replace", false, function(methods, classes, subject, invoker) {
     // arrange
-    var subject = new bb.array();
+    var subject = new busybody.array();
 
     var val0 = {}, val1 = {};
     subject.observe(function(removed, added, indexes) {
@@ -341,7 +341,7 @@ testUtils.testWithUtils("observe", "add then replace", false, function(methods, 
 
 testUtils.testWithUtils("observe", "length decrease", false, function(methods, classes, subject, invoker) {
     // arrange
-    var subject = new bb.array([3, 4, 5]);
+    var subject = new busybody.array([3, 4, 5]);
 
     subject.observe(function(removed, added, indexes) {
         strictEqual(removed.length, 1);
@@ -379,7 +379,7 @@ testUtils.testWithUtils("observe", "length decrease", false, function(methods, c
 
 testUtils.testWithUtils("observe", "length increase", false, function(methods, classes, subject, invoker) {
     // arrange
-    var subject = new bb.array([3, 4, 5]);
+    var subject = new busybody.array([3, 4, 5]);
 
     subject.observe(function(removed, added, indexes) {
         strictEqual(added.length, 1);
@@ -417,7 +417,7 @@ testUtils.testWithUtils("observe", "length increase", false, function(methods, c
 testUtils.testWithUtils("observe", "splice", false, function(methods, classes, subject, invoker) {
     
     // arrange
-    var subject = new bb.array([1, 2, 3]);
+    var subject = new busybody.array([1, 2, 3]);
 
     var val1 = 44, val2 = 55;
     subject.observe(function(removed, added, indexes) {
@@ -453,7 +453,7 @@ testUtils.testWithUtils("observe", "splice", false, function(methods, classes, s
 
 testUtils.testWithUtils("observe", "disposal", false, function(methods, classes, subject, invoker) {
     // arrange
-    var subject = new bb.array();
+    var subject = new busybody.array();
 
     var val = {};
     var dispose = subject.observe(function(removed, added) {
@@ -473,7 +473,7 @@ testUtils.testWithUtils("observe", "disposal", false, function(methods, classes,
 
 testUtils.testWithUtils("observe", "two reservations", false, function(methods, classes, subject, invoker) {
     // arrange
-    var subject = new bb.array();
+    var subject = new busybody.array();
 
     var val = {};
     var obs = function(removed, added) {
@@ -494,7 +494,7 @@ testUtils.testWithUtils("observe", "two reservations", false, function(methods, 
 
 testUtils.testWithUtils("observe", "two changes, two observations, 1 complex, one simple", false, function(methods, classes, subject, invoker) {
     // arrange
-    var subject = new bb.array();
+    var subject = new busybody.array();
 
     var val1 = {}, val2 = {};
     
@@ -529,7 +529,7 @@ testUtils.testWithUtils("observe", "two changes, two observations, 1 complex, on
 
 testUtils.testWithUtils("observe", "pop", false, function(methods, classes, subject, invoker) {
     // arrange
-    var subject = new bb.array([4, 5]);
+    var subject = new busybody.array([4, 5]);
     
     subject.observe(function(removed, added) {
         strictEqual(removed.length, 1);
@@ -560,7 +560,7 @@ testUtils.testWithUtils("observe", "pop", false, function(methods, classes, subj
 
 testUtils.testWithUtils("observe", "shift", false, function(methods, classes, subject, invoker) {
     // arrange
-    var subject = new bb.array([4, 5]);
+    var subject = new busybody.array([4, 5]);
     
     subject.observe(function(removed, added) {
         strictEqual(removed.length, 1);
@@ -591,7 +591,7 @@ testUtils.testWithUtils("observe", "shift", false, function(methods, classes, su
 
 testUtils.testWithUtils("remove", null, false, function(methods, classes, subject, invoker) {
     // arrange
-    var subject = new bb.array([3, 4, 5]);
+    var subject = new busybody.array([3, 4, 5]);
 
     // act
     subject.remove(4);
@@ -605,7 +605,7 @@ testUtils.testWithUtils("remove", null, false, function(methods, classes, subjec
 testUtils.testWithUtils("bind", "length change", false, function(methods, classes, subject, invoker) {
 	
     // arrange
-    var subject = new bb.array([1,2,3]);
+    var subject = new busybody.array([1,2,3]);
     var another = [];
 
     var val = {};
@@ -629,7 +629,7 @@ testUtils.testWithUtils("bind", "length change", false, function(methods, classe
 testUtils.testWithUtils("bind", "2 splices", false, function(methods, classes, subject, invoker) {
     
     // arrange
-    var subject = new bb.array([1,2,3,4,5,6,7,8,9]);
+    var subject = new busybody.array([1,2,3,4,5,6,7,8,9]);
     var another = [];
 
     var val = {};
@@ -655,8 +655,8 @@ testUtils.testWithUtils("bind", "2 splices", false, function(methods, classes, s
 testUtils.testWithUtils("bind", "2 way, simple", false, function(methods, classes, subject, invoker) {
     
     // arrange
-    var subject = new bb.array([1,2,3]);
-    var another = new bb.array();
+    var subject = new busybody.array([1,2,3]);
+    var another = new busybody.array();
     subject.name = "changed";
     another.name = "change target";
     
@@ -682,9 +682,9 @@ testUtils.testWithUtils("bind", "2 way, simple", false, function(methods, classe
 testUtils.testWithUtils("bind", "2 way bindings, complex", false, function(methods, classes, subject, invoker) {
         
     // arrange
-    var subject = new bb.array([1,2,3,4,5,6,7,8,9]);
+    var subject = new busybody.array([1,2,3,4,5,6,7,8,9]);
     subject.name = "subject";
-    var another = new bb.array();
+    var another = new busybody.array();
     another.name = "another";
     
     var val = {};
@@ -715,7 +715,7 @@ testUtils.testWithUtils("bind", "disposal", false, function(methods, classes, su
         
     // arrange
 	var initial = [1,2,3,4,5,6,7,8,9];
-    var subject = new bb.array(initial);
+    var subject = new busybody.array(initial);
     var another = [];
 
     // act
@@ -743,14 +743,14 @@ testUtils.testWithUtils("bind", "disposal", false, function(methods, classes, su
 testUtils.testWithUtils("bind", "with adds on pending queue", false, function(methods, classes, subject, invoker) {
     
     // arrange
-    var subject = new bb.array();
+    var subject = new busybody.array();
     subject.push(1);
     subject.push(2);
     subject.push(3);
 
     var another = [];
     
-    bb.observable.afterNextObserveCycle(function () {
+    busybody.observable.afterNextObserveCycle(function () {
         strictEqual(subject.length, 3);
         assert();
         start();
@@ -773,7 +773,7 @@ testUtils.testWithUtils("bind", "with adds on pending queue", false, function(me
     stop();
     
     // ensure afterNextObserveCycle is fired
-    var t = new bb.observable();
+    var t = new busybody.observable();
     t.observe("aa", function(){});
     t.aa = "KJBKJ";
 });
@@ -781,12 +781,12 @@ testUtils.testWithUtils("bind", "with adds on pending queue", false, function(me
 testUtils.testWithUtils("bind", "with moves on pending queue", false, function(methods, classes, subject, invoker) {
     
     // arrange
-    var subject = new bb.array(["aa","bb","cc"]);
+    var subject = new busybody.array(["aa","bb","cc"]);
     subject.reverse();
 
     var another = [];
     
-    bb.observable.afterNextObserveCycle(function () {
+    busybody.observable.afterNextObserveCycle(function () {
         strictEqual(subject.length, 3);
         assert();
         start();
@@ -809,7 +809,7 @@ testUtils.testWithUtils("bind", "with moves on pending queue", false, function(m
     stop();
     
     // ensure afterNextObserveCycle is fired
-    var t = new bb.observable();
+    var t = new busybody.observable();
     t.observe("aa", function(){});
     t.aa = "KJBKJ";
 });

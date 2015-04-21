@@ -1,5 +1,5 @@
 
-module("bb.utils.observeCycleHandler", {
+module("busybody.utils.observeCycleHandler", {
 	setup: function() {
 	},
 	teardown: function() {

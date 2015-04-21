@@ -1,11 +1,11 @@
-module("bb.utils.obj", {
+module("busybody.utils.obj", {
     setup: function() {
     },
     teardown: function() {
     }
 });
 
-var obj = bb.utils.obj;
+var obj = busybody.utils.obj;
 
 testUtils.testWithUtils("enumerateArr", null, true, function(methods, classes, subject, invoker) {
     // arrange

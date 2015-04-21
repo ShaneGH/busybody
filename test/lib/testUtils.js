@@ -109,7 +109,7 @@ $.extend(testUtils, (function() {
                     testSubject += "." + method;
                 }
                 
-                testSubject = bb.utils.obj.getObject(testSubject);
+                testSubject = busybody.utils.obj.getObject(testSubject);
                 function invoker() {                    
                     return testSubject.apply(subject, arguments);                   
                 };

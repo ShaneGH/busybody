@@ -3,6 +3,8 @@
 Class("busybody.utils.executeCallbacks", function () {
 	
 	var executeCallbacks = busybody.disposable.extend(function executeCallbacks() {
+		///<summary>Base class for objects with an execute function which executes a list of callbacks<summary>
+		
 		if (this.constructor === executeCallbacks) throw "You cannot create an instance of an abstract class";
 		
 		this._super();

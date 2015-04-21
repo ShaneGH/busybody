@@ -1,11 +1,11 @@
-module("bb.callbacks.arrayCallback", {
+module("busybody.callbacks.arrayCallback", {
     setup: function() {
     },
     teardown: function() {
     }
 });
 
-var computed = bb.observeTypes.computed;
+var computed = busybody.observeTypes.computed;
 
 testUtils.testWithUtils("constructor", null, false, function(methods, classes, subject, invoker) {
     // arrange

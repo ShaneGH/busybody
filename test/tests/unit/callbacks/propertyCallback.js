@@ -1,11 +1,11 @@
-module("bb.callbacks.propertyCallback", {
+module("busybody.callbacks.propertyCallback", {
     setup: function() {
     },
     teardown: function() {
     }
 });
 
-var propertyCallback = bb.callbacks.propertyCallback;
+var propertyCallback = busybody.callbacks.propertyCallback;
 
 testUtils.testWithUtils("constructor", null, false, function(methods, classes, subject, invoker) {
     // arrange

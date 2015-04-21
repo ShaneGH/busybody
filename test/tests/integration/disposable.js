@@ -1,11 +1,11 @@
-module("bb.disposable, integration", {
+module("busybody.disposable, integration", {
     setup: function() {
     },
     teardown: function() {
     }
 });
 
-var disposable = bb.disposable;
+var disposable = busybody.disposable;
 
 testUtils.testWithUtils("constructor", "and all functionality", false, function(methods, classes, subject, invoker) {
     // arrange

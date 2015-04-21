@@ -1,11 +1,11 @@
-module("bb.observeTypes.computed", {
+module("busybody.observeTypes.computed", {
     setup: function() {
     },
     teardown: function() {
     }
 });
 
-var computed = bb.observeTypes.computed;
+var computed = busybody.observeTypes.computed;
 
 testUtils.testWithUtils("testForWith", "ok, with variable name", true, function(methods, classes, subject, invoker) {
     // arrange
@@ -95,7 +95,7 @@ testUtils.testWithUtils("constructor", null, false, function(methods, classes, s
     var callback = {}, context = {}, options = { watchVariables: {arg1: {}}, allowWith: false }, stripedCallback = "(arg1)";
     subject._super = methods.method();
     subject.execute = methods.method();
-    classes.mock("bb.observeTypes.computed.stripFunction", function () {
+    classes.mock("busybody.observeTypes.computed.stripFunction", function () {
         methods.method([callback])(arguments[0]);
         return stripedCallback;
     }, 1);
@@ -378,7 +378,7 @@ testUtils.testWithUtils("bind", "bind and dispose", false, function(methods, cla
     var obj = {}, prop = {}, cb = {}, op = {
 		registerDisposable: methods.method([cb])
 	};
-    classes.mock("bb.observeTypes.computed.createBindFunction", function (o, p) {
+    classes.mock("busybody.observeTypes.computed.createBindFunction", function (o, p) {
         methods.method([obj, prop])(o, p);
         return cb;
     }, 1);
@@ -432,7 +432,7 @@ testUtils.testWithUtils("createBindFunction", "bind null to array", true, functi
 
 testUtils.testWithUtils("createBindFunction", "bind observable arrays", true, function(methods, classes, subject, invoker) {
     // arrange
-    var obj = {prop: new bb.array()}, prop = "prop", newVal = new bb.array([{},{},{}]);
+    var obj = {prop: new busybody.array()}, prop = "prop", newVal = new busybody.array([{},{},{}]);
     newVal.bind = methods.method([obj[prop]]);
     
     subject = invoker(obj, prop);
@@ -445,7 +445,7 @@ testUtils.testWithUtils("createBindFunction", "bind observable arrays", true, fu
 
 testUtils.testWithUtils("createBindFunction", "dispose", true, function(methods, classes, subject, invoker) {
     // arrange
-    var obj = {prop: new bb.array()}, prop = "prop", newVal = new bb.array([{},{},{}]);
+    var obj = {prop: new busybody.array()}, prop = "prop", newVal = new busybody.array([{},{},{}]);
     newVal.bind = methods.method([obj[prop]], {dispose: methods.method([], null, "dispose was not called") });
     
     subject = invoker(obj, prop);

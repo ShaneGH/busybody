@@ -1,11 +1,11 @@
-module("bb.utils.compiledArrayChange", {
+module("busybody.utils.compiledArrayChange", {
     setup: function() {
     },
     teardown: function() {
     }
 });
 
-var compiledArrayChange = bb.utils.compiledArrayChange;
+var compiledArrayChange = busybody.utils.compiledArrayChange;
 
 testUtils.testWithUtils("constructor, build and build indexes", null, false, function(methods, classes, subject, invoker) {
     // arrange

@@ -1,11 +1,11 @@
-module("bb.observeTypes.pathObserver", {
+module("busybody.observeTypes.pathObserver", {
     setup: function() {
     },
     teardown: function() {
     }
 });
 
-var pathObserver = bb.observeTypes.pathObserver;
+var pathObserver = busybody.observeTypes.pathObserver;
 
 testUtils.testWithUtils("getValue", "valid path", false, function(methods, classes, subject, invoker) {
     // arrange

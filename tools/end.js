@@ -213,5 +213,5 @@
             return target.dispose();
     };
 
-    window.bb = busybody;
+    window.busybody = busybody;
 }(window.orienteer));
