@@ -4,7 +4,7 @@ busybody supports non Object.observe environments as far back as IE 9
 
 ##Usage
 ###Observing a value
-'''javascript
+```javascript
 var myObject = {
 	myProperty: true
 };
@@ -14,4 +14,4 @@ busybody.observe(myObject, "myProperty", function (oldValue, newValue) {
 });
 
 myObject.myProperty = false;
-'''
+```
