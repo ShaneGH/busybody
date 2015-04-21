@@ -141,10 +141,11 @@
         return false;
     };
 
-	busybody.tryBindArrays = function (array1, array2) {
+	busybody.tryBindArrays = function (array1, array2, twoWay) {
 		///<summary>Try to bind the values of 2 arrays together</summary>
 		///<param name="array1" type="busybody.array">The first array</param>
 		///<param name="array2" type="busybody.array">The second array</param>
+		///<param name="twoWay" type="Boolean" optional="true">Bind the first array to the second array also</param>
 		///<returns type="busybody.disposable">A disposable</returns>
 		
 		if ((!(array1 instanceof Array) && array1 != null) ||
@@ -154,14 +155,27 @@
 		if (array1 == null && array2 == null)
 			return;
 		
+		var output;
 		if (array1 == null) {
 			array2.length = 0;
 		} else if (array2 != null) {
 			if (array1 instanceof busybody.array)
-				return array1.bind(array2);
+				output = array1.bind(array2);
 			else
 				busybody.array.copyAll(array1, array2);
 		}
+		
+		if (twoWay) {
+			var op2 = busybody.tryBindArrays(array2, array1);
+			if (op2) {
+				if (output)
+					output.registerDisposable(op2);
+				else
+					output = op2;
+			}
+		}
+			
+		return output;
 	};
 	
 	var index = (function () {

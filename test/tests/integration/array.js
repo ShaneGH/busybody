@@ -674,8 +674,7 @@ testUtils.testWithUtils("bind", "2 way, simple", false, function(methods, classe
     var val = {};
 
     // act
-    subject.bind(another);
-    another.bind(subject);
+	busybody.tryBindArrays(subject, another, true);
     
     // assert
     function assert() {
