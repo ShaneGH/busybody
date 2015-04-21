@@ -1,5 +1,8 @@
     
     busybody.getObserver = function (object) {
+		///<summary>Get the observer for an object, if any. The object's observer might be iself</summary>
+		///<param name="object" type="Object">The object</param>
+		///<returns type="busybody.observable">The observer</returns>
                 
         return object == null || object instanceof busybody.observableBase ?
             object :
@@ -7,6 +10,11 @@
     };
     
     busybody.captureArrayChanges = function (forObject, logic, callback) {
+		///<summary>Capture all of the changes to an array perpetrated by the logic</summary>
+		///<param name="forObject" type="busybody.array">The array</param>
+		///<param name="logic" type="Function">The function which will change the array</param>
+		///<param name="callback" type="Function">The callback (function (changes) { })</param>
+		
         if (!(forObject instanceof busybody.array))
             throw "Only busybody.array objects can have changes captured";
         
@@ -14,6 +22,12 @@
     };
     
     busybody.captureChanges = function (forObject, logic, callback, property) {
+		///<summary>Capture all of the changes to the property perpetrated by the logic</summary>
+		///<param name="forObject" type="Object">The object</param>
+		///<param name="logic" type="Function">The function which will change the array</param>
+		///<param name="callback" type="Function">The callback (function (changes) { })</param>
+		///<param name="property" type="String">The property</param>
+		
         forObject = busybody.getObserver(forObject);
         
 		if (forObject)
@@ -23,6 +37,10 @@
     };
 
     busybody.makeObservable = function (object) {
+		///<summary>Make an object observable</summary>
+		///<param name="object" type="Object">The object</param>
+		///<returns type="Object">The object</returns>
+		
         if (!arguments.length)
             object = {};
         
@@ -45,12 +63,25 @@
         return object;
     };
 
-    busybody.observe = function (object, property, callback, context, evaluateOnEachChange, evaluateIfValueHasNotChanged) {
+    busybody.observe = function (object, property, callback, context, options) {
+		///<summary>Observe changes to a property </summary>
+		///<param name="object" type="Object">The object</param>
+		///<param name="property" type="String">The property</param>
+		///<param name="callback" type="Function">The callback to execute</param>
+		///<param name="context" type="Any" optional="true">The "this" in the callback</param>
+		///<param name="options" type="Object" optional="true">See busybody.observable.observe for options</param>
+		
         busybody.makeObservable(object);
-        return busybody.tryObserve(object, property, callback, context, evaluateOnEachChange, evaluateIfValueHasNotChanged);
+        return busybody.tryObserve(object, property, callback, context, options);
     };
 
     busybody.tryObserve = function (object, property, callback, context, options) {
+		///<summary>Observe changes to a property if possible. If "object" is not observable, return</summary>
+		///<param name="object" type="Object">The object</param>
+		///<param name="property" type="String">The property</param>
+		///<param name="callback" type="Function">The callback to execute</param>
+		///<param name="context" type="Any" optional="true">The "this" in the callback</param>
+		///<param name="options" type="Object" optional="true">See busybody.observable.observe for options</param>
         
         if (object instanceof busybody.array) {
 			if (property instanceof Function)
@@ -69,22 +100,41 @@
         return false;
     };
 
-    busybody.observeArray = function (object, property, callback, context, evaluateOnEachChange) {
+    busybody.observeArray = function (object, property, callback, context, options) {
+		///<summary>Observe an array property of an object for changes</summary>
+		///<param name="object" type="Object">The object</param>
+		///<param name="property" type="String">The property</param>
+		///<param name="callback" type="Function">The callback</param>
+		///<param name="context" type="Any">The "this" value in the callback</param>
+		///<param name="options" type="Object" optional="true">See busybody.array.observe for options</param>
+		///<returns type="busybody.disposable">A disposable</returns>
+		
         busybody.makeObservable(object);
-        return busybody.tryObserveArray(object, property, callback, context, evaluateOnEachChange);
+        return busybody.tryObserveArray(object, property, callback, context, options);
     };
     
-    busybody.tryObserveArray = function (object, property, callback, context, evaluateOnEachChange) {
+    busybody.tryObserveArray = function (object, property, callback, context, options) {
+		///<summary>Observe an array property of an object for changes if possible. If "object" is not observable, return</summary>
+		///<param name="object" type="Object">The object</param>
+		///<param name="property" type="String">The property</param>
+		///<param name="callback" type="Function">The callback</param>
+		///<param name="context" type="Any">The "this" value in the callback</param>
+		///<param name="options" type="Object" optional="true">See busybody.array.observe for options</param>
+		///<returns type="busybody.disposable">A disposable</returns>
                 
         var target = busybody.getObserver(object);
         
         if (target)
-            return target.observeArray(property, callback, context, evaluateOnEachChange);
+            return target.observeArray(property, callback, context, options);
         
         return false;
     };
 
 	busybody.tryBindArrays = function (array1, array2) {
+		///<summary>Try to bind the values of 2 arrays together</summary>
+		///<param name="array1" type="busybody.array">The first array</param>
+		///<param name="array2" type="busybody.array">The second array</param>
+		///<returns type="busybody.disposable">A disposable</returns>
 		
 		if ((!(array1 instanceof Array) && array1 != null) ||
 		   (!(array2 instanceof Array) && array2 != null))
@@ -148,6 +198,14 @@
 	}
 
 	busybody.tryBind = function (object1, property1, object2, property2, twoWay, doNotSet) {
+		///<summary>Try to bind the values of 2 properties together</summary>
+		///<param name="object1" type="Object">The first object</param>
+		///<param name="property1" type="String">The first property</param>
+		///<param name="object2" type="Object">The second object</param>
+		///<param name="property2" type="String">The second property</param>
+		///<param name="twoWay" type="Boolean">Attempt to bind 2 ways</param>
+		///<param name="doNotSet" type="Boolean">Do not set the value of the second property to the value of the first property</param>
+		///<returns type="busybody.disposable">A disposable</returns>
 		
 		// store all parts which need to be disposed
 		var disposable = new busybody.disposable();
@@ -185,6 +243,13 @@
 	};
     
     busybody.bind = function (object1, property1, object2, property2, twoWay) {
+		///<summary>Bind the values of 2 properties together</summary>
+		///<param name="object1" type="Object">The first object</param>
+		///<param name="property1" type="String">The first property</param>
+		///<param name="object2" type="Object">The second object</param>
+		///<param name="property2" type="String">The second property</param>
+		///<param name="twoWay" type="Boolean">Attempt to bind 2 ways</param>
+		///<returns type="busybody.disposable">A disposable</returns>
 		
 		busybody.makeObservable(object1);
 		busybody.makeObservable(object2);
@@ -193,20 +258,31 @@
     };
 
     busybody.canObserve = function (object) {
+		///<summary>Determine if an object can be observed. You can use busybody.makeObservable(...) to make objects observable</summary>
+		///<param name="object" type="Object">The object</param>
+		///<returns type="Boolean">The result</returns>
         
 			//TODO: test array bit
         return object instanceof busybody.array || !!busybody.getObserver(object);
     }; 
 
     busybody.del = function (object, property) {
+		///<summary>Delete a value from an observable</summary>
+		///<param name="object" type="Object">The object</param>
+		///<param name="property" type="String">The value</param>
         
         var target = busybody.getObserver(object);
         
         if (target)
             return target.del(property);
+		else
+			delete target[property];
     };
     
     busybody.dispose = function (object) {
+		///<summary>Dispose of an object which is observable</summary>
+		///<param name="object" type="Object">The object</param>
+		
         var target = busybody.getObserver(object);
         
         if (target)

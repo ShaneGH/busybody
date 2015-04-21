@@ -133,7 +133,12 @@ Class("busybody.observableBase", function () {
     };
 
     observableBase.prototype.observeArray = function (property, callback, context, options) {
-		///<summary>Observe another array. See busybody.array.observe for args and return value</summary>
+		///<summary>Observe an array property for changes</summary>
+		///<param name="property" type="String">The property</param>
+		///<param name="callback" type="Function">The callback</param>
+		///<param name="context" type="Any">The "this" value in the callback</param>
+		///<param name="options" type="Object" optional="true">See busybody.array.observe for options</param>
+		///<returns type="busybody.disposable">A disposable</returns>
 		
         var d2, d1 = this.observe(property, function (oldValue, newValue) {
             
