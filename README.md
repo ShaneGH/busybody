@@ -5,7 +5,7 @@ busybody supports non Object.observe environments as far back as IE 9
 ##Index
 * <a href="#ObservingAValue">Observe</a>
 * <a href="#ObserveAPath">Observe a path</a>
-* <a href="#ObservableArrays">Observable Arrays</a>
+* <a href="#observablearrays">Observable Arrays</a>
 * <a href="#ComputedObservables">Computed Observables</a>
 * <a href="#PerformanceGains">Performance gains</a>
 * <a href="#CoreFunctionList">Core function list</a>
@@ -94,15 +94,15 @@ myObject.myProperty1.myProperty2 = false;
 |callback|property|The callback to execute|No|
 |context|Object|The "this" in the callback|Yes|
 ####Valid paths:
-* property1.property2
-* property1[3].property2
+* `property1.property2`
+* `property1[3].property2`
 
 ####Invalid paths:
-* property1["property2"]
-* property1[aValue]
-* property1.property2().property3
+* `property1["property2"]`
+* `property1[aValue]`
+* `property1.property2().property3`
 
-<h3 id="ObservableArrays">Observable Arrays</h3>
+###Observable Arrays
 To observe changes to an array you must create a busybody.array
 
 ```javascript
