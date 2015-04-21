@@ -21,9 +21,10 @@ myObject.myProperty = false;
 <h4 id="busybodyObserveArguments">busybody.observe arguments</h4>
 |Name|Type|Description|Optional |
 | --- | --- | --- | --- |
+|object|Object|The object which contains the property to observe|No|
 |property|String|The property|No|
 |callback|property|The callback to execute|No|
-|context|Function|The "this" in the callback|No|
+|context|Function|The "this" in the callback|Yes|
 |options|Object|Options for the callback|Yes|
 |options.useRawChanges|Boolean|Default: false. Use the change objects from the Array.observe as arguments|Yes|
 |options.evaluateOnEachChange|Boolean|Default: false. Evaluate once for each change rather than on an amalgamation of changes|Yes|
@@ -31,6 +32,8 @@ myObject.myProperty = false;
 |options.activateImmediately|Boolean|Default: false. Activate the callback now, meaning it could get changes which were applied before the callback was created|Yes|
 
 ###Attempting to observe a value
+Objects are not observable by default. Sometimes you may want to observe a value only *if possible*
+
 ```javascript
 var myObject = {
 	myProperty: true
@@ -61,9 +64,10 @@ busybody.tryObserve arguments are the same as <a href="#busybodyObserveArguments
 
 
 ###Observing a path
+Observing paths is the same as observing properties
 ```javascript
 
-// object which are not observalbe in a path cannot be observed.
+// objects which are not observalbe in a path cannot be observed.
 // makeObservable(...) will make an object observable without altering it
 var myObject = {
 	myProperty1: busybody.makeObservable({
@@ -77,3 +81,10 @@ busybody.observe(myObject, "myProperty1.myProperty2", function (oldValue, newVal
 
 myObject.myProperty1.myProperty2 = false;
 ```
+<h4 id="busybodyObserveArguments">busybody.observe path arguments</h4>
+|Name|Type|Description|Optional |
+| --- | --- | --- | --- |
+|object|Object|The root of the path|No|
+|property|String|The property|No|
+|callback|property|The callback to execute|No|
+|context|Function|The "this" in the callback|Yes|
