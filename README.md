@@ -127,9 +127,9 @@ myArray.push(4);
 
 ####busybody.array functionality
 busybody.arrays are almost the same as javascript Arrays with a few small exceptions:
-1. There is a `remove(...)` function which removes the specified element from the array
-2. You can use the following notation `myArray[2] = {};` but older browsers will not publish changes to the array.
-..* Use `myArray.replace(2, {});` instead.
-3. Do not include the final argument of the callback (indexes) if it will not be used. This will give a small performance gain.
+1.	There is a `remove(...)` function which removes the specified element from the array
+2.	You can use the following notation `myArray[2] = {};` but older browsers will not publish changes to the array.
+..*	Use `myArray.replace(2, {});` instead.
+3.	Do not include the final argument of the callback (indexes) if it will not be used. This will give a small performance gain.
 
 
