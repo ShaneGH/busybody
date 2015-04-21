@@ -2,6 +2,8 @@
 ##An Object.observe library that gets all up in yo business
 busybody supports non Object.observe environments as far back as IE 9
 
+
+
 ##Index
 * [Observe](#observing-a-value)
 * [Observe a path](#observe-a-path)
@@ -11,6 +13,8 @@ busybody supports non Object.observe environments as far back as IE 9
 * [Computed Observables](#computed-observables)
 * [Performance gains](#performance-gains)
 * [Core function list](#core-function-list)
+
+
 
 ##Observing a value
 ```javascript
