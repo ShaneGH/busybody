@@ -12,7 +12,6 @@ busybody supports non Object.observe environments as far back as IE 9
 * [Performance gains](#performance-gains)
 * [Core function list](#core-function-list)
 
-##Usage
 ##Observing a value
 ```javascript
 var myObject = {
@@ -25,7 +24,7 @@ busybody.observe(myObject, "myProperty", function (oldValue, newValue) {
 
 myObject.myProperty = false;
 ```
-XXXXXXXXXXXXbusybody.observe arguments
+###busybody.observe arguments
 |Name|Type|Description|Optional |
 | --- | --- | --- | --- |
 |object|Object|The object which contains the property to observe|No|
@@ -67,7 +66,7 @@ busybody.tryObserve(myObject, "myProperty", function (oldValue, newValue) {
 
 myObject.myProperty = false;
 ```
-XXXXXXXXXXXXbusybody.tryObserve arguments
+###busybody.tryObserve arguments
 busybody.tryObserve arguments are the same as [busybody.observe arguments](#busybodyobserve-arguments)
 
 
@@ -89,7 +88,7 @@ busybody.observe(myObject, "myProperty1.myProperty2", function (oldValue, newVal
 
 myObject.myProperty1.myProperty2 = false;
 ```
-XXXXXXXXXXXXbusybody.observe path arguments
+###busybody.observe path arguments
 |Name|Type|Description|Optional |
 | --- | --- | --- | --- |
 |object|Object|The root of the path|No|
@@ -97,11 +96,11 @@ XXXXXXXXXXXXbusybody.observe path arguments
 |callback|property|The callback to execute|No|
 |context|Object|The "this" in the callback|Yes|
 |**returns**|**busybody.disposable**|**Returns an object with a dispose function to cancel the subscriptions**|
-XXXXXXXXXXXXValid paths:
+###Valid paths:
 * `property1.property2`
 * `property1[3].property2`
 
-XXXXXXXXXXXXInvalid paths:
+###Invalid paths:
 * `property1["property2"]`
 * `property1[aValue]`
 * `property1.property2().property3`
@@ -119,7 +118,7 @@ busybody.observe(myArray, function (removedValues, addedValues, indexes) {
 
 myArray.push(4);
 ```
-XXXXXXXXXXXXbusybody.observe array arguments
+###busybody.observe array arguments
 |Name|Type|Description|Optional |
 | --- | --- | --- | --- |
 |object|Object|The object which contains the property to observe|No|
@@ -130,7 +129,7 @@ XXXXXXXXXXXXbusybody.observe array arguments
 |options.evaluateOnEachChange|Boolean|Default: false. Evaluate once for each change rather than on an amalgamation of changes|Yes|
 |**returns**|**busybody.disposable**|**Returns an object with a dispose function to cancel the subscriptions**|
 
-XXXXXXXXXXXXbusybody.array functionality
+###busybody.array functionality
 busybody.arrays are almost the same as javascript Arrays with a few small exceptions:
 * There is a `remove(...)` function which removes the specified element from the array
 * You can use the following notation `myArray[2] = {};` but older browsers will not publish changes to the array. Use `myArray.replace(2, {});` instead.
@@ -147,7 +146,7 @@ busybody.tryBindArrays(myArray1, myArray2, true);
 
 console.log(myArray2);
 ```
-XXXXXXXXXXXXbusybody.tryBindArrays arguments
+###busybody.tryBindArrays arguments
 |Name|Type|Description|Optional |
 | --- | --- | --- | --- |
 |array1|busybody.array|The first array|No|
@@ -166,7 +165,7 @@ busybody.bind(myObject1, "myProperty", myObject2, "myProperty", true);
 
 console.log(myObject2.myProperty);
 ```
-XXXXXXXXXXXXbusybody.bind arguments
+###busybody.bind arguments
 |Name|Type|Description|Optional |
 | --- | --- | --- | --- |
 |object1|Object|The first object|No|
