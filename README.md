@@ -2,8 +2,11 @@
 ###An Object.observe library that gets all up in yo business
 busybody supports non Object.observe environments as far back as IE 9
 
+##Index
+<a href="#ObservingAValue">Observe</a>
+
 ##Usage
-###Observing a value
+<h3 id="ObservingAValue">Observing a value</h3>
 ```javascript
 var myObject = {
 	myProperty: true
@@ -20,7 +23,7 @@ myObject.myProperty = false;
 ```javascript
 
 // object which are not observalbe in a path cannot be observed.
-//makeObservable will make an object observable without altering it
+// makeObservable(...) will make an object observable without altering it
 var myObject = {
 	myProperty1: busybody.makeObservable({
 		myProperty2: true
@@ -28,7 +31,7 @@ var myObject = {
 };
 
 busybody.observe(myObject, "myProperty1.myProperty2", function (oldValue, newValue) {
-	console.log("myProperty has changed from: " + oldValue + " to " + newValue + ".")
+	console.log("myProperty2 has changed from: " + oldValue + " to " + newValue + ".")
 });
 
 myObject.myProperty1.myProperty2 = false;
