@@ -11,7 +11,7 @@ busybody supports non Object.observe environments as far back as IE 9
 * <a href="#CoreFunctionList">Core function list</a>
 
 ##Usage
-<h3 id="ObservingAValue">Observing a value</h3>
+###Observing a value
 ```javascript
 var myObject = {
 	myProperty: true
@@ -23,7 +23,7 @@ busybody.observe(myObject, "myProperty", function (oldValue, newValue) {
 
 myObject.myProperty = false;
 ```
-<h4 id="busybodyObserveArguments">busybody.observe arguments</h4>
+####busybody.observe arguments
 |Name|Type|Description|Optional |
 | --- | --- | --- | --- |
 |object|Object|The object which contains the property to observe|No|
@@ -68,7 +68,7 @@ myObject.myProperty = false;
 busybody.tryObserve arguments are the same as <a href="#busybodyObserveArguments">busybody.observe arguments</a>
 
 
-<h3 id="ObserveAPath">Observe a path</h3>
+###Observe a path
 Observing paths is the same as observing properties
 ```javascript
 
