@@ -1,5 +1,5 @@
 # busybody
-##An Object.observe library that gets all up in yo business
+####An Object.observe library that gets all up in yo business
 busybody supports non Object.observe environments as far back as IE 9
 
 
@@ -198,16 +198,16 @@ Computed observables are properties which are based on the evaluation of a funct
 
 
 ```javascript
-var myObject = {
+var john = {
 	firstName: "John",
 	lastName: "Watson"
 };
 
-busybody.computed(myObject, "fullName", function () {
+busybody.computed(john, "fullName", function () {
 	return this.firstName + " " + this.lastName;
 });
 
-console.log(myObject.fullName);
+console.log(john.fullName);
 ```
 ###busybody.computed arguments
 |Name|Type|Description|Optional |
@@ -215,22 +215,37 @@ console.log(myObject.fullName);
 |callback|Function|The logic which returns the computed value|No|
 |context|Object|The "this" value in the callback|No|
 |options|Object|Computed options|Yes|
-|options.watchVariables|Object|Default: null. A dictionary of variables in the callback which are to be watched|Yes|
+|[options.watchVariables](#complex-computed-observables)|Object|Default: null. A dictionary of variables in the callback which are to be watched|Yes|
 |options.observeArrayElements|Boolean|Default: false. If set to true, the computed will attempt to watch values within any array watch variables. This is useful if the computed is an aggregate function. The default is false because it is expensive computationally|Yes|
-|options.allowWith|Boolean|Default: false. If set to true, "with (...)" statements are allowed in the computed function. Although variables accessed within the with statement cannot be observed|Yes|
-|options.delayExecution|Boolean|Default: false. If set to true, the computed will not be activated until it's execute function is called or a value within the computed changes|Yes|
+|options.allowWith|Boolean|Default: false. If set to true, `with (...)` statements are allowed in the computed function. Although variables accessed within the with statement cannot be observed|Yes|
+|options.delayExecution|Boolean|Default: false. If set to true, the computed will not be activated until it's `execute(...)` function is called or a value within the computed changes|Yes|
 |**returns**|**busybody.observeTypes.computed**|**Returns an object with a dispose function to cancel the computed**|
 
 
-		///<summary>A value defined by the return value of a function. If configured correctly, a change in a value within the function will trigger a re-execution of the function</summary>
-		///<param name="callback" type="Function">The logic which returns the computed value</param>
-		///<param name="context" type="Any">The "this" value in the callback</param>
-		///<param name="options" type="Object" optional="true">Options on how the computed is composed</param>
-		///<param name="options.watchVariables" type="Object">Default: null. A dictionary of variables in the callback which are to be watched</param>
-		///<param name="options.observeArrayElements" type="Boolean">Default: false. If set to true, the computed will attempt to watch values within any array watch variables. This is useful if the computed is an aggregate function. The default is false because it is expensive computationally</param>
-		///<param name="options.allowWith" type="Boolean">Default: false. If set to true, "with (...)" statements are allowed in the computed function. Although variables accessed within the with statement cannot be observed</param>delayExecution
-		///<param name="options.delayExecution" type="Boolean">Default: false. If set to true, the computed will not be activated until it's execute function is called or a value within the computed changes</param>
-		
+
+##Complex Computed Observables
+You can include other variables in the computed also as long as you include them as `watchVariables`
+
+
+```javascript
+var john = {
+	firstName: "John",
+	lastName: "Watson"
+};
+var barry = {
+	firstName: "Barry",
+	lastName: "Johnson"
+};
+
+busybody.computed(john, "barryAndI", function () {
+	return barry.firstName + " and " + this.firstName;
+}, {
+	watchVariables: { barry: barry }
+});
+
+console.log(john.barryAndI);
+```
+###busybody.computed arguments
 
 
 
