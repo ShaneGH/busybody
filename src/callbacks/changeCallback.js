@@ -2,8 +2,12 @@
 Class("busybody.callbacks.changeCallback", function () {
         
     var changeCallback = orienteer.extend(function changeCallback(evaluateOnEachChange) {
+		///<summary>Base class for change callback handlers<summary>
+		///<param name="evaluateOnEachChange" type="Boolean">Default: false. Evaluate once for each change rather than on an amalgamation of changes<param>
+		
         this._super();
         
+		///<summary type="Boolean">Default: false. Evaluate once for each change rather than on an amalgamation of changes<summary>
         this.evaluateOnEachChange = evaluateOnEachChange;
     });
     
@@ -11,26 +15,40 @@ Class("busybody.callbacks.changeCallback", function () {
     changeCallback.dispose = {};
     
     changeCallback.prototype.activate = function (activatingChange) {
+		///<summary>Activate this callback<summary>
+		///<param name="activatingChange" type="Object" optional="true">The first change to execute on<param>
+		
         if (this._activated || this._activatingChange)
             throw "This callback has been activated";
         
-		if (arguments.length)
-        	this._activatingChange = activatingChange;
-		else
+		if (!arguments.length)
 			this._activated = true;
+		else if (activatingChange == null)
+			throw "Invalid change";
+		else
+        	this._activatingChange = activatingChange;
     };
     
     changeCallback.prototype.deactivate = function (deactivatingChange) {
+		///<summary>Deactivate this callback<summary>
+		///<param name="deactivatingChange" type="Object" optional="true">The first change to deactivate on<param>
+		
         if (this._deactivatingChange)
             throw "This callback has a deactivate pending";
         
-        if (arguments.length)
-            this._deactivatingChange = deactivatingChange;
-        else 
+        if (!arguments.length)
             this._activated = false;
+        else if (deactivatingChange == null)
+			throw "Invalid change";
+		else
+            this._deactivatingChange = deactivatingChange;
     };
 
     changeCallback.prototype.evaluateSingle = function (changes, changeIndex) {
+		///<summary>Evaluate a single change<summary>
+		///<param name="changes" type="[Object]">A list of all changes in the batch<param>
+		///<param name="index" type="Number">The index of the change to execute<param>
+		///<returns type="Any">The return value of the callback<param>
         
         if (!this.evaluateOnEachChange) return;
 
@@ -51,10 +69,19 @@ Class("busybody.callbacks.changeCallback", function () {
     };
     
     changeCallback.prototype._evaluateSingle = function (changes, changeIndex) {
+		///<summary>Abstract. Evaluate a single change<summary>
+		///<param name="changes" type="[Object]">A list of all changes in the batch<param>
+		///<param name="index" type="Number">The index of the change to execute<param>
+		///<returns type="Any">The return value of the callback<param>
+		
         throw "Abstract methods must be implemented";
     };
 
     changeCallback.prototype.evaluateMultiple = function (changes) {
+		///<summary>Evaluate on batch of changes<summary>
+		///<param name="changes" type="[Object]">A list of all changes in the batch<param>
+		///<returns type="Any">The return value of the callback<param>
+		
         if (this.evaluateOnEachChange || !changes.length) return;
 
         if (this._activated === false) return changeCallback.dispose;
@@ -88,7 +115,13 @@ Class("busybody.callbacks.changeCallback", function () {
         return output;
     };
     
-    changeCallback.prototype._evaluateMultiple = function (changes) {
+    changeCallback.prototype._evaluateMultiple = function (changes, beginAt, endAt) {
+		///<summary>Evaluate on batch of changes<summary>
+		///<param name="changes" type="[Object]">A list of all changes in the batch<param>
+		///<param name="beginAt" type="Number">The index of the first change to execute<param>
+		///<param name="endAt" type="Number">The index of the change after the last change to execute<param>
+		///<returns type="Any">The return value of the callback<param>
+		
         throw "Abstract methods must be implemented";
     };
     

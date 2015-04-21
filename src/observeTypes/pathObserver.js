@@ -11,23 +11,30 @@ Class("busybody.observeTypes.pathObserver", function () {
 		
         this._super();
         
+		///<summary type="busybody.observable">The object to observe<summary>
         this.forObject = forObject;
+		
+		///<summary type="String">The path to observe<summary>
         this.property = property;
         
+		///<summary type="[String]">The path split into parts<summary>
         this.path = busybody.utils.obj.splitPropertyName(property);
         
+		///<summary type="[busybody.observable]">The subscriptions<summary>
         this.__pathDisposables = new Array(this.path.length);
         this.execute();
         
         this.buildObservableChain();
-        this.init = true;
 		
-		this.callbacks = [];
 		if (callback)
 			this.onValueChanged(callback.bind(context || forObject), false);
     });
     
     pathObserver.prototype.onValueChanged = function (callback, evaluateImmediately) {
+		///<summary>Add a new callback<summary>
+		///<param name="callback" type="Function">The callback<param>
+		///<param name="evaluateImmediately" type="Boolean" optional="true">If true, execute the callback now<param>
+		///<returns type="busybody.disposable">A disposable to remove the callback<param>
               
 		var output = this.addCallback(callback);		
         if (evaluateImmediately)
@@ -37,6 +44,9 @@ Class("busybody.observeTypes.pathObserver", function () {
     };
     
     pathObserver.prototype.buildObservableChain = function (begin) {
+		///<summary>Rebuild the observable chain<summary>
+		///<param name="begin" type="Number" optional="true">The first element to rebuild<param>
+		
         begin = begin || 0;
         
         // dispose of anything in the path after the change
@@ -83,6 +93,9 @@ Class("busybody.observeTypes.pathObserver", function () {
     };
         
     pathObserver.prototype.getValue = function() {
+		///<summary>Evaluate the path observer<summary>
+		///<returns type="Any">The value. Returns null rather than a TypeError<param>
+		
         var current = this.forObject;
         
         // get item at index "begin"
@@ -94,6 +107,8 @@ Class("busybody.observeTypes.pathObserver", function () {
     };
 	
     pathObserver.prototype.dispose = function () {
+		///<summary>Dispose of this path observer<summary>
+		
         this._super();
         
         for (var i = 0, ii = this.__pathDisposables.length; i < ii && this.__pathDisposables[i]; i++)

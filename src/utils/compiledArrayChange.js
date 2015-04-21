@@ -3,6 +3,11 @@
 Class("busybody.utils.compiledArrayChange", function () {
     
     function compiledArrayChange(changes, beginAt, endAt) {
+		///<summary>Helper for compiling array change batches<summary>
+		///<param name="changes" type="[Object]">A list of all changes in the batch<param>
+		///<param name="beginAt" type="Number">The index of the first change to process<param>
+		///<param name="endAt" type="Number">The index of the change after the last change to process<param>
+		
         this.beginAt = beginAt;
         this.endAt = endAt;
         this.changes = [];
@@ -11,6 +16,8 @@ Class("busybody.utils.compiledArrayChange", function () {
     }
     
     compiledArrayChange.prototype.buildIndexes = function () {
+		///<summary>Evaluate the indexes in the batch<summary>
+		
         if (this.indexes)
             return;
         
@@ -80,6 +87,9 @@ Class("busybody.utils.compiledArrayChange", function () {
     //TODO: build based on shifts and adds
     
     compiledArrayChange.prototype.build = function (changes) {  
+		///<summary>Evaluate the batch<summary>
+		///<param name="changes" type="[Object]">A list of all changes in the batch<param>
+		
         this.removed = [];
         this.added = [];
         if (!changes.length || this.beginAt >= this.endAt) {
@@ -144,18 +154,33 @@ Class("busybody.utils.compiledArrayChange", function () {
     };
     
     compiledArrayChange.prototype.areEqual = function (beginAt, endAt) {
+		///<summary>Determine if two compiledArrayChanges are the same based on the first and last index<summary>
+		///<param name="changes" type="[Object]">A list of all changes in the batch<param>
+		///<param name="beginAt" type="Number">The index of the first change to execute<param>
+		///<param name="endAt" type="Number">The index of the change after the last change to execute<param>
+		///<returns type="Boolean">The result<param>
+		
         return this.beginAt === beginAt && this.endAt === endAt;
     };
     
     compiledArrayChange.prototype.getRemoved = function () {
+		///<summary>Get items removed in this batch<summary>
+		///<returns type="[Any]">The items<param>
+		
         return this.removed.slice();
     };
     
     compiledArrayChange.prototype.getAdded = function () {
+		///<summary>Get items added in this batch<summary>
+		///<returns type="[Any]">The items<param>
+		
         return this.added.slice();
     };
     
     compiledArrayChange.prototype.getIndexes = function () {
+		///<summary>Get detailed batch info<summary>
+		///<returns type="Object">The items<param>
+		
         if (!this.indexes)
             this.buildIndexes();        
         
