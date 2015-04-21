@@ -272,7 +272,7 @@ var mike = {
 
 busybody.computed(mike, "myFriends", function () {
 	var output = [];
-	for (var i = 0; i < this.friends; i++)
+	for (var i = 0; i < this.friends.length; i++)
 		output.push(this.friends[i].firstName);
 	
 	return output.join(", ");
