@@ -3,8 +3,12 @@
 busybody supports non Object.observe environments as far back as IE 9
 
 ##Index
-<a href="#ObservingAValue">Observe</a>
-<a href="#ObserveAPath">Observe a path</a>
+* <a href="#ObservingAValue">Observe</a>
+* <a href="#ObserveAPath">Observe a path</a>
+* <a href="#ObservableArrays">Observable Arrays</a>
+* <a href="#ComputedObservables">Computed Observables</a>
+* <a href="#PerformanceGains">Performance gains</a>
+* <a href="#CoreFunctionList">Core function list</a>
 
 ##Usage
 <h3 id="ObservingAValue">Observing a value</h3>
@@ -27,7 +31,7 @@ myObject.myProperty = false;
 |callback|property|The callback to execute|No|
 |context|Function|The "this" in the callback|Yes|
 |options|Object|Options for the callback|Yes|
-|options.useRawChanges|Boolean|Default: false. Use the change objects from the Array.observe as arguments|Yes|
+|options.useRawChanges|Boolean|Default: false. Use the change objects from the Object.observe as arguments|Yes|
 |options.evaluateOnEachChange|Boolean|Default: false. Evaluate once for each change rather than on an amalgamation of changes|Yes|
 |options.evaluateIfValueHasNotChanged|Boolean|Default: false. Evaluate if the oldValue and the newValue are the same|Yes|
 |options.activateImmediately|Boolean|Default: false. Activate the callback now, meaning it could get changes which were applied before the callback was created|Yes|
@@ -97,3 +101,29 @@ myObject.myProperty1.myProperty2 = false;
 * property1["property2"]
 * property1[aValue]
 * property1.property2().property3
+
+<h3 id="ObservableArrays">Observable Arrays</h3>
+To observe changes to an array you must create a busybody.array
+
+```javascript
+var myArray = busybody.array([1, 2, 3]);
+
+busybody.observe(myArray, function (removedValues, addedValues, indexes) {
+	console.log("Added values: " + addedValues + ".");
+	console.log("Removed values: " + removedValues + ".");
+});
+
+myArray.push(4);
+```
+####busybody.observe array arguments
+|Name|Type|Description|Optional |
+| --- | --- | --- | --- |
+|object|Object|The object which contains the property to observe|No|
+|callback|property|The callback to execute|No|
+|context|Function|The "this" in the callback|Yes|
+|options|Object|Options for the callback|Yes|
+|options.useRawChanges|Boolean|Default: false. Use the change objects from the Array.observe as arguments|Yes|
+|options.evaluateOnEachChange|Boolean|Default: false. Evaluate once for each change rather than on an amalgamation of changes|Yes|
+
+
+
