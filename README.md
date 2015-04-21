@@ -4,6 +4,7 @@ busybody supports non Object.observe environments as far back as IE 9
 
 ##Index
 <a href="#ObservingAValue">Observe</a>
+<a href="#ObserveAPath">Observe a path</a>
 
 ##Usage
 <h3 id="ObservingAValue">Observing a value</h3>
@@ -63,7 +64,7 @@ myObject.myProperty = false;
 busybody.tryObserve arguments are the same as <a href="#busybodyObserveArguments">busybody.observe arguments</a>
 
 
-###Observing a path
+<h3 id="ObserveAPath">Observe a path</h3>
 Observing paths is the same as observing properties
 ```javascript
 
@@ -87,7 +88,7 @@ myObject.myProperty1.myProperty2 = false;
 |object|Object|The root of the path|No|
 |property|String|The property|No|
 |callback|property|The callback to execute|No|
-|context|Function|The "this" in the callback|Yes|
+|context|Object|The "this" in the callback|Yes|
 ####Valid paths:
 * property1.property2
 * property1[3].property2
