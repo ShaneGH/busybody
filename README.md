@@ -81,10 +81,17 @@ busybody.observe(myObject, "myProperty1.myProperty2", function (oldValue, newVal
 
 myObject.myProperty1.myProperty2 = false;
 ```
-<h4 id="busybodyObserveArguments">busybody.observe path arguments</h4>
+####busybody.observe path arguments
 |Name|Type|Description|Optional |
 | --- | --- | --- | --- |
 |object|Object|The root of the path|No|
 |property|String|The property|No|
 |callback|property|The callback to execute|No|
 |context|Function|The "this" in the callback|Yes|
+####Valid paths:
+* property1.property2
+* property1[3].property2
+####Invalid paths:
+* property1["property2"]
+* property1[aValue]
+* property1.property2().property3
