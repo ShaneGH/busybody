@@ -4,11 +4,11 @@ busybody supports non Object.observe environments as far back as IE 9
 
 ##Index
 * [Observe](#observing-a-value)
-* <a href="#ObserveAPath">Observe a path</a>
-* <a href="#observable-arrays">Observable Arrays</a>
-* <a href="#ComputedObservables">Computed Observables</a>
-* <a href="#PerformanceGains">Performance gains</a>
-* <a href="#CoreFunctionList">Core function list</a>
+* [Observe a path](#observe-a-path)
+* [Observable Arrays](#observable-arrays)
+* [Computed Observables](#computed-observables)
+* [Performance gains](#performance-gains)
+* [Core function list](#core-function-list)
 
 ##Usage
 ###Observing a value
@@ -65,7 +65,7 @@ busybody.tryObserve(myObject, "myProperty", function (oldValue, newValue) {
 myObject.myProperty = false;
 ```
 ####busybody.tryObserve arguments
-busybody.tryObserve arguments are the same as <a href="#busybodyObserveArguments">busybody.observe arguments</a>
+busybody.tryObserve arguments are the same as [busybody.observe arguments](busybodyobserve-arguments)
 
 
 ###Observe a path
