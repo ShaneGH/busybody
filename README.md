@@ -7,6 +7,7 @@ busybody supports non Object.observe environments as far back as IE 9
 * [Observe a path](#observe-a-path)
 * [Observable Arrays](#observable-arrays)
 * [Bind Arrays](#bind-arrays)
+* [Bind Properties](#bind-properties)
 * [Computed Observables](#computed-observables)
 * [Performance gains](#performance-gains)
 * [Core function list](#core-function-list)
@@ -151,10 +152,41 @@ console.log(myArray2);
 | --- | --- | --- | --- |
 |array1|busybody.array|The first array|No|
 |array2|busybody.array|The second array|No|
-|twoWay|Boolean|The "this" in the callback|Yes|
+|twoWay|Boolean|Bind the first array to the second array also|Yes|
 |**returns**|**busybody.disposable**|**If any subscriptions were made, this function returns an object with a dispose function to cancel the subscriptions**|
 
+###Bind Properties
+You can bind the values of 2 properties together.
 
+```javascript
+var myObject1 = {myProperty: true};
+var myObject2 = {};
+
+busybody.bind(myObject1, "myProperty", myObject2, "myProperty", true);
+
+console.log(myObject2.myProperty);
+```
+####busybody.bind arguments
+|Name|Type|Description|Optional |
+| --- | --- | --- | --- |
+|object1|Object|The first object|No|
+|property1|String|The first property|No|
+|object2|Object|The second object|No|
+|property2|String|The second property|No|
+|twoWay|Boolean|Bind the first object to the object array also|Yes|
+|doNotSet|Boolean|If true, do not set the value of object2 to the value of object1 (mostly for internal use)|Yes|
+|**returns**|**busybody.disposable**|**Returns an object with a dispose function to cancel the subscriptions**|
+
+
+		///<summary>Try to bind the values of 2 properties together</summary>
+		///<param name="object1" type="Object">The first object</param>
+		///<param name="property1" type="String">The first property</param>
+		///<param name="object2" type="Object">The second object</param>
+		///<param name="property2" type="String">The second property</param>
+		///<param name="twoWay" type="Boolean">Attempt to bind 2 ways</param>
+		///<param name="doNotSet" type="Boolean">Do not set the value of the second property to the value of the first property</param>
+		///<returns type="busybody.disposable">A disposable</returns>
+		
 
 
 
