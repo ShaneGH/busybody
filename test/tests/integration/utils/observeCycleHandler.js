@@ -11,7 +11,7 @@ testUtils.testWithUtils("placeholder", null, false, function(methods, classes, s
 	stop(5);
 	
 	var subject = new busybody.utils.observeCycleHandler(), sequence = 0;
-	subject.befreObserveCycle(function () {
+	subject.beforeObserveCycle(function () {
 		start();
 		strictEqual(sequence, 0);
 		sequence++;
