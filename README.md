@@ -1,5 +1,5 @@
 # busybody
-###An Object.observe library that gets all up in yo business
+##An Object.observe library that gets all up in yo business
 busybody supports non Object.observe environments as far back as IE 9
 
 ##Index
@@ -13,7 +13,7 @@ busybody supports non Object.observe environments as far back as IE 9
 * [Core function list](#core-function-list)
 
 ##Usage
-###Observing a value
+##Observing a value
 ```javascript
 var myObject = {
 	myProperty: true
@@ -25,7 +25,7 @@ busybody.observe(myObject, "myProperty", function (oldValue, newValue) {
 
 myObject.myProperty = false;
 ```
-####busybody.observe arguments
+XXXXXXXXXXXXbusybody.observe arguments
 |Name|Type|Description|Optional |
 | --- | --- | --- | --- |
 |object|Object|The object which contains the property to observe|No|
@@ -39,7 +39,7 @@ myObject.myProperty = false;
 |options.activateImmediately|Boolean|Default: false. Activate the callback now, meaning it could get changes which were applied before the callback was created|Yes|
 |**returns**|**busybody.disposable**|**Returns an object with a dispose function to cancel the subscriptions**|
 
-###Attempting to observe a value
+##Attempting to observe a value
 Objects are not observable by default. Sometimes you may want to observe a value only *if possible*
 
 ```javascript
@@ -67,11 +67,11 @@ busybody.tryObserve(myObject, "myProperty", function (oldValue, newValue) {
 
 myObject.myProperty = false;
 ```
-####busybody.tryObserve arguments
+XXXXXXXXXXXXbusybody.tryObserve arguments
 busybody.tryObserve arguments are the same as [busybody.observe arguments](#busybodyobserve-arguments)
 
 
-###Observe a path
+##Observe a path
 Observing paths is the same as observing properties
 ```javascript
 
@@ -89,7 +89,7 @@ busybody.observe(myObject, "myProperty1.myProperty2", function (oldValue, newVal
 
 myObject.myProperty1.myProperty2 = false;
 ```
-####busybody.observe path arguments
+XXXXXXXXXXXXbusybody.observe path arguments
 |Name|Type|Description|Optional |
 | --- | --- | --- | --- |
 |object|Object|The root of the path|No|
@@ -97,16 +97,16 @@ myObject.myProperty1.myProperty2 = false;
 |callback|property|The callback to execute|No|
 |context|Object|The "this" in the callback|Yes|
 |**returns**|**busybody.disposable**|**Returns an object with a dispose function to cancel the subscriptions**|
-####Valid paths:
+XXXXXXXXXXXXValid paths:
 * `property1.property2`
 * `property1[3].property2`
 
-####Invalid paths:
+XXXXXXXXXXXXInvalid paths:
 * `property1["property2"]`
 * `property1[aValue]`
 * `property1.property2().property3`
 
-###Observable Arrays
+##Observable Arrays
 To observe changes to an array you must create a busybody.array
 
 ```javascript
@@ -119,7 +119,7 @@ busybody.observe(myArray, function (removedValues, addedValues, indexes) {
 
 myArray.push(4);
 ```
-####busybody.observe array arguments
+XXXXXXXXXXXXbusybody.observe array arguments
 |Name|Type|Description|Optional |
 | --- | --- | --- | --- |
 |object|Object|The object which contains the property to observe|No|
@@ -130,14 +130,14 @@ myArray.push(4);
 |options.evaluateOnEachChange|Boolean|Default: false. Evaluate once for each change rather than on an amalgamation of changes|Yes|
 |**returns**|**busybody.disposable**|**Returns an object with a dispose function to cancel the subscriptions**|
 
-####busybody.array functionality
+XXXXXXXXXXXXbusybody.array functionality
 busybody.arrays are almost the same as javascript Arrays with a few small exceptions:
 * There is a `remove(...)` function which removes the specified element from the array
 * You can use the following notation `myArray[2] = {};` but older browsers will not publish changes to the array. Use `myArray.replace(2, {});` instead.
 * Do not include the final argument of the callback `indexes` if it will not be used. This will give a small performance gain.
 
-###Bind Arrays
-You can bind 2 arrays together. The tryBindArrays function will take a *best attempt* approach to binding, meaning that if an array is not observable it will ignore that part
+##Bind Arrays
+You can bind 2 arrays together. This will mean that changes to one array will result in changes to another. The tryBindArrays function will take a *best attempt* approach to binding, meaning that if an array is not observable it will ignore that part
 
 ```javascript
 var myArray1 = busybody.array([1, 2, 3]);
@@ -147,7 +147,7 @@ busybody.tryBindArrays(myArray1, myArray2, true);
 
 console.log(myArray2);
 ```
-####busybody.tryBindArrays arguments
+XXXXXXXXXXXXbusybody.tryBindArrays arguments
 |Name|Type|Description|Optional |
 | --- | --- | --- | --- |
 |array1|busybody.array|The first array|No|
@@ -155,8 +155,8 @@ console.log(myArray2);
 |twoWay|Boolean|Bind the first array to the second array also|Yes|
 |**returns**|**busybody.disposable**|**If any subscriptions were made, this function returns an object with a dispose function to cancel the subscriptions**|
 
-###Bind Properties
-You can bind the values of 2 properties together.
+##Bind Properties
+You can bind the values of 2 properties together. This will mean that changes to a property of an object will result in changes to another property of another object.
 
 ```javascript
 var myObject1 = {myProperty: true};
@@ -166,7 +166,7 @@ busybody.bind(myObject1, "myProperty", myObject2, "myProperty", true);
 
 console.log(myObject2.myProperty);
 ```
-####busybody.bind arguments
+XXXXXXXXXXXXbusybody.bind arguments
 |Name|Type|Description|Optional |
 | --- | --- | --- | --- |
 |object1|Object|The first object|No|
