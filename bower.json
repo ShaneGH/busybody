@@ -1,12 +1,12 @@
 {
   "name": "busybody",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "homepage": "https://github.com/ShaneGH/busybody",
   "authors": [
     "Shane Connon <shane.connon@gmail.com>"
   ],
   "description": "Object observe functionality, polyfills and enhancements",
-  "main": ["release/busybody-0.0.1.debug.js", "release/busybody-0.0.1.js"],
+  "main": ["release/busybody-0.1.0.debug.js", "release/busybody-0.1.0.js"],
   "license": "MIT",
   "private": true,
   "ignore": [
@@ -17,6 +17,6 @@
     "tests"
   ],
   "dependencies": {
-    "orienteer": "ShaneGH/orienteer#v-0.1.0"
+    "orienteer": "ShaneGH/orienteer#>=0.1.0"
   }
 }
