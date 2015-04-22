@@ -281,7 +281,6 @@ busybody.computed(mike, "myFriends", function () {
 }, { observeArrayElements: true });
 
 console.log(mike.myFriends);
-```
 
 
 
