@@ -286,7 +286,7 @@ console.log(mike.myFriends);
 
 
 ##Performance Gains
-To improve performance you can use `busybody.observables` rather than regular objects. The downside is that the busybody.observable has a few values which will be enumerated over in a `for (var i in myObservable)` situation.
+To improve performance you can use `busybody.observable` objects rather than regular objects. The downside is that the busybody.observable has a few values which will be enumerated over in a `for (var i in myObservable)` situation.
 ```javascript
 var myObject = new busybody.observable();
 myObject.myProperty = true;
