@@ -7,8 +7,13 @@ Class("busybody.observableBase", function () {
 
         this._super();
 
+        ///<summary type="[Object]">Current changes to be processed</summary>
         this.$changeBatch = [];
+		
+        ///<summary type="Object">The object to observe. If null, observe this</summary>
         this.$forObject = forObject;
+		
+        ///<summary type="Object">Dictionary of change callbacks</summary>
         this.$callbacks = {};
     });
     

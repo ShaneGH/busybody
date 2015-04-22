@@ -25,6 +25,24 @@ testUtils.testWithUtils("observe", "path, last element changed", false, function
     subject.aa.bb.cc = 22;        
 });
 
+testUtils.testWithUtils("observe", "begin with null", false, function(methods, classes, subject, invoker) {
+    // arrange
+    var subject = new busybody.observable;
+
+    var dispose = new pathObserver(subject, "aa.bb.cc", function(oldVal, newVal) {
+        strictEqual(oldVal, null);
+        strictEqual(newVal, 22);
+        start();
+    });
+
+    // act
+    stop();
+    subject.aa = {
+		bb: {
+			cc: 22
+		}
+	};        
+});
 
 testUtils.testWithUtils("observe", "path, last element changed, has array", false, function(methods, classes, subject, invoker) {
     

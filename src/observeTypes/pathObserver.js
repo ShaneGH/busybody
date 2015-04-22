@@ -66,7 +66,7 @@ Class("busybody.observeTypes.pathObserver", function () {
         
         // get the last item in the path subscribing to changes along the way
         for (; current && i < this.path.length - 1; i++) {
-            if ((busybody.canObserve(current) || current instanceof busybody.array) && current[this.path[i]] && i >= begin) {
+            if ((busybody.canObserve(current) || current instanceof busybody.array)) {
                 
                 var args = [current, (function (i) {
                     return function(oldVal, newVal) {
