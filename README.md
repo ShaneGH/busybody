@@ -38,10 +38,10 @@ myObject.myProperty = false;
 |callback|Function|The callback to execute|No|
 |context|Object|The "this" in the callback|Yes|
 |options|Object|Options for the callback|Yes|
-|options.useRawChanges|Boolean|Default: false. Use the change objects from the Object.observe as arguments|Yes|
-|options.evaluateOnEachChange|Boolean|Default: false. Evaluate once for each change rather than on an amalgamation of changes|Yes|
-|options.evaluateIfValueHasNotChanged|Boolean|Default: false. Evaluate if the oldValue and the newValue are the same|Yes|
-|options.activateImmediately|Boolean|Default: false. Activate the callback now, meaning it could get changes which were applied before the callback was created|Yes|
+|options => useRawChanges|Boolean|Default: false. Use the change objects from the Object.observe as arguments|Yes|
+|options => evaluateOnEachChange|Boolean|Default: false. Evaluate once for each change rather than on an amalgamation of changes|Yes|
+|options => evaluateIfValueHasNotChanged|Boolean|Default: false. Evaluate if the oldValue and the newValue are the same|Yes|
+|options => activateImmediately|Boolean|Default: false. Activate the callback now, meaning it could get changes which were applied before the callback was created|Yes|
 |**returns**|**busybody.disposable**|**Returns an object with a dispose function to cancel the subscriptions**|
 
 
@@ -136,8 +136,8 @@ myArray.push(4);
 |callback|property|The callback to execute|No|
 |context|Function|The "this" in the callback|Yes|
 |options|Object|Options for the callback|Yes|
-|options .useRawChanges|Boolean|Default: false. Use the change objects from the Array.observe as arguments|Yes|
-|options .evaluateOnEachChange|Boolean|Default: false. Evaluate once for each change rather than on an amalgamation of changes|Yes|
+|options => useRawChanges|Boolean|Default: false. Use the change objects from the Array.observe as arguments|Yes|
+|options => evaluateOnEachChange|Boolean|Default: false. Evaluate once for each change rather than on an amalgamation of changes|Yes|
 |**returns**|**busybody.disposable**|**Returns an object with a dispose function to cancel the subscriptions**|
 
 ###busybody.array functionality
@@ -215,10 +215,10 @@ console.log(john.fullName);
 |callback|Function|The logic which returns the computed value|No|
 |context|Object|The "this" value in the callback|No|
 |options|Object|Computed options|Yes|
-|[options.watchVariables](#complex-computed-observables)|Object|Default: null. A dictionary of variables in the callback which are to be watched|Yes|
-|[options.observeArrayElements](#computed-observables-with-arrays)|Boolean|Default: false. If set to true, the computed will attempt to watch values within any array watch variables. This is useful if the computed is an aggregate function. The default is false because it is expensive computationally|Yes|
-|options.allowWith|Boolean|Default: false. If set to true, `with (...)` statements are allowed in the computed function. Although variables accessed within the with statement cannot be observed|Yes|
-|options.delayExecution|Boolean|Default: false. If set to true, the computed will not be activated until it's `execute(...)` function is called or a value within the computed changes|Yes|
+|[options => watchVariables](#complex-computed-observables)|Object|Default: null. A dictionary of variables in the callback which are to be watched|Yes|
+|[options => observeArrayElements](#computed-observables-with-arrays)|Boolean|Default: false. If set to true, the computed will attempt to watch values within any array watch variables. This is useful if the computed is an aggregate function. The default is false because it is expensive computationally|Yes|
+|options => allowWith|Boolean|Default: false. If set to true, `with (...)` statements are allowed in the computed function. Although variables accessed within the with statement cannot be observed|Yes|
+|options => delayExecution|Boolean|Default: false. If set to true, the computed will not be activated until it's `execute(...)` function is called or a value within the computed changes|Yes|
 |**returns**|**busybody.observeTypes.computed**|**Returns an object with a dispose function to cancel the computed**|
 
 ###busybody.computed functionality
