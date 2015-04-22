@@ -264,7 +264,6 @@ Class("busybody.observableBase", function () {
         return computed;        
     };
     
-	//TODM
     observableBase.prototype.del = function (property) {
 		///<summary>Delete a property and publish changes.</summary>
 		///<param name="property" type="String">The property</param>

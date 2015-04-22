@@ -15,6 +15,7 @@ busybody supports non Object.observe environments as far back as IE 9
 * [Computed Observables with Arrays](#computed-observables-with-arrays)
 * [Performance gains](#performance-gains)
 * [Core function list](#core-function-list)
+* [Quirks](#quirks)
 
 
 
@@ -144,7 +145,7 @@ myArray.push(4);
 busybody.arrays are almost the same as javascript Arrays with a few small exceptions:
 * There is a `remove(...)` function which removes the specified element from the array
 * You can use the following notation `myArray[2] = {};` but older browsers will not publish changes to the array. Use `myArray.replace(2, {});` instead.
-* Do not include the final argument of the callback `indexes` if it will not be used. This will give a small performance gain.
+* Do not include the final argument of the callback (`indexes`) in the callback definition if it will not be used. This will give a small performance gain.
 
 
 
@@ -345,16 +346,9 @@ This is a list of the functions exposed by busybody. If the function args are no
 
 
 
+##Quirks
 
-
-
-
-
-
-
-
-
-
-
-
-
+To support older browsers and the async nature of busybody, follow the following rules:
+* Don't use `delete myObject.property`; use `busybody.del(myObject, "property")` instead.
+* Don't use `myArray[2] = "something"` for `busybody.array` objects; use `myArray.replace(2, "something")` instead.
+* To keep in line with [`Object.observe`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/observe) specs, and transition smoothly into it's usage, all observe callbacks are executed asynchronusly.
