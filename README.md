@@ -136,8 +136,8 @@ myArray.push(4);
 |callback|property|The callback to execute|No|
 |context|Function|The "this" in the callback|Yes|
 |options|Object|Options for the callback|Yes|
-|options.useRawChanges|Boolean|Default: false. Use the change objects from the Array.observe as arguments|Yes|
-|options.evaluateOnEachChange|Boolean|Default: false. Evaluate once for each change rather than on an amalgamation of changes|Yes|
+|options .useRawChanges|Boolean|Default: false. Use the change objects from the Array.observe as arguments|Yes|
+|options .evaluateOnEachChange|Boolean|Default: false. Evaluate once for each change rather than on an amalgamation of changes|Yes|
 |**returns**|**busybody.disposable**|**Returns an object with a dispose function to cancel the subscriptions**|
 
 ###busybody.array functionality
