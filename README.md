@@ -272,13 +272,51 @@ var mike = {
 
 busybody.computed(mike, "myFriends", function () {
 	var output = [];
-	for (var i = 0; i < this.friends.length; i++)
+	var length = this.friends.length;
+	for (var i = 0; i < length; i++)
 		output.push(this.friends[i].firstName);
 	
 	return output.join(", ");
 }, { observeArrayElements: true });
 
 console.log(mike.myFriends);
+```
+
+
+
+##Performance Gains
+To improve performance you can use busybody.observables rather than regular objects. The downside is that the busybody.observable has a few values which will be enumerated over in a `for (var i in myObservable)` situation.
+```javascript
+var myObject = new busybody.observable();
+myObject.myProperty = true;
+
+// observation 1
+busybody.observe(myObject, "myProperty", function (oldValue, newValue) {
+	console.log("myProperty has changed from: " + oldValue + " to " + newValue + ".")
+});
+
+// observation 2
+myObject.observe("myProperty", function (oldValue, newValue) {
+	console.log("myProperty has changed from: " + oldValue + " to " + newValue + ".")
+});
+
+myObject.myProperty = false;
+```
+
+
+
+
+
+```javascript
+var myObject = {
+	myProperty: true
+};
+
+busybody.observe(myObject, "myProperty", function (oldValue, newValue) {
+	console.log("myProperty has changed from: " + oldValue + " to " + newValue + ".")
+});
+
+myObject.myProperty = false;
 ```
 
 
