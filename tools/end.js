@@ -26,7 +26,7 @@
 		///<param name="forObject" type="Object">The object</param>
 		///<param name="logic" type="Function">The function which will change the array</param>
 		///<param name="callback" type="Function">The callback (function (changes) { })</param>
-		///<param name="property" type="String">The property</param>
+		///<param name="property" type="String" optional="true">The property</param>
 		
         forObject = busybody.getObserver(forObject);
         

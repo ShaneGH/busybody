@@ -321,6 +321,30 @@ myObject.myProperty = false;
 
 
 
+##Core Function List
+
+This is a list of the functions exposed by busybody. If the function args are not detailed in this documentation, look at the function in a debugger window (using the debug version of busybody). All functions have full argument documentation within them.
+
+|Name|Description|
+| --- | --- |
+|bind|Bind two properties together|
+|captureArrayChanges|Capture all of the changes to the first argument (array) when the second argument (Function) is executed. The changes are passed to the third object (Function)|
+|captureChanges|Capture all of the changes to the first argument (Object) when the second argument (Function) is executed. The changes are passed to the third object (Function)|
+|canObserve|Determine whether a `tryObserve` type function will succeed|
+|computed|Create a computed property on an object|
+|del|delete a property from an object|
+|dispose|dispose of an object|
+|getObserver|Gets the observer object for an object or return null. The observer is either: The object itself if the object is a busybody.observable or the non enumerable $observer property of the object, if it is a busybody.observable|
+|makeObservable|Make an object observable|
+|observe|Observe a property of an object|
+|observeArray|Observe an array property of an object|
+|tryBind|Bind two properties together if possible|
+|tryBindArrays|Bind two arrays together if possible|
+|tryObserve|Observe a property of an object if possible|
+|tryObserveArray|Observe an array property of an object if possible|
+
+
+
 
 
 

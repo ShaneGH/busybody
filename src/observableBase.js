@@ -87,7 +87,7 @@ Class("busybody.observableBase", function () {
 		///<summary>Capture all of the changes to the property perpetrated by the logic</summary>
 		///<param name="logic" type="Function">The function which will change the array</param>
 		///<param name="callback" type="Function">The callback (function (changes) { })</param>
-		///<param name="toProperty" type="String">The property</param>
+		///<param name="toProperty" type="String" optional="true">The property</param>
 				
 		if (toProperty && (toProperty = busybody.utils.obj.splitPropertyName(toProperty)).length > 1) {
 			return busybody.captureChanges(
