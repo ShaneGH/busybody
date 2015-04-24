@@ -209,6 +209,12 @@ busybody.computed(john, "fullName", function () {
 });
 
 console.log(john.fullName);
+
+busybody.observe(john, "fullName", function (oldValue, newValue) {
+	console.log(john.fullName);
+})
+
+john.lastName = "Michaels";
 ```
 ###busybody.computed arguments
 |Name|Type|Description|Optional |
