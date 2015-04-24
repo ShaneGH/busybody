@@ -10,10 +10,19 @@ Class("busybody.arrayBase", function () {
             if (!(arguments[0] instanceof Array))
                 throw "The initial values must be an array";
         
+		///<summary type="[busybody.disposable]">Items to despose of with this</summary>
         this.$disposables = [];
+		
+		///<summary type="[Array]">Arrays which are obund to this</summary>
         this.$boundArrays = [];
+		
+		///<summary type="[busybody.callbacks.arrayCallback]">On change callbacks</summary>
         this.$callbacks = [];
+		
+		///<summary type="[Object]">The current change batch</summary>
         this.$changeBatch = [];
+		
+		///<summary type="Number">The length property of an array base is dynamic. $length is the cached value. You can use this value, but do not write to it</summary>
         this.$length = initialValues ? initialValues.length : 0;    
         
         if (initialValues)
@@ -153,7 +162,7 @@ Class("busybody.arrayBase", function () {
     arrayBase.prototype.alteringArray = function(method, args) {
 		///<summary>Execute logic which will alter this array. Apply changes to any bound arrays.</summary>
 		///<param name="method" type="String">A method pointer which will alter the array</param>
-		///<param name="args" type="[]">The arguments to the method</param>
+		///<param name="args" type="Array">The arguments to the method</param>
 				
         if (this.__alteringArray)
             throw "Calls to alteringArray must be synchronus and not nested.";
@@ -182,8 +191,8 @@ Class("busybody.arrayBase", function () {
 
     arrayBase.copyAll = function (from, to, convert) {
 		///<summary>Copy the contents of one array to another</summary>
-		///<param name="from" type="[]">The from array</param>
-		///<param name="to" type="[]">The to array</param>
+		///<param name="from" type="Array">The from array</param>
+		///<param name="to" type="Array">The to array</param>
 		///<param name="convert" type="Function">A function to convert values before copy</param>
         
         var args;
@@ -202,7 +211,7 @@ Class("busybody.arrayBase", function () {
     
     arrayBase.prototype.bind = function(anotherArray) {
 		///<summary>Bind arrays</summary>
-		///<param name="anotherArray" type="[]">The other array</param>
+		///<param name="anotherArray" type="Array">The other array</param>
 		///<returns type="busybody.disposable">A disposable</returns>
         
         if (!anotherArray || this.$boundArrays.indexOf(anotherArray) !== -1) return;

@@ -180,7 +180,7 @@ Class("busybody.utils.obj", function () {
 
     function addWithDispose(callbackArray, item) {
 		///<summary>Add an item to an array and return a disposable which will remove it</summary>
-		///<param name="callbackArray" type="[]">The array</param>
+		///<param name="callbackArray" type="Array">The array</param>
 		///<param name="item" type="Any">The item</param>
 		///<returns type="busybody.disposable">The disposable</param>
 

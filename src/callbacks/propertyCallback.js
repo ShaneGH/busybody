@@ -15,8 +15,10 @@ Class("busybody.callbacks.propertyCallback", function () {
 		///<summary type="Function">The callback to execute</summary>
         this.callback = callback;
 		
-		///<summary type="Any" optional="true">The "this" in the callback</summary>
+		///<summary type="Any">The "this" in the callback</summary>
         this.context = context;
+		
+		///<summary type="Boolean">Default: false. Evaluate if the oldValue and the newValue are the same</summary>
         this.evaluateIfValueHasNotChanged = options && options.evaluateIfValueHasNotChanged;
 		
 		///<summary type="Boolean">Default: false. Evaluate if the oldValue and the newValue are the same</summary>

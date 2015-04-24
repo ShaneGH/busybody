@@ -55,6 +55,7 @@ Class("busybody.observableBase", function () {
     observableBase.processChanges = function (callbacks, changes) {
 		///<summary>Process changes</summary>
 		///<param name="callbacks" type="[busybody.callbacks.chageCallback]">The callbacks</param>
+		///<param name="changes" type="[Object]">The changes</param>
 		///<returns type="[Function]">A list of items to execute after this funciton returns</returns>
 		
         var dispose = [];
@@ -128,13 +129,13 @@ Class("busybody.observableBase", function () {
         throw "Abstract methods must be overridden";
 	};
     
-    observableBase.prototype.bind = function (property, otherObject, otherPropoerty) {
+    observableBase.prototype.bind = function (property, otherObject, otherProperty) {
 		///<summary>Bind a property to another objects property</summary>
 		///<param name="property" type="String">The property</param>
 		///<param name="otherObject" type="Object">The other object</param>
 		///<param name="otherProperty" type="String">The other property</param>
 		
-		return busybody.bind(this, property, otherObject, otherPropoerty);
+		return busybody.bind(this, property, otherObject, otherProperty);
     };
 
     observableBase.prototype.observeArray = function (property, callback, context, options) {

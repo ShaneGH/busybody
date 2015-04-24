@@ -85,7 +85,10 @@ Class("busybody.array", function () {
         
         this._super.apply(this, arguments);
         
+		///<summary type="[Function]">Callbacks to fire the next time the array changes</summary>
         this.$onNextArrayChanges = [];
+		
+		///<summary type="[Function]">Callbacks which capture changes to the array</summary>
         this.$captureCallbacks = [];
     }); 
     

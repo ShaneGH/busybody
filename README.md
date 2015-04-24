@@ -312,22 +312,6 @@ myObject.myProperty = false;
 
 
 
-
-
-```javascript
-var myObject = {
-	myProperty: true
-};
-
-busybody.observe(myObject, "myProperty", function (oldValue, newValue) {
-	console.log("myProperty has changed from: " + oldValue + " to " + newValue + ".")
-});
-
-myObject.myProperty = false;
-```
-
-
-
 ##Core Function List
 
 This is a list of the functions exposed by busybody. If the function args are not detailed in this documentation, look at the function in a debugger window (using the debug version of busybody). All functions have full argument documentation within them.

@@ -47,7 +47,7 @@ Class("busybody.callbacks.changeCallback", function () {
     changeCallback.prototype.evaluateSingle = function (changes, changeIndex) {
 		///<summary>Evaluate a single change</summary>
 		///<param name="changes" type="[Object]">A list of all changes in the batch</param>
-		///<param name="index" type="Number">The index of the change to execute</param>
+		///<param name="changeIndex" type="Number">The index of the change to execute</param>
 		///<returns type="Any">The return value of the callback</param>
         
         if (!this.evaluateOnEachChange) return;
@@ -71,7 +71,7 @@ Class("busybody.callbacks.changeCallback", function () {
     changeCallback.prototype._evaluateSingle = function (changes, changeIndex) {
 		///<summary>Abstract. Evaluate a single change</summary>
 		///<param name="changes" type="[Object]">A list of all changes in the batch</param>
-		///<param name="index" type="Number">The index of the change to execute</param>
+		///<param name="changeIndex" type="Number">The index of the change to execute</param>
 		///<returns type="Any">The return value of the callback</param>
 		
         throw "Abstract methods must be implemented";

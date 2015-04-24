@@ -3,7 +3,7 @@
 Class("busybody.observeTypes.pathObserver", function () {
         
     var pathObserver = busybody.observeTypes.observeTypesBase.extend(function pathObserver (forObject, property, callback, context) {
-        ///<summary>Observe a property for change. Should be "call()"ed with this being a "watched"</summary>
+        ///<summary>Observe a property path for change.</summary>
         ///<param name="forObject" type="busybody.observable" optional="false">The object to watch</param>
         ///<param name="property" type="String" optional="false">The property</param>
         ///<param name="callback" type="Function" optional="true">A callback for property change</param>
@@ -66,7 +66,7 @@ Class("busybody.observeTypes.pathObserver", function () {
         
         // get the last item in the path subscribing to changes along the way
         for (; current && i < this.path.length - 1; i++) {
-            if ((busybody.canObserve(current) || current instanceof busybody.array)) {
+            if (busybody.canObserve(current) || current instanceof busybody.array) {
                 
                 var args = [current, (function (i) {
                     return function(oldVal, newVal) {

@@ -112,7 +112,7 @@
     array.prototype.sort = function(sortFunction) {
 		///<summary>Sort the elements in the array</summary>
 		///<param name="sortFunction" type="Function">A function to compare items</param>
-		///<returns type="[]">this</returns>
+		///<returns type="Array">this</returns>
 		
         if (!useObjectObserve) {
                 

@@ -156,6 +156,10 @@ Class("busybody.observeTypes.computed", function () {
         
 	//TODO: somehow retain "this.prop['val']"
     computed.stripFunction = function(input) {
+		///<summary>Strip strings and comments from a function</summary>
+		///<param name="input" type="Function">The functin</param>
+		///<returns type="String">The striped function</param>
+		
         input = input
             .toString()
             .replace(STRIP_INLINE_COMMENTS, "")
