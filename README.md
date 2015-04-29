@@ -5,6 +5,7 @@ busybody supports non Object.observe environments as far back as IE 9
 
 
 ##Index
+* [Installing Busybody](#installing-busybody)
 * [Observe](#observing-a-value)
 * [Observe a path](#observe-a-path)
 * [Observable Arrays](#observable-arrays)
@@ -16,6 +17,13 @@ busybody supports non Object.observe environments as far back as IE 9
 * [Performance gains](#performance-gains)
 * [Core function list](#core-function-list)
 * [Quirks](#quirks)
+
+
+
+##Installing Busybody
+Busybody is a javascript library and just needs to be included on your wepage. Busybody releases are done through github, so you can see and download the latest [here](https://github.com/ShaneGH/busybody/releases). Releases contain a "busybody-{version}.js" and a "busybody-{version}.debug.js" file, and including either of these on your page will allow you to use busybody. The difference between these files is that one is [minimized](http://en.wikipedia.org/wiki/Minification_%28programming%29) and the other is not.
+
+Alternatively, you can pull the source down using [bower](http://bower.io) (with the tag: ShaneGH/busybody#{version number}) and build using [grunt](http://gruntjs.com) and the DEV README.js file included in the project.
 
 
 
