@@ -1,4 +1,4 @@
-// busybody v0.1.0
+// busybody v0.1.1
 // (c) Shane Connon 2015
 // http://www.opensource.org/licenses/mit-license.php
 (function () {
