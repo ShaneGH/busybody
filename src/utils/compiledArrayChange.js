@@ -158,28 +158,28 @@ Class("busybody.utils.compiledArrayChange", function () {
 		///<param name="changes" type="[Object]">A list of all changes in the batch</param>
 		///<param name="beginAt" type="Number">The index of the first change to execute</param>
 		///<param name="endAt" type="Number">The index of the change after the last change to execute</param>
-		///<returns type="Boolean">The result</param>
+		///<returns type="Boolean">The result</returns>
 		
         return this.beginAt === beginAt && this.endAt === endAt;
     };
     
     compiledArrayChange.prototype.getRemoved = function () {
 		///<summary>Get items removed in this batch</summary>
-		///<returns type="[Any]">The items</param>
+		///<returns type="[Any]">The items</returns>
 		
         return this.removed.slice();
     };
     
     compiledArrayChange.prototype.getAdded = function () {
 		///<summary>Get items added in this batch</summary>
-		///<returns type="[Any]">The items</param>
+		///<returns type="[Any]">The items</returns>
 		
         return this.added.slice();
     };
     
     compiledArrayChange.prototype.getIndexes = function () {
 		///<summary>Get detailed batch info</summary>
-		///<returns type="Object">The items</param>
+		///<returns type="Object">The items</returns>
 		
         if (!this.indexes)
             this.buildIndexes();        

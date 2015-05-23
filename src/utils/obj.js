@@ -81,7 +81,7 @@ Class("busybody.utils.obj", function () {
     var splitPropertyName = function(propertyName) {
 		///<summary>Split a path into strings and numbers</summary>
 		///<param name="propertyName" type="String">The name</param>
-		///<returns type="[String|Number]">The path</param>
+		///<returns type="[String|Number]">The path</returns>
 		
         propertyName = propertyName.split(".");
         
@@ -108,7 +108,7 @@ Class("busybody.utils.obj", function () {
     var joinPropertyName = function (propertyName) {
 		///<summary>Join a path</summary>
 		///<param name="propertyName" type="[String|Number]">The path</param>
-		///<returns type="String">The name</param>
+		///<returns type="String">The name</returns>
 		
         var output = [];
         enumerateArr(propertyName, function (item) {
@@ -182,7 +182,7 @@ Class("busybody.utils.obj", function () {
 		///<summary>Add an item to an array and return a disposable which will remove it</summary>
 		///<param name="callbackArray" type="Array">The array</param>
 		///<param name="item" type="Any">The item</param>
-		///<returns type="busybody.disposable">The disposable</param>
+		///<returns type="busybody.disposable">The disposable</returns>
 
         callbackArray.push(item);
         var dispose = new busybody.disposable(function () {

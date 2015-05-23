@@ -25,7 +25,7 @@ Class("busybody.callbacks.arrayCallback", function () {
 		///<summary>Evaluate a single change</summary>
 		///<param name="changes" type="[Object]">A list of all changes in the batch</param>
 		///<param name="index" type="Number">The index of the change to execute</param>
-		///<returns type="Any">The return value of the callback</param>
+		///<returns type="Any">The return value of the callback</returns>
 
         this.callback.call(this.context, changes[index]);
     };
@@ -35,7 +35,7 @@ Class("busybody.callbacks.arrayCallback", function () {
 		///<param name="changes" type="[Object]">A list of all changes in the batch</param>
 		///<param name="beginAt" type="Number">The index of the first change to execute</param>
 		///<param name="endAt" type="Number">The index of the change after the last change to execute</param>
-		///<returns type="Any">The return value of the callback</param>
+		///<returns type="Any">The return value of the callback</returns>
 		
 		if (this.useRawChanges) {
 			this.callback.call(this.context, changes.slice(beginAt, endAt));
@@ -62,7 +62,7 @@ Class("busybody.callbacks.arrayCallback", function () {
     arrayCallback.prototype._evaluateArrayMultiple = function (result) {
 		///<summary>Evalue the callback</summary>
 		///<param name="result" type="busybody.utils.compiledArrayChange">Inputs for the callback</param>
-		///<returns type="Any">The return value of the callback</param>
+		///<returns type="Any">The return value of the callback</returns>
         
         this.callback.call(this.context, result.getRemoved(), result.getAdded(), result.getIndexes());
     };

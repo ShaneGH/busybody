@@ -29,7 +29,7 @@ Class("busybody.callbacks.propertyCallback", function () {
 		///<summary>Evaluate a single change</summary>
 		///<param name="changes" type="[Object]">A list of all changes in the batch</param>
 		///<param name="index" type="Number">The index of the change to execute</param>
-		///<returns type="Any">The return value of the callback</param>
+		///<returns type="Any">The return value of the callback</returns>
 
         var change = changes[index], 
             nextChange = changes[index + 1], 
@@ -46,7 +46,7 @@ Class("busybody.callbacks.propertyCallback", function () {
 		///<param name="changes" type="[Object]">A list of all changes in the batch</param>
 		///<param name="beginAt" type="Number">The index of the first change to execute</param>
 		///<param name="endAt" type="Number">The index of the change after the last change to execute</param>
-		///<returns type="Any">The return value of the callback</param>
+		///<returns type="Any">The return value of the callback</returns>
 		
 		var newVal = changes[endAt] ? changes[endAt].oldValue : changes[0].object[changes[0].name];
         

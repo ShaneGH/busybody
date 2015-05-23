@@ -16,7 +16,7 @@ Class("busybody.utils.executeCallbacks", function () {
 		///<summary>Add a callback</summary>
 		///<param name="callback" type="Function">The callback</param>
 		///<param name="property" type="String">The property</param>
-		///<returns type="busybody.disposable">A dispose object</param>
+		///<returns type="busybody.disposable">A dispose object</returns>
 		
 		var op = busybody.utils.obj.addWithDispose(this.callbacks, callback);
 		this.registerDisposable(op);
@@ -26,7 +26,7 @@ Class("busybody.utils.executeCallbacks", function () {
         
     executeCallbacks.prototype._execute = function() {
 		///<summary>Abstract. Execute and return argumets for the callbacks</summary>
-		///<returns type="Object">Arguments for the callbacks in the form of { cancel: true | false, arguments: [] }</param>
+		///<returns type="Object">Arguments for the callbacks in the form of { cancel: true | false, arguments: [] }</returns>
 		
 		throw "Abstract methods must be implemented";
 	};

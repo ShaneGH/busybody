@@ -48,7 +48,7 @@ Class("busybody.callbacks.changeCallback", function () {
 		///<summary>Evaluate a single change</summary>
 		///<param name="changes" type="[Object]">A list of all changes in the batch</param>
 		///<param name="changeIndex" type="Number">The index of the change to execute</param>
-		///<returns type="Any">The return value of the callback</param>
+		///<returns type="Any">The return value of the callback</returns>
         
         if (!this.evaluateOnEachChange) return;
 
@@ -72,7 +72,7 @@ Class("busybody.callbacks.changeCallback", function () {
 		///<summary>Abstract. Evaluate a single change</summary>
 		///<param name="changes" type="[Object]">A list of all changes in the batch</param>
 		///<param name="changeIndex" type="Number">The index of the change to execute</param>
-		///<returns type="Any">The return value of the callback</param>
+		///<returns type="Any">The return value of the callback</returns>
 		
         throw "Abstract methods must be implemented";
     };
@@ -80,7 +80,7 @@ Class("busybody.callbacks.changeCallback", function () {
     changeCallback.prototype.evaluateMultiple = function (changes) {
 		///<summary>Evaluate on batch of changes</summary>
 		///<param name="changes" type="[Object]">A list of all changes in the batch</param>
-		///<returns type="Any">The return value of the callback</param>
+		///<returns type="Any">The return value of the callback</returns>
 		
         if (this.evaluateOnEachChange || !changes.length) return;
 
@@ -120,7 +120,7 @@ Class("busybody.callbacks.changeCallback", function () {
 		///<param name="changes" type="[Object]">A list of all changes in the batch</param>
 		///<param name="beginAt" type="Number">The index of the first change to execute</param>
 		///<param name="endAt" type="Number">The index of the change after the last change to execute</param>
-		///<returns type="Any">The return value of the callback</param>
+		///<returns type="Any">The return value of the callback</returns>
 		
         throw "Abstract methods must be implemented";
     };

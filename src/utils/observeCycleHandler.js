@@ -69,7 +69,7 @@ Class("busybody.utils.observeCycleHandler", function () {
     observeCycleHandler.prototype.afterObserveCycle = function (callback) {
 		///<summary>Execute after each observe cycle</summary>
 		///<param name="callback" type="Function">The callback to execute</param>
-		///<returns type="busybody.disposable">The dispose callback</param>
+		///<returns type="busybody.disposable">The dispose callback</returns>
 
         return busybody.utils.obj.addWithDispose(this.$afterObserveCycles, callback);
     };
@@ -77,7 +77,7 @@ Class("busybody.utils.observeCycleHandler", function () {
     observeCycleHandler.prototype.beforeObserveCycle = function (callback) {
 		///<summary>Execute before each observe cycle</summary>
 		///<param name="callback" type="Function">The callback to execute</param>
-		///<returns type="busybody.disposable">The dispose callback</param>
+		///<returns type="busybody.disposable">The dispose callback</returns>
 
         return busybody.utils.obj.addWithDispose(this.$beforeObserveCycles, callback);
     };

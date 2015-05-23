@@ -34,7 +34,7 @@ Class("busybody.observeTypes.pathObserver", function () {
 		///<summary>Add a new callback</summary>
 		///<param name="callback" type="Function">The callback</param>
 		///<param name="evaluateImmediately" type="Boolean" optional="true">If true, execute the callback now</param>
-		///<returns type="busybody.disposable">A disposable to remove the callback</param>
+		///<returns type="busybody.disposable">A disposable to remove the callback</returns>
               
 		var output = this.addCallback(callback);		
         if (evaluateImmediately)
@@ -94,7 +94,7 @@ Class("busybody.observeTypes.pathObserver", function () {
         
     pathObserver.prototype.getValue = function() {
 		///<summary>Evaluate the path observer</summary>
-		///<returns type="Any">The value. Returns null rather than a TypeError</param>
+		///<returns type="Any">The value. Returns null rather than a TypeError</returns>
 		
         var current = this.forObject;
         

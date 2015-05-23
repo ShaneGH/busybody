@@ -80,7 +80,7 @@ Class("busybody.observeTypes.computed", function () {
     computed.testForWith = function (input) {
 		///<summary>Determine if a function string contains a "with (...)" call</summary>
 		///<param name="input" type="String">The input</param>
-		///<returns type="Boolean">The result</param>
+		///<returns type="Boolean">The result</returns>
 		
         WITH.lastIndex = 0;
         
@@ -120,7 +120,7 @@ Class("busybody.observeTypes.computed", function () {
 	// abstract
     computed.prototype.getValue = function() {
 		///<summary>Execute the computed function</summary>
-		///<returns type="Any">The result</param>
+		///<returns type="Any">The result</returns>
 		
 		if (this.possibleArrays)
 			this.rebuildArrays();
@@ -132,7 +132,7 @@ Class("busybody.observeTypes.computed", function () {
 		///<summary>Bind the value of this computed to the property of an object</summary>
 		///<param name="object" type="Object">The object</param>
 		///<param name="property" type="String">The property</param>
-		///<returns type="busybody.disposable">A dispose object</param>
+		///<returns type="busybody.disposable">A dispose object</returns>
 		
         var callback = computed.createBindFunction(object, property);
 		var output = this.onValueChanged(callback, true);
@@ -145,7 +145,7 @@ Class("busybody.observeTypes.computed", function () {
 		///<summary>Execute a callback when the value of the computed changes</summary>
 		///<param name="callback" type="Function">The callback: function (oldValue, newValue) { }</param>
 		///<param name="executeImmediately" type="Boolean">If set to true the callback will be executed immediately with undefined as the oldValue</param>
-		///<returns type="busybody.disposable">A dispose object to remove the callback</param>
+		///<returns type="busybody.disposable">A dispose object to remove the callback</returns>
               
 		var output = this.addCallback(callback);		
         if (executeImmediately)
@@ -158,7 +158,7 @@ Class("busybody.observeTypes.computed", function () {
     computed.stripFunction = function(input) {
 		///<summary>Strip strings and comments from a function</summary>
 		///<param name="input" type="Function">The functin</param>
-		///<returns type="String">The striped function</param>
+		///<returns type="String">The striped function</returns>
 		
         input = input
             .toString()
@@ -194,7 +194,7 @@ Class("busybody.observeTypes.computed", function () {
 		///<summary>Find all property paths of a given variable</summary>
 		///<param name="variableName" type="String">The variable name</param>
 		///<param name="complexExamination" type="Boolean">If set to true, the result will include the indexes of the property path as well as the actual text of the property paths</param>
-		///<returns type="[Object]">The results</param>
+		///<returns type="[Object]">The results</returns>
 		
 		variableName = trim(variableName);
 		if (!/^[\$\w]+$/.test(variableName))
@@ -313,7 +313,7 @@ Class("busybody.observeTypes.computed", function () {
 		///<summary>Add a path watch object, triggering an execute(...) when something chages</summary>
 		///<param name="variable" type="Object">The path root</param>
 		///<param name="path" type="String">The path</param>
-		///<returns type="String">A disposable key. The path can be disposed by calling this.disposeOf(key)</param>
+		///<returns type="String">A disposable key. The path can be disposed by calling this.disposeOf(key)</returns>
 		
 		var path = new busybody.observeTypes.pathObserver(variable, path, this.execute, this);
 		
@@ -333,10 +333,10 @@ Class("busybody.observeTypes.computed", function () {
 	};
 	
 	computed.createBindFunction = function (bindToObject, bindToProperty) {
-		///<summary>Create a functino which will bind the result of the computed to either an object property or an array</summary>
+		///<summary>Create a function which will bind the result of the computed to either an object property or an array</summary>
 		///<param name="bindToObject" type="Object">The object root</param>
 		///<param name="bindToProperty" type="String">The path</param>
-		///<returns type="Function">The bind function (function (oldValue, newValue) { }). The function has a dispose property which needs to be called to disposse of any array subscriptions</param>
+		///<returns type="Function">The bind function (function (oldValue, newValue) { }). The function has a dispose property which needs to be called to disposse of any array subscriptions</returns>
 		
         var arrayDisposeCallback;
         var output = function (oldValue, newValue) {

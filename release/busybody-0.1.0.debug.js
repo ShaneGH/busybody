@@ -263,7 +263,7 @@ Class("busybody.utils.obj", function () {
     var splitPropertyName = function(propertyName) {
 		///<summary>Split a path into strings and numbers</summary>
 		///<param name="propertyName" type="String">The name</param>
-		///<returns type="[String|Number]">The path</param>
+		///<returns type="[String|Number]">The path</returns>
 		
         propertyName = propertyName.split(".");
         
@@ -290,7 +290,7 @@ Class("busybody.utils.obj", function () {
     var joinPropertyName = function (propertyName) {
 		///<summary>Join a path</summary>
 		///<param name="propertyName" type="[String|Number]">The path</param>
-		///<returns type="String">The name</param>
+		///<returns type="String">The name</returns>
 		
         var output = [];
         enumerateArr(propertyName, function (item) {
@@ -362,9 +362,9 @@ Class("busybody.utils.obj", function () {
 
     function addWithDispose(callbackArray, item) {
 		///<summary>Add an item to an array and return a disposable which will remove it</summary>
-		///<param name="callbackArray" type="[]">The array</param>
+		///<param name="callbackArray" type="Array">The array</param>
 		///<param name="item" type="Any">The item</param>
-		///<returns type="busybody.disposable">The disposable</param>
+		///<returns type="busybody.disposable">The disposable</returns>
 
         callbackArray.push(item);
         var dispose = new busybody.disposable(function () {
@@ -402,9 +402,12 @@ Class("busybody.disposable", function () {
 	
     var disposable = orienteer.extend(function disposable(disposableOrDisposeFunction) {
         ///<summary>An object which can be disposed</summary>
-		///<param name="disposeableOrDisposeFunction" type="Object|Function">An initial dispose function</param>
+		///<param name="disposableOrDisposeFunction" type="Object|Function">An initial dispose function</param>
         
         this._super();
+		
+		///<summary type="[Function]">A list of functions to call when this is disposed of</summary>
+		this.$disposables = undefined;
         
         if (!disposableOrDisposeFunction)
             ;
@@ -497,7 +500,7 @@ Class("busybody.utils.executeCallbacks", function () {
 		///<summary>Add a callback</summary>
 		///<param name="callback" type="Function">The callback</param>
 		///<param name="property" type="String">The property</param>
-		///<returns type="busybody.disposable">A dispose object</param>
+		///<returns type="busybody.disposable">A dispose object</returns>
 		
 		var op = busybody.utils.obj.addWithDispose(this.callbacks, callback);
 		this.registerDisposable(op);
@@ -507,7 +510,7 @@ Class("busybody.utils.executeCallbacks", function () {
         
     executeCallbacks.prototype._execute = function() {
 		///<summary>Abstract. Execute and return argumets for the callbacks</summary>
-		///<returns type="Object">Arguments for the callbacks in the form of { cancel: true | false, arguments: [] }</param>
+		///<returns type="Object">Arguments for the callbacks in the form of { cancel: true | false, arguments: [] }</returns>
 		
 		throw "Abstract methods must be implemented";
 	};
@@ -623,6 +626,7 @@ Class("busybody.observableBase", function () {
     observableBase.processChanges = function (callbacks, changes) {
 		///<summary>Process changes</summary>
 		///<param name="callbacks" type="[busybody.callbacks.chageCallback]">The callbacks</param>
+		///<param name="changes" type="[Object]">The changes</param>
 		///<returns type="[Function]">A list of items to execute after this funciton returns</returns>
 		
         var dispose = [];
@@ -696,13 +700,13 @@ Class("busybody.observableBase", function () {
         throw "Abstract methods must be overridden";
 	};
     
-    observableBase.prototype.bind = function (property, otherObject, otherPropoerty) {
+    observableBase.prototype.bind = function (property, otherObject, otherProperty) {
 		///<summary>Bind a property to another objects property</summary>
 		///<param name="property" type="String">The property</param>
 		///<param name="otherObject" type="Object">The other object</param>
 		///<param name="otherProperty" type="String">The other property</param>
 		
-		return busybody.bind(this, property, otherObject, otherPropoerty);
+		return busybody.bind(this, property, otherObject, otherProperty);
     };
 
     observableBase.prototype.observeArray = function (property, callback, context, options) {
@@ -829,7 +833,7 @@ Class("busybody.observableBase", function () {
 		///<param name="property" type="String">The property</param>
 		///<param name="callback" type="Function">The computed logic.</param>
 		///<param name="options" type="Object" optional="true">See busybody.observeTypes.computed for options</param>
-		///<returns type="busybody.observeTypes.computed">The computed</param>
+		///<returns type="busybody.observeTypes.computed">The computed</returns>
         
         var computed = new busybody.observeTypes.computed(callback, this.$forObject || this, options);
         computed.bind(this.$forObject || this, property);
@@ -847,7 +851,7 @@ Class("busybody.observableBase", function () {
     observableBase.afterObserveCycle = function(callback) {
 		///<summary>Execute a callback after each observe cycle.</summary>
 		///<param name="callback" type="Function">The callback.</param>
-		///<returns type="busybody.disposable">A dispose callback</param>
+		///<returns type="busybody.disposable">A dispose callback</returns>
 		
         return busybody.utils.observeCycleHandler.instance.afterObserveCycle(callback);
     };
@@ -855,7 +859,7 @@ Class("busybody.observableBase", function () {
     observableBase.beforeObserveCycle = function(callback) {
 		///<summary>Execute a callback before each observe cycle.</summary>
 		///<param name="callback" type="Function">The callback.</param>
-		///<returns type="busybody.disposable">A dispose callback</param>
+		///<returns type="busybody.disposable">A dispose callback</returns>
 		
         return busybody.utils.observeCycleHandler.instance.beforeObserveCycle(callback);
     };
@@ -864,7 +868,7 @@ Class("busybody.observableBase", function () {
 		///<summary>Execute a callback after the next observe cycle.</summary>
 		///<param name="callback" type="Function">The callback.</param>
 		///<param name="waitForNextCycleToStart" type="Boolean" options="true">If false and there is no observe cycle running, will execute the callback immediately.</param>
-		///<returns type="busybody.disposable">A dispose callback</param>
+		///<returns type="busybody.disposable">A dispose callback</returns>
 
         if (!waitForNextCycleToStart && busybody.utils.observeCycleHandler.instance.length === 0) {
             callback();
@@ -882,7 +886,7 @@ Class("busybody.observableBase", function () {
     observableBase.beforeNextObserveCycle = function (callback) {
 		///<summary>Execute a callback before the next observe cycle.</summary>
 		///<param name="callback" type="Function">The callback.</param>
-		///<returns type="busybody.disposable">A dispose callback</param>
+		///<returns type="busybody.disposable">A dispose callback</returns>
 
         var dispose = busybody.utils.observeCycleHandler.instance.beforeObserveCycle(function () {
             dispose.dispose();
@@ -944,8 +948,8 @@ Class("busybody.callbacks.changeCallback", function () {
     changeCallback.prototype.evaluateSingle = function (changes, changeIndex) {
 		///<summary>Evaluate a single change</summary>
 		///<param name="changes" type="[Object]">A list of all changes in the batch</param>
-		///<param name="index" type="Number">The index of the change to execute</param>
-		///<returns type="Any">The return value of the callback</param>
+		///<param name="changeIndex" type="Number">The index of the change to execute</param>
+		///<returns type="Any">The return value of the callback</returns>
         
         if (!this.evaluateOnEachChange) return;
 
@@ -968,8 +972,8 @@ Class("busybody.callbacks.changeCallback", function () {
     changeCallback.prototype._evaluateSingle = function (changes, changeIndex) {
 		///<summary>Abstract. Evaluate a single change</summary>
 		///<param name="changes" type="[Object]">A list of all changes in the batch</param>
-		///<param name="index" type="Number">The index of the change to execute</param>
-		///<returns type="Any">The return value of the callback</param>
+		///<param name="changeIndex" type="Number">The index of the change to execute</param>
+		///<returns type="Any">The return value of the callback</returns>
 		
         throw "Abstract methods must be implemented";
     };
@@ -977,7 +981,7 @@ Class("busybody.callbacks.changeCallback", function () {
     changeCallback.prototype.evaluateMultiple = function (changes) {
 		///<summary>Evaluate on batch of changes</summary>
 		///<param name="changes" type="[Object]">A list of all changes in the batch</param>
-		///<returns type="Any">The return value of the callback</param>
+		///<returns type="Any">The return value of the callback</returns>
 		
         if (this.evaluateOnEachChange || !changes.length) return;
 
@@ -1017,7 +1021,7 @@ Class("busybody.callbacks.changeCallback", function () {
 		///<param name="changes" type="[Object]">A list of all changes in the batch</param>
 		///<param name="beginAt" type="Number">The index of the first change to execute</param>
 		///<param name="endAt" type="Number">The index of the change after the last change to execute</param>
-		///<returns type="Any">The return value of the callback</param>
+		///<returns type="Any">The return value of the callback</returns>
 		
         throw "Abstract methods must be implemented";
     };
@@ -1037,10 +1041,19 @@ Class("busybody.arrayBase", function () {
             if (!(arguments[0] instanceof Array))
                 throw "The initial values must be an array";
         
+		///<summary type="[busybody.disposable]">Items to despose of with this</summary>
         this.$disposables = [];
+		
+		///<summary type="[Array]">Arrays which are obund to this</summary>
         this.$boundArrays = [];
+		
+		///<summary type="[busybody.callbacks.arrayCallback]">On change callbacks</summary>
         this.$callbacks = [];
+		
+		///<summary type="[Object]">The current change batch</summary>
         this.$changeBatch = [];
+		
+		///<summary type="Number">The length property of an array base is dynamic. $length is the cached value. You can use this value, but do not write to it</summary>
         this.$length = initialValues ? initialValues.length : 0;    
         
         if (initialValues)
@@ -1180,7 +1193,7 @@ Class("busybody.arrayBase", function () {
     arrayBase.prototype.alteringArray = function(method, args) {
 		///<summary>Execute logic which will alter this array. Apply changes to any bound arrays.</summary>
 		///<param name="method" type="String">A method pointer which will alter the array</param>
-		///<param name="args" type="[]">The arguments to the method</param>
+		///<param name="args" type="Array">The arguments to the method</param>
 				
         if (this.__alteringArray)
             throw "Calls to alteringArray must be synchronus and not nested.";
@@ -1209,8 +1222,8 @@ Class("busybody.arrayBase", function () {
 
     arrayBase.copyAll = function (from, to, convert) {
 		///<summary>Copy the contents of one array to another</summary>
-		///<param name="from" type="[]">The from array</param>
-		///<param name="to" type="[]">The to array</param>
+		///<param name="from" type="Array">The from array</param>
+		///<param name="to" type="Array">The to array</param>
 		///<param name="convert" type="Function">A function to convert values before copy</param>
         
         var args;
@@ -1229,7 +1242,7 @@ Class("busybody.arrayBase", function () {
     
     arrayBase.prototype.bind = function(anotherArray) {
 		///<summary>Bind arrays</summary>
-		///<param name="anotherArray" type="[]">The other array</param>
+		///<param name="anotherArray" type="Array">The other array</param>
 		///<returns type="busybody.disposable">A disposable</returns>
         
         if (!anotherArray || this.$boundArrays.indexOf(anotherArray) !== -1) return;
@@ -1371,7 +1384,10 @@ Class("busybody.array", function () {
         
         this._super.apply(this, arguments);
         
+		///<summary type="[Function]">Callbacks to fire the next time the array changes</summary>
         this.$onNextArrayChanges = [];
+		
+		///<summary type="[Function]">Callbacks which capture changes to the array</summary>
         this.$captureCallbacks = [];
     }); 
     
@@ -1545,7 +1561,7 @@ Class("busybody.array", function () {
     array.prototype.sort = function(sortFunction) {
 		///<summary>Sort the elements in the array</summary>
 		///<param name="sortFunction" type="Function">A function to compare items</param>
-		///<returns type="[]">this</returns>
+		///<returns type="Array">this</returns>
 		
         if (!useObjectObserve) {
                 
@@ -1625,7 +1641,7 @@ Class("busybody.callbacks.arrayCallback", function () {
 		///<summary>Evaluate a single change</summary>
 		///<param name="changes" type="[Object]">A list of all changes in the batch</param>
 		///<param name="index" type="Number">The index of the change to execute</param>
-		///<returns type="Any">The return value of the callback</param>
+		///<returns type="Any">The return value of the callback</returns>
 
         this.callback.call(this.context, changes[index]);
     };
@@ -1635,7 +1651,7 @@ Class("busybody.callbacks.arrayCallback", function () {
 		///<param name="changes" type="[Object]">A list of all changes in the batch</param>
 		///<param name="beginAt" type="Number">The index of the first change to execute</param>
 		///<param name="endAt" type="Number">The index of the change after the last change to execute</param>
-		///<returns type="Any">The return value of the callback</param>
+		///<returns type="Any">The return value of the callback</returns>
 		
 		if (this.useRawChanges) {
 			this.callback.call(this.context, changes.slice(beginAt, endAt));
@@ -1662,7 +1678,7 @@ Class("busybody.callbacks.arrayCallback", function () {
     arrayCallback.prototype._evaluateArrayMultiple = function (result) {
 		///<summary>Evalue the callback</summary>
 		///<param name="result" type="busybody.utils.compiledArrayChange">Inputs for the callback</param>
-		///<returns type="Any">The return value of the callback</param>
+		///<returns type="Any">The return value of the callback</returns>
         
         this.callback.call(this.context, result.getRemoved(), result.getAdded(), result.getIndexes());
     };
@@ -1687,8 +1703,10 @@ Class("busybody.callbacks.propertyCallback", function () {
 		///<summary type="Function">The callback to execute</summary>
         this.callback = callback;
 		
-		///<summary type="Any" optional="true">The "this" in the callback</summary>
+		///<summary type="Any">The "this" in the callback</summary>
         this.context = context;
+		
+		///<summary type="Boolean">Default: false. Evaluate if the oldValue and the newValue are the same</summary>
         this.evaluateIfValueHasNotChanged = options && options.evaluateIfValueHasNotChanged;
 		
 		///<summary type="Boolean">Default: false. Evaluate if the oldValue and the newValue are the same</summary>
@@ -1699,7 +1717,7 @@ Class("busybody.callbacks.propertyCallback", function () {
 		///<summary>Evaluate a single change</summary>
 		///<param name="changes" type="[Object]">A list of all changes in the batch</param>
 		///<param name="index" type="Number">The index of the change to execute</param>
-		///<returns type="Any">The return value of the callback</param>
+		///<returns type="Any">The return value of the callback</returns>
 
         var change = changes[index], 
             nextChange = changes[index + 1], 
@@ -1716,7 +1734,7 @@ Class("busybody.callbacks.propertyCallback", function () {
 		///<param name="changes" type="[Object]">A list of all changes in the batch</param>
 		///<param name="beginAt" type="Number">The index of the first change to execute</param>
 		///<param name="endAt" type="Number">The index of the change after the last change to execute</param>
-		///<returns type="Any">The return value of the callback</param>
+		///<returns type="Any">The return value of the callback</returns>
 		
 		var newVal = changes[endAt] ? changes[endAt].oldValue : changes[0].object[changes[0].name];
         
@@ -1988,7 +2006,7 @@ Class("busybody.observeTypes.computed", function () {
     computed.testForWith = function (input) {
 		///<summary>Determine if a function string contains a "with (...)" call</summary>
 		///<param name="input" type="String">The input</param>
-		///<returns type="Boolean">The result</param>
+		///<returns type="Boolean">The result</returns>
 		
         WITH.lastIndex = 0;
         
@@ -2028,7 +2046,7 @@ Class("busybody.observeTypes.computed", function () {
 	// abstract
     computed.prototype.getValue = function() {
 		///<summary>Execute the computed function</summary>
-		///<returns type="Any">The result</param>
+		///<returns type="Any">The result</returns>
 		
 		if (this.possibleArrays)
 			this.rebuildArrays();
@@ -2040,7 +2058,7 @@ Class("busybody.observeTypes.computed", function () {
 		///<summary>Bind the value of this computed to the property of an object</summary>
 		///<param name="object" type="Object">The object</param>
 		///<param name="property" type="String">The property</param>
-		///<returns type="busybody.disposable">A dispose object</param>
+		///<returns type="busybody.disposable">A dispose object</returns>
 		
         var callback = computed.createBindFunction(object, property);
 		var output = this.onValueChanged(callback, true);
@@ -2053,7 +2071,7 @@ Class("busybody.observeTypes.computed", function () {
 		///<summary>Execute a callback when the value of the computed changes</summary>
 		///<param name="callback" type="Function">The callback: function (oldValue, newValue) { }</param>
 		///<param name="executeImmediately" type="Boolean">If set to true the callback will be executed immediately with undefined as the oldValue</param>
-		///<returns type="busybody.disposable">A dispose object to remove the callback</param>
+		///<returns type="busybody.disposable">A dispose object to remove the callback</returns>
               
 		var output = this.addCallback(callback);		
         if (executeImmediately)
@@ -2064,6 +2082,10 @@ Class("busybody.observeTypes.computed", function () {
         
 	//TODO: somehow retain "this.prop['val']"
     computed.stripFunction = function(input) {
+		///<summary>Strip strings and comments from a function</summary>
+		///<param name="input" type="Function">The functin</param>
+		///<returns type="String">The striped function</returns>
+		
         input = input
             .toString()
             .replace(STRIP_INLINE_COMMENTS, "")
@@ -2098,7 +2120,7 @@ Class("busybody.observeTypes.computed", function () {
 		///<summary>Find all property paths of a given variable</summary>
 		///<param name="variableName" type="String">The variable name</param>
 		///<param name="complexExamination" type="Boolean">If set to true, the result will include the indexes of the property path as well as the actual text of the property paths</param>
-		///<returns type="[Object]">The results</param>
+		///<returns type="[Object]">The results</returns>
 		
 		variableName = trim(variableName);
 		if (!/^[\$\w]+$/.test(variableName))
@@ -2217,7 +2239,7 @@ Class("busybody.observeTypes.computed", function () {
 		///<summary>Add a path watch object, triggering an execute(...) when something chages</summary>
 		///<param name="variable" type="Object">The path root</param>
 		///<param name="path" type="String">The path</param>
-		///<returns type="String">A disposable key. The path can be disposed by calling this.disposeOf(key)</param>
+		///<returns type="String">A disposable key. The path can be disposed by calling this.disposeOf(key)</returns>
 		
 		var path = new busybody.observeTypes.pathObserver(variable, path, this.execute, this);
 		
@@ -2237,10 +2259,10 @@ Class("busybody.observeTypes.computed", function () {
 	};
 	
 	computed.createBindFunction = function (bindToObject, bindToProperty) {
-		///<summary>Create a functino which will bind the result of the computed to either an object property or an array</summary>
+		///<summary>Create a function which will bind the result of the computed to either an object property or an array</summary>
 		///<param name="bindToObject" type="Object">The object root</param>
 		///<param name="bindToProperty" type="String">The path</param>
-		///<returns type="Function">The bind function (function (oldValue, newValue) { }). The function has a dispose property which needs to be called to disposse of any array subscriptions</param>
+		///<returns type="Function">The bind function (function (oldValue, newValue) { }). The function has a dispose property which needs to be called to disposse of any array subscriptions</returns>
 		
         var arrayDisposeCallback;
         var output = function (oldValue, newValue) {
@@ -2275,7 +2297,7 @@ Class("busybody.observeTypes.computed", function () {
 Class("busybody.observeTypes.pathObserver", function () {
         
     var pathObserver = busybody.observeTypes.observeTypesBase.extend(function pathObserver (forObject, property, callback, context) {
-        ///<summary>Observe a property for change. Should be "call()"ed with this being a "watched"</summary>
+        ///<summary>Observe a property path for change.</summary>
         ///<param name="forObject" type="busybody.observable" optional="false">The object to watch</param>
         ///<param name="property" type="String" optional="false">The property</param>
         ///<param name="callback" type="Function" optional="true">A callback for property change</param>
@@ -2306,7 +2328,7 @@ Class("busybody.observeTypes.pathObserver", function () {
 		///<summary>Add a new callback</summary>
 		///<param name="callback" type="Function">The callback</param>
 		///<param name="evaluateImmediately" type="Boolean" optional="true">If true, execute the callback now</param>
-		///<returns type="busybody.disposable">A disposable to remove the callback</param>
+		///<returns type="busybody.disposable">A disposable to remove the callback</returns>
               
 		var output = this.addCallback(callback);		
         if (evaluateImmediately)
@@ -2338,7 +2360,7 @@ Class("busybody.observeTypes.pathObserver", function () {
         
         // get the last item in the path subscribing to changes along the way
         for (; current && i < this.path.length - 1; i++) {
-            if ((busybody.canObserve(current) || current instanceof busybody.array)) {
+            if (busybody.canObserve(current) || current instanceof busybody.array) {
                 
                 var args = [current, (function (i) {
                     return function(oldVal, newVal) {
@@ -2366,7 +2388,7 @@ Class("busybody.observeTypes.pathObserver", function () {
         
     pathObserver.prototype.getValue = function() {
 		///<summary>Evaluate the path observer</summary>
-		///<returns type="Any">The value. Returns null rather than a TypeError</param>
+		///<returns type="Any">The value. Returns null rather than a TypeError</returns>
 		
         var current = this.forObject;
         
@@ -2553,28 +2575,28 @@ Class("busybody.utils.compiledArrayChange", function () {
 		///<param name="changes" type="[Object]">A list of all changes in the batch</param>
 		///<param name="beginAt" type="Number">The index of the first change to execute</param>
 		///<param name="endAt" type="Number">The index of the change after the last change to execute</param>
-		///<returns type="Boolean">The result</param>
+		///<returns type="Boolean">The result</returns>
 		
         return this.beginAt === beginAt && this.endAt === endAt;
     };
     
     compiledArrayChange.prototype.getRemoved = function () {
 		///<summary>Get items removed in this batch</summary>
-		///<returns type="[Any]">The items</param>
+		///<returns type="[Any]">The items</returns>
 		
         return this.removed.slice();
     };
     
     compiledArrayChange.prototype.getAdded = function () {
 		///<summary>Get items added in this batch</summary>
-		///<returns type="[Any]">The items</param>
+		///<returns type="[Any]">The items</returns>
 		
         return this.added.slice();
     };
     
     compiledArrayChange.prototype.getIndexes = function () {
 		///<summary>Get detailed batch info</summary>
-		///<returns type="Object">The items</param>
+		///<returns type="Object">The items</returns>
 		
         if (!this.indexes)
             this.buildIndexes();        
@@ -2660,7 +2682,7 @@ Class("busybody.utils.observeCycleHandler", function () {
     observeCycleHandler.prototype.afterObserveCycle = function (callback) {
 		///<summary>Execute after each observe cycle</summary>
 		///<param name="callback" type="Function">The callback to execute</param>
-		///<returns type="busybody.disposable">The dispose callback</param>
+		///<returns type="busybody.disposable">The dispose callback</returns>
 
         return busybody.utils.obj.addWithDispose(this.$afterObserveCycles, callback);
     };
@@ -2668,7 +2690,7 @@ Class("busybody.utils.observeCycleHandler", function () {
     observeCycleHandler.prototype.beforeObserveCycle = function (callback) {
 		///<summary>Execute before each observe cycle</summary>
 		///<param name="callback" type="Function">The callback to execute</param>
-		///<returns type="busybody.disposable">The dispose callback</param>
+		///<returns type="busybody.disposable">The dispose callback</returns>
 
         return busybody.utils.obj.addWithDispose(this.$beforeObserveCycles, callback);
     };
@@ -2795,7 +2817,7 @@ Class("busybody.utils.observeCycleHandler", function () {
 		///<param name="property" type="String">The property</param>
 		///<param name="callback" type="Function">The computed logic.</param>
 		///<param name="options" type="Object" optional="true">See busybody.observeTypes.computed for options</param>
-		///<returns type="busybody.observeTypes.computed">The computed</param>
+		///<returns type="busybody.observeTypes.computed">The computed</returns>
         
 		return busybody.getObserver(busybody.makeObservable(object)).computed(property, callback, options);
     };

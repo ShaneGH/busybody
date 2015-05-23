@@ -262,7 +262,7 @@ Class("busybody.observableBase", function () {
 		///<param name="property" type="String">The property</param>
 		///<param name="callback" type="Function">The computed logic.</param>
 		///<param name="options" type="Object" optional="true">See busybody.observeTypes.computed for options</param>
-		///<returns type="busybody.observeTypes.computed">The computed</param>
+		///<returns type="busybody.observeTypes.computed">The computed</returns>
         
         var computed = new busybody.observeTypes.computed(callback, this.$forObject || this, options);
         computed.bind(this.$forObject || this, property);
@@ -280,7 +280,7 @@ Class("busybody.observableBase", function () {
     observableBase.afterObserveCycle = function(callback) {
 		///<summary>Execute a callback after each observe cycle.</summary>
 		///<param name="callback" type="Function">The callback.</param>
-		///<returns type="busybody.disposable">A dispose callback</param>
+		///<returns type="busybody.disposable">A dispose callback</returns>
 		
         return busybody.utils.observeCycleHandler.instance.afterObserveCycle(callback);
     };
@@ -288,7 +288,7 @@ Class("busybody.observableBase", function () {
     observableBase.beforeObserveCycle = function(callback) {
 		///<summary>Execute a callback before each observe cycle.</summary>
 		///<param name="callback" type="Function">The callback.</param>
-		///<returns type="busybody.disposable">A dispose callback</param>
+		///<returns type="busybody.disposable">A dispose callback</returns>
 		
         return busybody.utils.observeCycleHandler.instance.beforeObserveCycle(callback);
     };
@@ -297,7 +297,7 @@ Class("busybody.observableBase", function () {
 		///<summary>Execute a callback after the next observe cycle.</summary>
 		///<param name="callback" type="Function">The callback.</param>
 		///<param name="waitForNextCycleToStart" type="Boolean" options="true">If false and there is no observe cycle running, will execute the callback immediately.</param>
-		///<returns type="busybody.disposable">A dispose callback</param>
+		///<returns type="busybody.disposable">A dispose callback</returns>
 
         if (!waitForNextCycleToStart && busybody.utils.observeCycleHandler.instance.length === 0) {
             callback();
@@ -315,7 +315,7 @@ Class("busybody.observableBase", function () {
     observableBase.beforeNextObserveCycle = function (callback) {
 		///<summary>Execute a callback before the next observe cycle.</summary>
 		///<param name="callback" type="Function">The callback.</param>
-		///<returns type="busybody.disposable">A dispose callback</param>
+		///<returns type="busybody.disposable">A dispose callback</returns>
 
         var dispose = busybody.utils.observeCycleHandler.instance.beforeObserveCycle(function () {
             dispose.dispose();

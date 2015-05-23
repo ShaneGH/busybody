@@ -106,7 +106,7 @@
 		///<param name="property" type="String">The property</param>
 		///<param name="callback" type="Function">The computed logic.</param>
 		///<param name="options" type="Object" optional="true">See busybody.observeTypes.computed for options</param>
-		///<returns type="busybody.observeTypes.computed">The computed</param>
+		///<returns type="busybody.observeTypes.computed">The computed</returns>
         
 		return busybody.getObserver(busybody.makeObservable(object)).computed(property, callback, options);
     };
