@@ -315,7 +315,8 @@ Class("busybody.observeTypes.computed", function () {
 		///<param name="path" type="String">The path</param>
 		///<returns type="String">A disposable key. The path can be disposed by calling this.disposeOf(key)</returns>
 		
-		var path = new busybody.observeTypes.pathObserver(variable, path, this.execute, this);
+		var path = new busybody.observeTypes.pathObserver(variable, path);
+        path.onValueChanged(this.execute.bind(this), false);
 		
 		var dispose;
 		var te = this.execute.bind(this);

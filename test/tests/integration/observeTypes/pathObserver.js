@@ -14,7 +14,8 @@ testUtils.testWithUtils("observe", "path, last element changed", false, function
     subject.aa.bb = new busybody.observable();
     subject.aa.bb.cc = 11;
 
-    var dispose = new pathObserver(subject, "aa.bb.cc", function(oldVal, newVal) {
+    var dispose = new pathObserver(subject, "aa.bb.cc");
+    dispose.onValueChanged(function(oldVal, newVal) {
         strictEqual(oldVal, 11);
         strictEqual(newVal, 22);
         start();
@@ -29,7 +30,8 @@ testUtils.testWithUtils("observe", "begin with null", false, function(methods, c
     // arrange
     var subject = new busybody.observable;
 
-    var dispose = new pathObserver(subject, "aa.bb.cc", function(oldVal, newVal) {
+    var dispose = new pathObserver(subject, "aa.bb.cc");
+    dispose.onValueChanged(function(oldVal, newVal) {
         strictEqual(oldVal, null);
         strictEqual(newVal, 22);
         start();
@@ -52,7 +54,8 @@ testUtils.testWithUtils("observe", "path, last element changed, has array", fals
     subject.aa.bb = new busybody.array([{}, new busybody.observable()]);
     subject.aa.bb[1].cc = 11;
 
-    var dispose = new pathObserver(subject, "aa.bb[1].cc", function(oldVal, newVal) {
+    var dispose = new pathObserver(subject, "aa.bb[1].cc");
+    dispose.onValueChanged(function(oldVal, newVal) {
         strictEqual(oldVal, 11);
         strictEqual(newVal, 22);
         start();
@@ -72,7 +75,8 @@ testUtils.testWithUtils("observe", "path, array element changed, has array", fal
     subject.aa.bb = new busybody.array([{}, new busybody.observable()]);
     subject.aa.bb[1].cc = 11;
 
-    var dispose = new pathObserver(subject, "aa.bb[1].cc", function(oldVal, newVal) {
+    var dispose = new pathObserver(subject, "aa.bb[1].cc");
+    dispose.onValueChanged(function(oldVal, newVal) {
         strictEqual(oldVal, 11);
         strictEqual(newVal, 22);
         start();
@@ -112,7 +116,8 @@ testUtils.testWithUtils("observe", "path, last element changed, has non observab
     subject.aa.bb = new busybody.observable();
     subject.aa.bb.cc = 11;
 
-    var dispose = new pathObserver(subject, "aa.bb.cc", function(oldVal, newVal) {
+    var dispose = new pathObserver(subject, "aa.bb.cc");
+    dispose.onValueChanged(function(oldVal, newVal) {
         strictEqual(oldVal, 11);
         strictEqual(newVal, 22);
         start();
@@ -130,7 +135,8 @@ testUtils.testWithUtils("observe", "path, mid element nulled then last element c
     subject.aa.bb = new busybody.observable();
     subject.aa.bb.cc = 11;
 
-    var dispose = new pathObserver(subject, "aa.bb.cc", function(oldVal, newVal) {
+    var dispose = new pathObserver(subject, "aa.bb.cc");
+    dispose.onValueChanged(function(oldVal, newVal) {
         strictEqual(oldVal, 11);
         strictEqual(newVal, null);
         start();
@@ -153,7 +159,8 @@ testUtils.testWithUtils("observe", "path, mid element changed, null val", false,
     subject.aa.bb = new busybody.observable();
     subject.aa.bb.cc = 11;
 
-    new pathObserver(subject, "aa.bb.cc", function(oldVal, newVal) {
+    var dispose = new pathObserver(subject, "aa.bb.cc");
+    dispose.onValueChanged(function(oldVal, newVal) {
         strictEqual(oldVal, 11);
         strictEqual(newVal, null);
         start();
@@ -176,7 +183,8 @@ testUtils.testWithUtils("observe", "path, mid element and last element changed",
     newVal.bb = new busybody.observable();
     newVal.bb.cc = 22;
 
-    new pathObserver(subject, "aa.bb.cc", function(oldVal, newVal) {
+    var dispose = new pathObserver(subject, "aa.bb.cc");
+    dispose.onValueChanged(function(oldVal, newVal) {
         strictEqual(oldVal, 11);
         strictEqual(newVal, 22);
         start();
@@ -200,7 +208,8 @@ testUtils.testWithUtils("observe", "path, mid element changed, after disposal", 
     newVal.bb = new busybody.observable();
     newVal.bb.cc = 22;
 
-    var dispose = new pathObserver(subject, "aa.bb.cc", function(oldVal, newVal) {
+    var dispose = new pathObserver(subject, "aa.bb.cc");
+    dispose.onValueChanged(function(oldVal, newVal) {
         ok(false);
     });
 

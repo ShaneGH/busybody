@@ -2,13 +2,11 @@
 
 Class("busybody.observeTypes.pathObserver", function () {
         
-    var pathObserver = busybody.observeTypes.observeTypesBase.extend(function pathObserver (forObject, property, callback, context) {
+    var pathObserver = busybody.observeTypes.observeTypesBase.extend(function pathObserver (forObject, property) {
         ///<summary>Observe a property path for change.</summary>
         ///<param name="forObject" type="busybody.observable" optional="false">The object to watch</param>
         ///<param name="property" type="String" optional="false">The property</param>
-        ///<param name="callback" type="Function" optional="true">A callback for property change</param>
-        ///<param name="context" type="Any" optional="true">The context of the callback</param>
-		
+		if (arguments.length > 2)debugger;
         this._super();
         
 		///<summary type="busybody.observable">The object to observe</summary>
@@ -25,9 +23,6 @@ Class("busybody.observeTypes.pathObserver", function () {
         this.execute();
         
         this.buildObservableChain();
-		
-		if (callback)
-			this.onValueChanged(callback.bind(context || forObject), false);
     });
     
     pathObserver.prototype.onValueChanged = function (callback, evaluateImmediately) {

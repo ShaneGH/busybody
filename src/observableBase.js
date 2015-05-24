@@ -202,7 +202,10 @@ Class("busybody.observableBase", function () {
 		///<param name="options.activateImmediately" type="Boolean">Default: false. Activate the callback now, meaning it could get changes which were applied before the callback was created</param>
 		
         if (/[\.\[]/.test(property)) {
-            var pw = new busybody.observeTypes.pathObserver(this.$forObject || this, property, callback, context);
+            var pw = new busybody.observeTypes.pathObserver(this.$forObject || this, property);
+            if (callback)
+                pw.onValueChanged(callback.bind(context || pw.forObject), false);
+            
             this.registerDisposable(pw);
             return pw;
         }
