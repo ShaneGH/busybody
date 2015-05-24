@@ -117,11 +117,11 @@ Class("busybody.arrayBase", function () {
         throw "Abstract methods must be implemented";
     };
     
-    arrayBase.prototype.observe = function (callback, context, options) {
+    arrayBase.prototype.observe = function (callback, options) {
 		///<summary>Observe for array changes</summary>
 		///<param name="callback" type="Function">The callback</param>
-		///<param name="context" type="Any">The "this" value in the callback</param>
 		///<param name="options" type="Object" optional="true">Options on when the callback is executed and what it's args will be</param>
+		///<param name="options.context" type="Any">Default: null. The "this" value in the callback</param>
 		///<param name="options.useRawChanges" type="Boolean">Default: false. Use the change objects from the Array.observe as arguments</param>
 		///<param name="options.evaluateOnEachChange" type="Boolean">Default: false. Evaluate once for each change rather than on an amalgamation of changes</param>
 		///<returns type="busybody.disposable">A disposable</returns>
@@ -132,7 +132,7 @@ Class("busybody.arrayBase", function () {
             return busybody.observe.apply(null, args);
         }
 		
-		return this.addCallback(new busybody.callbacks.arrayCallback(callback, context, options));
+		return this.addCallback(new busybody.callbacks.arrayCallback(callback, options));
     };
 	
 	arrayBase.prototype.disposableFor = function (changeCallback) {

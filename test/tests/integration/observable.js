@@ -274,7 +274,7 @@ function testMe (moduleName, buildSubject) {
             strictEqual(oldVal, undefined);
             strictEqual(newVal, "aaa");
             start();
-        }, null, {activateImmediately: true});
+        }, {activateImmediately: true});
 
         // act
 
@@ -312,7 +312,7 @@ function testMe (moduleName, buildSubject) {
             strictEqual(oldVal, "xxx");
             strictEqual(newVal, "yyy");
             start();
-        }, null, true);
+        });
         
         busybody.observe(subject, "val", function(oldVal, newVal) {
             strictEqual(oldVal, "xxx");
@@ -335,7 +335,7 @@ function testMe (moduleName, buildSubject) {
             strictEqual(oldVal, "xxx");
             strictEqual(newVal, "yyy");
             start();
-        }, null, true);
+        }, true);
         
         subject.val = "yyy"; 
         disp.dispose(true);
@@ -408,7 +408,7 @@ function testMe (moduleName, buildSubject) {
             number++;
 
             start(1);
-        }, null, { evaluateOnEachChange: true  });
+        }, { evaluateOnEachChange: true  });
 
         // act
         subject.val = "bbb";
@@ -434,7 +434,7 @@ function testMe (moduleName, buildSubject) {
 				
 			i++;
             start();
-        }, null, {useRawChanges: true, evaluateOnEachChange:true});
+        }, {useRawChanges: true, evaluateOnEachChange:true});
 
         // act
 		subject.val = "bbb";
@@ -457,7 +457,7 @@ function testMe (moduleName, buildSubject) {
 			strictEqual(changes[1].oldValue, "bbb");
 			
             start();
-        }, null, {useRawChanges: true});
+        }, {useRawChanges: true});
 
         // act
 		subject.val = "bbb";
@@ -650,6 +650,24 @@ function testMe (moduleName, buildSubject) {
             start();
         }, 100);
     });
+    
+    testUtils.testWithUtils("observe", "context", false, function(methods, classes, subject, invoker) {
+        
+        // arrange
+        var subject = buildSubject(), ctxt = {};
+        subject.val = "aaa";
+        
+        busybody.observe(subject, "val", function(oldVal, newVal) {
+            strictEqual(this, ctxt);
+            start();
+        }, {context: ctxt});
+
+        // act
+        subject.val = "ccc";
+
+        stop();
+    });
+
 }
 
 testMe("busybody.observable, integration", function() { return new busybody.observable(); });

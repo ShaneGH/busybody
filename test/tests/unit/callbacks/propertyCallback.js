@@ -13,7 +13,7 @@ testUtils.testWithUtils("constructor", null, false, function(methods, classes, s
     subject._super = methods.method([ee]);
     
     // act
-    invoker(cb, co, { evaluateOnEachChange: ee, evaluateIfValueHasNotChanged: en });
+    invoker(cb, { context: co, evaluateOnEachChange: ee, evaluateIfValueHasNotChanged: en });
     
     // assert
     strictEqual(subject.callback, cb);

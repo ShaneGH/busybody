@@ -9,11 +9,11 @@ Class("busybody.observeTypes.computed", function () {
     var GET_ITEMS = "((\\s*\\.\\s*([\\w\\$]*))|(\\s*\\[\\s*\\d\\s*\\]))+"; // ".propertyName" -or- "[2]"
     var completeArg = {};
 	
-    var computed = busybody.observeTypes.observeTypesBase.extend(function computed(callback, context, options) {
+    var computed = busybody.observeTypes.observeTypesBase.extend(function computed(callback, options) {
 		///<summary>A value defined by the return value of a function. If configured correctly, a change in a value within the function will trigger a re-execution of the function</summary>
 		///<param name="callback" type="Function">The logic which returns the computed value</param>
-		///<param name="context" type="Any">The "this" value in the callback</param>
 		///<param name="options" type="Object" optional="true">Options on how the computed is composed</param>
+		///<param name="options.context" type="Any">Default: null. The "this" value in the callback</param>
 		///<param name="options.watchVariables" type="Object">Default: null. A dictionary of variables in the callback which are to be watched</param>
 		///<param name="options.observeArrayElements" type="Boolean">Default: false. If set to true, the computed will attempt to watch values within any array watch variables. This is useful if the computed is an aggregate function. The default is false because it is expensive computationally</param>
 		///<param name="options.allowWith" type="Boolean">Default: false. If set to true, "with (...)" statements are allowed in the computed function. Although variables accessed within the with statement cannot be observed</param>
@@ -38,7 +38,7 @@ Class("busybody.observeTypes.computed", function () {
         this.callbackFunction = callback;
 		
 		///<summary type="Any">The "this" in the computed logic</summary>
-        this.context = context;
+        this.context = options.context;
         
         if (!options.allowWith && computed.testForWith(this.callbackString))
                 throw "You cannot use the \"with\" keyword in computed functions by default. To allow \"with\", use the allowWith flag on the options argument of the constructor, however, properties of the variable within the \"with\" statement cannot be monitored for change.";
@@ -65,8 +65,11 @@ Class("busybody.observeTypes.computed", function () {
                 throw "Argument \"" + arg + "\" must be added as a watch variable.";
         });
         
+        // watch this
+        if (this.context)
+            this.watchVariable("this", this.context, options.observeArrayElements);
+        
         // watch each watch variable
-        this.watchVariable("this", context, options.observeArrayElements);
         if (options.watchVariables) {
             for (var i in options.watchVariables) {                
                 this.watchVariable(i, options.watchVariables[i], options.observeArrayElements);

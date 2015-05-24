@@ -1,11 +1,11 @@
 
 Class("busybody.callbacks.arrayCallback", function () {
         
-    var arrayCallback = busybody.callbacks.changeCallback.extend(function arrayCallback(callback, context, options) {
+    var arrayCallback = busybody.callbacks.changeCallback.extend(function arrayCallback(callback, options) {
 		///<summary>Evaluate array changes</summary>
 		///<param name="callback" type="Function">The callback to execute</param>
-		///<param name="context" type="Any" optional="true">The "this" in the callback</param>
 		///<param name="options" type="Object" optional="true">Options for the callback</param>
+		///<param name="options.context" type="Any">Default: null. The "this" value in the callback</param>
 		///<param name="options.useRawChanges" type="Boolean">Default: false. Use the change objects from the Array.observe as arguments</param>
 		///<param name="options.evaluateOnEachChange" type="Boolean">Default: false. Evaluate once for each change rather than on an amalgamation of changes</param>
 		
@@ -18,7 +18,7 @@ Class("busybody.callbacks.arrayCallback", function () {
         this.callback = callback;
 		
 		///<summary type="Any" optional="true">The "this" in the callback</summary>
-        this.context = context;
+        this.context = options ? options.context : null;
     });
 
     arrayCallback.prototype._evaluateSingle = function (changes, index) {

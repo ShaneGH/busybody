@@ -80,7 +80,7 @@ testUtils.testWithUtils("observe", "get raw changes", false, function(methods, c
         strictEqual(changes[1].addedCount, 2);
         
         start();
-    }, null, {useRawChanges: true});
+    }, {useRawChanges: true});
 	
 	subject.splice(1, 1);
 	subject.splice(2, 0, 2, 3);
@@ -124,7 +124,6 @@ testUtils.testWithUtils("observe", "subscribe and unsubscribe", false, function(
 	
     // arrange
     var subject = new busybody.array();
-
     subject.observe(function(removed, added, indexes) {
         ok(false);
     }).dispose(true);
@@ -208,7 +207,7 @@ testUtils.testWithUtils("observe", "ensure changes before observe are not notice
         strictEqual(change.index, count1);
         
         start();
-    }, null, {evaluateOnEachChange: true});
+    }, {evaluateOnEachChange: true});
     
     subject.push(66);
     
@@ -232,7 +231,7 @@ testUtils.testWithUtils("observe", "ensure changes before observe are not notice
         
         strictEqual(change.index, 2);
         start();
-    }, null, {evaluateOnEachChange: true});
+    }, {evaluateOnEachChange: true});
     
     subject.push(77);
 
@@ -378,7 +377,7 @@ testUtils.testWithUtils("observe", "length decrease", false, function(methods, c
         strictEqual(change.type, "splice");
 
         start();
-    }, null, {evaluateOnEachChange: true});
+    }, {evaluateOnEachChange: true});
 
     // act
     subject.length = 2;
@@ -415,7 +414,7 @@ testUtils.testWithUtils("observe", "length increase", false, function(methods, c
         strictEqual(change.type, "splice");
 
         start();
-    }, null, {evaluateOnEachChange: true});
+    }, {evaluateOnEachChange: true});
 
     // act
     subject.length = 4;
@@ -529,7 +528,7 @@ testUtils.testWithUtils("observe", "two changes, two observations, 1 complex, on
 
         done++;
         start();
-    }, null, {evaluateOnEachChange: true});
+    }, {evaluateOnEachChange: true});
 
     // act
     subject.push(val1);
@@ -558,7 +557,7 @@ testUtils.testWithUtils("observe", "pop", false, function(methods, classes, subj
         strictEqual(change.type, "splice");
         
         start();
-    }, null, {evaluateOnEachChange: true});
+    }, {evaluateOnEachChange: true});
 
     // act
     var result = subject.pop();
@@ -589,7 +588,7 @@ testUtils.testWithUtils("observe", "shift", false, function(methods, classes, su
         strictEqual(change.type, "splice");
         
         start();
-    }, null, {evaluateOnEachChange: true});
+    }, {evaluateOnEachChange: true});
 
     // act
     var result = subject.shift();
@@ -732,8 +731,6 @@ testUtils.testWithUtils("bind", "disposal", false, function(methods, classes, su
     subject.bind(another).dispose();
     
     // assert
-	
-	
     function assert() {
         strictEqual(another.length, initial.length);
         for(var i = 0, ii = another.length; i < ii; i++)
@@ -822,4 +819,20 @@ testUtils.testWithUtils("bind", "with moves on pending queue", false, function(m
     var t = new busybody.observable();
     t.observe("aa", function(){});
     t.aa = "KJBKJ";
+});
+
+testUtils.testWithUtils("observe", "context", false, function(methods, classes, subject, invoker) {
+    // arrange
+    var subject = new busybody.array([4, 5]), context = {};
+    
+    subject.observe(function() {
+        strictEqual(this, context);
+        start();
+    }, {context: context});
+
+    // act
+    subject.pop();
+    stop();
+    
+    // assert
 });

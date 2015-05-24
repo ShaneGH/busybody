@@ -74,24 +74,22 @@
         return object;
     };
 
-    busybody.observe = function (object, property, callback, context, options) {
+    busybody.observe = function (object, property, callback, options) {
 		///<summary>Observe changes to a property </summary>
 		///<param name="object" type="Object">The object</param>
 		///<param name="property" type="String">The property</param>
 		///<param name="callback" type="Function">The callback to execute</param>
-		///<param name="context" type="Any" optional="true">The "this" in the callback</param>
 		///<param name="options" type="Object" optional="true">See busybody.observable.observe for options</param>
 		
         busybody.makeObservable(object);
-        return busybody.tryObserve(object, property, callback, context, options);
+        return busybody.tryObserve(object, property, callback, options);
     };
 
-    busybody.tryObserve = function (object, property, callback, context, options) {
+    busybody.tryObserve = function (object, property, callback, options) {
 		///<summary>Observe changes to a property if possible. If "object" is not observable, return</summary>
 		///<param name="object" type="Object">The object</param>
 		///<param name="property" type="String">The property</param>
 		///<param name="callback" type="Function">The callback to execute</param>
-		///<param name="context" type="Any" optional="true">The "this" in the callback</param>
 		///<param name="options" type="Object" optional="true">See busybody.observable.observe for options</param>
         
         if (object instanceof busybody.array) {
@@ -106,7 +104,7 @@
         var target = busybody.getObserver(object);
         
         if (target)
-            return target.observe(property, callback, context, options);
+            return target.observe(property, callback, options);
         
         return false;
     };
@@ -122,32 +120,30 @@
 		return busybody.getObserver(busybody.makeObservable(object)).computed(property, callback, options);
     };
 
-    busybody.observeArray = function (object, property, callback, context, options) {
+    busybody.observeArray = function (object, property, callback, options) {
 		///<summary>Observe an array property of an object for changes</summary>
 		///<param name="object" type="Object">The object</param>
 		///<param name="property" type="String">The property</param>
 		///<param name="callback" type="Function">The callback</param>
-		///<param name="context" type="Any">The "this" value in the callback</param>
 		///<param name="options" type="Object" optional="true">See busybody.array.observe for options</param>
 		///<returns type="busybody.disposable">A disposable</returns>
 		
         busybody.makeObservable(object);
-        return busybody.tryObserveArray(object, property, callback, context, options);
+        return busybody.tryObserveArray(object, property, callback, options);
     };
     
-    busybody.tryObserveArray = function (object, property, callback, context, options) {
+    busybody.tryObserveArray = function (object, property, callback, options) {
 		///<summary>Observe an array property of an object for changes if possible. If "object" is not observable, return</summary>
 		///<param name="object" type="Object">The object</param>
 		///<param name="property" type="String">The property</param>
 		///<param name="callback" type="Function">The callback</param>
-		///<param name="context" type="Any">The "this" value in the callback</param>
 		///<param name="options" type="Object" optional="true">See busybody.array.observe for options</param>
 		///<returns type="busybody.disposable">A disposable</returns>
                 
         var target = busybody.getObserver(object);
         
         if (target)
-            return target.observeArray(property, callback, context, options);
+            return target.observeArray(property, callback, options);
         
         return false;
     };
@@ -268,7 +264,7 @@
 			}
 		}
 		
-		disposable.registerDisposable(busybody.tryObserve(object1, property1, ev, null, {useRawChanges: true}));
+		disposable.registerDisposable(busybody.tryObserve(object1, property1, ev, {useRawChanges: true}));
 		
 		ev();
 		

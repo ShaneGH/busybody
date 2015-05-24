@@ -19,7 +19,8 @@ Class("busybody.utils.observeCycleHandler", function () {
         this.observe("length", function (oldVal, newVal) {
             if (newVal === 0)
                 enumerateArr(this.$afterObserveCycles.slice(), ex);
-        }, this, {
+        }, {
+            context: this,
 			evaluateOnEachChange: false, 
 			evaluateIfValueHasNotChanged: true
 		});

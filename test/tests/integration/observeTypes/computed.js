@@ -15,7 +15,7 @@ testUtils.testWithUtils("integration test", "very simple change", false, functio
 
     var comp = new busybody.observeTypes.computed(function() {
         return this.val3;
-    }, subject);
+    }, {context:subject});
     
     comp.bind(subject, "comp");
 
@@ -42,7 +42,7 @@ testUtils.testWithUtils("monitor array contents", "without [i]", false, function
 
     var comp = new busybody.observeTypes.computed(function() {
 		return this.people[1].age;
-    }, subject);
+    }, {context:subject});
     
     comp.bind(subject, "comp");
 	strictEqual(subject.comp, 55);
@@ -75,7 +75,7 @@ testUtils.testWithUtils("monitor array contents", "simple", false, function(meth
 		for (var i = 0, ii = this.prop.people.length; i < ii; i++)
 			op += this.prop.people[i].age;
 		return op;
-    }, subject, {observeArrayElements: true});
+    }, {context:subject, observeArrayElements: true});
     
     comp.bind(subject, "comp");
 	strictEqual(subject.comp, 88);
@@ -106,7 +106,7 @@ testUtils.testWithUtils("monitor array contents", "enumerate over this", false, 
 		for (var i = 0, ii = this.length; i < ii; i++)
 			op += this[i].age;
 		return op;
-    }, subject, {observeArrayElements: true});
+    }, {context:subject, observeArrayElements: true});
     
     comp.bind(subject, "comp");
 	strictEqual(subject.comp, 88);
@@ -139,7 +139,7 @@ testUtils.testWithUtils("monitor array contents", "$ in property name", false, f
 		for (var i = 0, ii = this.$prop.people.length; i < ii; i++)
 			op += this.$prop.people[i].age;
 		return op;
-    }, subject, {observeArrayElements: true});
+    }, {context:subject, observeArrayElements: true});
     
     comp.bind(subject, "comp");
 	strictEqual(subject.comp, 88);
@@ -172,7 +172,7 @@ testUtils.testWithUtils("monitor array contents", "get value from array index", 
 		for (var i = 0, ii = this.prop.people.length; i < ii; i++)
 			op += this.prop.people[i][2];
 		return op;
-    }, subject, {observeArrayElements: true});
+    }, {context:subject, observeArrayElements: true});
     
     comp.bind(subject, "comp");
 	strictEqual(subject.comp, 88);
@@ -205,7 +205,7 @@ testUtils.testWithUtils("monitor array contents", "get initial array from array 
 		for (var i = 0, ii = this.prop[1].length; i < ii; i++)
 			op += this.prop[1][i].age;
 		return op;
-    }, subject, {observeArrayElements: true});
+    }, {context:subject, observeArrayElements: true});
     
     comp.bind(subject, "comp");
 	strictEqual(subject.comp, 88);
@@ -238,7 +238,7 @@ testUtils.testWithUtils("monitor array contents", "2 observed properties", false
 		for (var i = 0, ii = this.prop.people.length; i < ii; i++)
 			op += this.prop.people[i].age1 + this.prop.people[i].age2;
 		return op;
-    }, subject, {observeArrayElements: true});
+    }, {context:subject, observeArrayElements: true});
     
     comp.bind(subject, "comp");
 	strictEqual(subject.comp, 10);
@@ -279,7 +279,7 @@ testUtils.testWithUtils("bind non array to array", null, false, function(methods
 
     var comp = new busybody.observeTypes.computed(function() {
         return null;
-    }, subject);
+    }, {context:subject});
     
     comp.bind(subject, "comp");
 
@@ -296,7 +296,7 @@ testUtils.testWithUtils("integration test", "simple change", false, function(met
 
     new busybody.observeTypes.computed(function() {
         return this.val1.val2 + " " + this.val3;
-    }, subject).bind(subject, "comp");
+    }, {context:subject}).bind(subject, "comp");
 
     subject.observe("comp", function(oldVal, newVal) {
         strictEqual(oldVal, "hello world");
@@ -319,7 +319,7 @@ testUtils.testWithUtils("integration test", "multi property change", false, func
 
     new busybody.observeTypes.computed(function() {
         return this.val1.val2 + " " + this.val3;
-    }, subject).bind(subject, "something.comp");
+    }, {context:subject}).bind(subject, "something.comp");
 
     subject.something.observe("comp", function(oldVal, newVal) {
         strictEqual(oldVal, "hello world");
@@ -341,7 +341,7 @@ testUtils.testWithUtils("integration test", "complex change", false, function(me
 
     new busybody.observeTypes.computed(function() {            
         return this.val1.val2 + " " + this.val3;
-    }, subject).bind(subject, "comp");
+    }, {context:subject}).bind(subject, "comp");
 
     subject.observe("comp", function(oldVal, newVal) {
         strictEqual(oldVal, "hello world");
@@ -363,7 +363,7 @@ testUtils.testWithUtils("integration test", "array", false, function(methods, cl
 
     new busybody.observeTypes.computed(function() { 
         return this.val1;
-    }, subject).bind(subject, "comp");
+    }, {context:subject}).bind(subject, "comp");
 
     // act
     function assert() {        
@@ -402,7 +402,7 @@ testUtils.testWithUtils("integration test", "array total", false, function(metho
             tmp += this.val1[i];
         
         return tmp;
-    }, subject).bind(subject, "comp");
+    }, {context:subject}).bind(subject, "comp");
 
     // act
     function assert() {
@@ -441,7 +441,7 @@ testUtils.testWithUtils("integration test", "two changes", false, function(metho
 
     new busybody.observeTypes.computed(function() {
         return this.val1.val2 + " " + this.val3;
-    }, subject).bind(subject, "comp");
+    }, {context:subject}).bind(subject, "comp");
 
     subject.observe("comp", function(oldVal, newVal) {
         strictEqual(oldVal, "hello world");
@@ -463,7 +463,7 @@ testUtils.testWithUtils("integration test", "strings", false, function(methods, 
 
     new busybody.observeTypes.computed(function() {
         return "this.val1";
-    }, subject).bind(subject, "comp");
+    }, {context:subject}).bind(subject, "comp");
 
     subject.observe("comp", function(oldVal, newVal) {
         ok(false);
@@ -487,7 +487,7 @@ testUtils.testWithUtils("integration test", "dispose", false, function(methods, 
 
     var disp = new busybody.observeTypes.computed(function() {
         return this.val1.val2 + " " + this.val3;
-    }, subject).bind(subject, "comp");
+    }, {context:subject}).bind(subject, "comp");
 
     subject.observe("comp", function(oldVal, newVal) {
         ok(false);
@@ -514,7 +514,8 @@ testUtils.testWithUtils("integration test", "variable change, with $", false, fu
 
     new busybody.observeTypes.computed(function() {
         return $var1.val1.val2 + " " + $var1.val3;
-    }, subject, {
+    }, {
+        context: subject,
         watchVariables: {
             $var1: $var1
         }
@@ -545,7 +546,8 @@ testUtils.testWithUtils("integration test", "variable name vs property name", fa
     new busybody.observeTypes.computed(function() {
         return var1.
         var2.var3;
-    }, subject, {
+    }, {
+        context: subject,
         var2: var2    // watch var2
     }).bind(subject, "comp");
 
@@ -571,7 +573,8 @@ testUtils.testWithUtils("integration test", "variable name with character before
 
     new busybody.observeTypes.computed(function() {
         return avar1.val;
-    }, subject, {
+    }, {
+        context: subject,
         var1: var1
     }).bind(subject, "comp");
 
@@ -597,9 +600,9 @@ testUtils.testWithUtils("integration test", "variable name with character after"
 
     new busybody.observeTypes.computed(function() {
         return var1a.val;
-    }, {
+    }, {context: {
         var1: var1
-    }).bind(subject, "comp");
+    }}).bind(subject, "comp");
 
     subject.observe("comp", function(oldVal, newVal) {
         ok(false);
@@ -622,7 +625,8 @@ testUtils.testWithUtils("integration test", "with args", false, function(methods
 
     new busybody.observeTypes.computed(function(var1) {
         return var1.val;
-    }, subject, {
+    }, {
+        context: subject,
         watchVariables: {
             var1: var1
         }
@@ -647,6 +651,6 @@ testUtils.testWithUtils("integration test", "with args, arg not added as watched
     throws(function() {
         new busybody.observeTypes.computed(function(var1) {
             return var1.val;
-        }, subject).bind(subject, "comp");
+        }, {context:subject}).bind(subject, "comp");
     });
 });

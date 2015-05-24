@@ -18,7 +18,7 @@ testUtils.testWithUtils("replace", null, false, function(methods, classes, subje
 		strictEqual(changes[0].removed.length, 1);
 		strictEqual(changes[0].removed[0], 2);		
 		start();
-	}, null, { useRawChanges: true });
+	}, { useRawChanges: true });
 	
 	// act
 	subject.replace(1, 4);
@@ -41,7 +41,7 @@ testUtils.testWithUtils("pop", null, false, function(methods, classes, subject, 
 		strictEqual(changes[0].removed.length, 1);
 		strictEqual(changes[0].removed[0], 3);		
 		start();
-	}, null, { useRawChanges: true });
+	}, { useRawChanges: true });
 	
 	// act
 	var op = subject.pop();
@@ -65,7 +65,7 @@ testUtils.testWithUtils("shift", null, false, function(methods, classes, subject
 		strictEqual(changes[0].removed.length, 1);
 		strictEqual(changes[0].removed[0], 1);		
 		start();
-	}, null, { useRawChanges: true });
+	}, { useRawChanges: true });
 	
 	// act
 	var op = subject.shift();
@@ -88,7 +88,7 @@ testUtils.testWithUtils("remove", null, false, function(methods, classes, subjec
 		strictEqual(changes[0].removed.length, 1);
 		strictEqual(changes[0].removed[0], 2);		
 		start();
-	}, null, { useRawChanges: true });
+	}, { useRawChanges: true });
 	
 	// act
 	subject.remove(2);
@@ -110,7 +110,7 @@ testUtils.testWithUtils("splice", null, false, function(methods, classes, subjec
 		strictEqual(changes[0].removed.length, 1);
 		strictEqual(changes[0].removed[0], 2);		
 		start();
-	}, null, { useRawChanges: true });
+	}, { useRawChanges: true });
 	
 	// act
 	subject.splice(1, 1, 55, 66);
@@ -133,7 +133,7 @@ testUtils.testWithUtils("push", null, false, function(methods, classes, subject,
 		strictEqual(changes[0].addedCount, 3);
 		strictEqual(changes[0].removed.length, 0);	
 		start();
-	}, null, { useRawChanges: true });
+	}, { useRawChanges: true });
 	
 	// act
 	subject.push(4, 5, 6);
@@ -160,7 +160,7 @@ testUtils.testWithUtils("reverse", "odd number", false, function(methods, classe
 		strictEqual(changes[1].type, "update");
 		strictEqual(changes[1].oldValue, 3);
 		start();
-	}, null, { useRawChanges: true });
+	}, { useRawChanges: true });
 	
 	// act
 	subject.reverse();
@@ -195,7 +195,7 @@ testUtils.testWithUtils("reverse", "even number", false, function(methods, class
 		strictEqual(changes[1].type, "update");
 		strictEqual(changes[1].oldValue, 4);
 		start();
-	}, null, { useRawChanges: true });
+	}, { useRawChanges: true });
 	
 	// act
 	subject.reverse();
@@ -222,7 +222,7 @@ testUtils.testWithUtils("sort", "cannot test this to0 rigourously. Observe and n
 		ok(ch.indexOf("1") !== -1);
 		ok(ch.indexOf("2") !== -1);
 		start();
-	}, null, { useRawChanges: true });
+	}, { useRawChanges: true });
 	
 	// act
 	subject.sort(function (a, b) { return a > b; });

@@ -1,11 +1,11 @@
 
 Class("busybody.callbacks.propertyCallback", function () {
         
-    var propertyCallback = busybody.callbacks.changeCallback.extend(function propertyCallback(callback, context, options) {
+    var propertyCallback = busybody.callbacks.changeCallback.extend(function propertyCallback(callback, options) {
 		///<summary>Evaluate property changes</summary>
 		///<param name="callback" type="Function">The callback to execute</param>
-		///<param name="context" type="Any" optional="true">The "this" in the callback</param>
 		///<param name="options" type="Object" optional="true">Options for the callback</param>
+		///<param name="options.context" type="Any" optional="true">Default: null. The "this" in the callback</param>
 		///<param name="options.useRawChanges" type="Boolean">Default: false. Use the change objects from the Array.observe as arguments</param>
 		///<param name="options.evaluateOnEachChange" type="Boolean">Default: false. Evaluate once for each change rather than on an amalgamation of changes</param>
 		///<param name="options.evaluateIfValueHasNotChanged" type="Boolean">Default: false. Evaluate if the oldValue and the newValue are the same</param>
@@ -16,7 +16,7 @@ Class("busybody.callbacks.propertyCallback", function () {
         this.callback = callback;
 		
 		///<summary type="Any">The "this" in the callback</summary>
-        this.context = context;
+        this.context = options ? options.context : null;
 		
 		///<summary type="Boolean">Default: false. Evaluate if the oldValue and the newValue are the same</summary>
         this.evaluateIfValueHasNotChanged = options && options.evaluateIfValueHasNotChanged;

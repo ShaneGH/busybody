@@ -91,7 +91,7 @@ Class("busybody.observeTypes.pathObserver", function () {
         if (busybody.canObserve(current))
             this.__pathDisposables[i] = busybody.tryObserve(current, this.path[i], function (oldVal, newVal) {
                 this.execute();
-            }, this);
+            }, {context: this});
     };
         
     pathObserver.prototype.getValue = function() {

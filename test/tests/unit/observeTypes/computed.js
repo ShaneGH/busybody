@@ -92,7 +92,7 @@ testUtils.testWithUtils("stripFunction", "string '", true, function(methods, cla
 
 testUtils.testWithUtils("constructor", null, false, function(methods, classes, subject, invoker) {
     // arrange
-    var callback = {}, context = {}, options = { watchVariables: {arg1: {}}, allowWith: false }, stripedCallback = "(arg1)";
+    var callback = {}, options = { context: {}, watchVariables: {arg1: {}}, allowWith: false }, stripedCallback = "(arg1)";
     subject._super = methods.method();
     subject.execute = methods.method();
     classes.mock("busybody.observeTypes.computed.stripFunction", function () {
@@ -103,17 +103,17 @@ testUtils.testWithUtils("constructor", null, false, function(methods, classes, s
     subject.watchVariable = methods.dynamicMethod(function () {
         ok(count < 2);
         count++;
-        return count === 1 ? ["this", context] : ["arg1", options.watchVariables.arg1];
+        return count === 1 ? ["this", options.context] : ["arg1", options.watchVariables.arg1];
     }, null, "watchVariable");
     
     
     // act
-    invoker(callback, context, options);
+    invoker(callback, options);
     
     // assert
     strictEqual(subject.arguments.constructor, Array);
     strictEqual(subject.callbackString, stripedCallback);
-    strictEqual(subject.context, context);
+    strictEqual(subject.context, options.context);
     strictEqual(subject.arguments.constructor, Array);
 });
 
@@ -142,7 +142,7 @@ testUtils.testWithUtils("constructor", "has allowed with", false, function(metho
     
     // act
     // assert
-    invoker(callback, null, {allowWith: true});
+    invoker(callback, {allowWith: true});
     ok(true);
 });
 

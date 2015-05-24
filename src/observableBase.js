@@ -138,11 +138,10 @@ Class("busybody.observableBase", function () {
 		return busybody.bind(this, property, otherObject, otherProperty);
     };
 
-    observableBase.prototype.observeArray = function (property, callback, context, options) {
+    observableBase.prototype.observeArray = function (property, callback, options) {
 		///<summary>Observe an array property for changes</summary>
 		///<param name="property" type="String">The property</param>
 		///<param name="callback" type="Function">The callback</param>
-		///<param name="context" type="Any">The "this" value in the callback</param>
 		///<param name="options" type="Object" optional="true">See busybody.array.observe for options</param>
 		///<returns type="busybody.disposable">A disposable</returns>
 		
@@ -163,19 +162,19 @@ Class("busybody.observableBase", function () {
             
             //TODO: duplication of logic
             if (options && options.evaluateOnEachChange) {
-                callback.call(context, change);
+                callback.call(options.context, change);
             } else {
                 var cec = new busybody.utils.compiledArrayChange([change], 0, 1);
-                callback.call(context, cec.getRemoved(), cec.getAdded(), cec.getIndexes());
+                callback.call(options ? options.context : null, cec.getRemoved(), cec.getAdded(), cec.getIndexes());
             }
             
             if (newValue instanceof busybody.array)
-                d2 = this.registerDisposable(newValue.observe(callback, context, options));
-        }, this);
+                d2 = this.registerDisposable(newValue.observe(callback, options));
+        }, {context: this});
         
         var tmp;
         if ((tmp = busybody.utils.obj.getObject(property, this.$forObject || this)) instanceof busybody.array)
-            d2 = this.registerDisposable(tmp.observe(callback, context, options));
+            d2 = this.registerDisposable(tmp.observe(callback, options));
         
         return new busybody.disposable(function () {
             if (d2) {
@@ -190,12 +189,12 @@ Class("busybody.observableBase", function () {
         });
     }
 
-    observableBase.prototype.observe = function (property, callback, context, options) {
+    observableBase.prototype.observe = function (property, callback, options) {
 		///<summary>Observe changes to a property </summary>
 		///<param name="property" type="String">The property</param>
 		///<param name="callback" type="Function">The callback to execute</param>
-		///<param name="context" type="Any" optional="true">The "this" in the callback</param>
 		///<param name="options" type="Object" optional="true">Options for the callback</param>
+		///<param name="options.context" type="Any" optional="true">Default: null. The "this" in the callback</param>
 		///<param name="options.useRawChanges" type="Boolean">Default: false. Use the change objects from the Object.observe as arguments</param>
 		///<param name="options.evaluateOnEachChange" type="Boolean">Default: false. Evaluate once for each change rather than on an amalgamation of changes</param>
 		///<param name="options.evaluateIfValueHasNotChanged" type="Boolean">Default: false. Evaluate if the oldValue and the newValue are the same</param>
@@ -204,7 +203,7 @@ Class("busybody.observableBase", function () {
         if (/[\.\[]/.test(property)) {
             var pw = new busybody.observeTypes.pathObserver(this.$forObject || this, property);
             if (callback)
-                pw.onValueChanged(callback.bind(context || pw.forObject), false);
+                pw.onValueChanged(callback.bind((options ? options.context : false) || pw.forObject), false);
             
             this.registerDisposable(pw);
             return pw;
@@ -212,7 +211,7 @@ Class("busybody.observableBase", function () {
         
         this._init(property);
 
-        var cb = new busybody.callbacks.propertyCallback(callback, context, options);
+        var cb = new busybody.callbacks.propertyCallback(callback, options);
         if (!this.$callbacks[property]) this.$callbacks[property] = [];
         this.$callbacks[property].push(cb);
 
@@ -261,13 +260,18 @@ Class("busybody.observableBase", function () {
     };
     
     observableBase.prototype.computed = function (property, callback, options) {
-		///<summary>Create a computed which bind's to a property. The context of the callback will be this observable.</summary>
+		///<summary>Create a computed which bind's to a property. The context of the callback will be this observable unless there is a context option.</summary>
 		///<param name="property" type="String">The property</param>
 		///<param name="callback" type="Function">The computed logic.</param>
 		///<param name="options" type="Object" optional="true">See busybody.observeTypes.computed for options</param>
 		///<returns type="busybody.observeTypes.computed">The computed</returns>
         
-        var computed = new busybody.observeTypes.computed(callback, this.$forObject || this, options);
+        if (!options)
+            options = {context: this.$forObject || this};
+        else if (!options.hasOwnProperty("context"))
+            options.context = this.$forObject || this;
+        
+        var computed = new busybody.observeTypes.computed(callback, options);
         computed.bind(this.$forObject || this, property);
         this.registerDisposable(computed);
         return computed;        
