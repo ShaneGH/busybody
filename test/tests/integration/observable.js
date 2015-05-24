@@ -654,3 +654,19 @@ function testMe (moduleName, buildSubject) {
 
 testMe("busybody.observable, integration", function() { return new busybody.observable(); });
 testMe("busybody.observable, integration, do not use prototype", function() { return {}; });
+testUtils.testWithUtils("observe", "clear observer", false, function(methods, classes, subject, invoker) {
+    
+    // arrange
+    var subject = busybody.makeObservable({});
+
+    var disp = subject.$observer.dispose;
+    subject.$observer.dispose = methods.customMethod(function () {
+        disp.call(subject.$observer);
+    });
+    
+    // act
+    busybody.dispose(subject);
+    
+    // assert
+    ok(!subject.$observer);
+});

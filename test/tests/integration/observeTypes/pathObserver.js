@@ -108,26 +108,6 @@ testUtils.testWithUtils("observe", "path, last element is array", false, functio
     subject.aa.bb.push(55);
 }); */
 
-
-testUtils.testWithUtils("observe", "path, last element changed, has non observable in path", false, function(methods, classes, subject, invoker) {
-    // arrange
-    var subject = new busybody.observable();
-    subject.aa = {};
-    subject.aa.bb = new busybody.observable();
-    subject.aa.bb.cc = 11;
-
-    var dispose = new pathObserver(subject, "aa.bb.cc");
-    dispose.onValueChanged(function(oldVal, newVal) {
-        strictEqual(oldVal, 11);
-        strictEqual(newVal, 22);
-        start();
-    });
-
-    // act
-    stop();
-    subject.aa.bb.cc = 22;        
-});
-
 testUtils.testWithUtils("observe", "path, mid element nulled then last element changed", false, function(methods, classes, subject, invoker) {
     // arrange
     var subject = new busybody.observable();
@@ -222,4 +202,26 @@ testUtils.testWithUtils("observe", "path, mid element changed, after disposal", 
         ok(true);
         start();
     }, 100);
+});
+
+testUtils.testWithUtils("observe", "trackPartialObservable", false, function(methods, classes, subject, invoker) {
+    // arrange
+    var subject = {
+        aa: {
+            bb: new busybody.observable()
+        }
+    };
+    subject.aa.bb.cc = 11;
+    
+    var dispose = new pathObserver(subject, "aa.bb.cc", {trackPartialObservable: true});
+    dispose.onValueChanged(function(oldVal, newVal) {
+        strictEqual(oldVal, 11);
+        strictEqual(newVal, 33);
+        dispose.dispose();
+        start();
+    });
+
+    // act
+    stop();
+    subject.aa.bb.cc = 33;
 });

@@ -8,6 +8,17 @@
             object :
             (object.$observer instanceof busybody.observableBase ? object.$observer : null);
     };
+
+    busybody.tryRemoveObserver = function (object) {
+		///<summary>Remove the observer from an object, if possible. If there is no observer, or the object is it's own observer, do nothing</summary>
+		///<param name="object" type="Object">The object</param>
+		///<returns type="Boolean">Whether an observer was removed or not</returns>
+        
+        return object && 
+            !(object instanceof busybody.observableBase) &&
+            object.$observer instanceof busybody.observableBase &&
+            (object.$observer.dispose(), delete object.$observer);
+    };
     
     busybody.captureArrayChanges = function (forObject, logic, callback) {
 		///<summary>Capture all of the changes to an array perpetrated by the logic</summary>
@@ -55,7 +66,7 @@
 
         Object.defineProperty(object, "$observer", {
             enumerable: false,
-            configurable: false,
+            configurable: true,
             value: new busybody.observable(object),
             writable: false
         });
@@ -308,10 +319,8 @@
 		///<summary>Dispose of an object which is observable</summary>
 		///<param name="object" type="Object">The object</param>
 		
-        var target = busybody.getObserver(object);
-        
-        if (target)
-            return target.dispose();
+        if (!busybody.tryRemoveObserver(object) && object instanceof busybody.disposable)
+            object.dispose();
     };
 
     window.busybody = busybody;

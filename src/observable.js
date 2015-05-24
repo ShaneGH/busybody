@@ -102,9 +102,7 @@ var observable = useObjectObserve ?
 
             if (this.$observed.hasOwnProperty(forProperty)) return;
 
-            if ((this.$forObject || this).hasOwnProperty(forProperty))
-                this.$observed[forProperty] = (this.$forObject || this)[forProperty];
-
+            this.$observed[forProperty] = (this.$forObject || this)[forProperty];
             Object.defineProperty(this.$forObject || this, forProperty, {
                 get: function() {
                     return getObserver(this).$observed[forProperty];
@@ -167,7 +165,16 @@ var observable = useObjectObserve ?
         observable.prototype.dispose = function () {
 			///<summary>Dispose.</summary>
 			
+            var _this = this.$forObject || this;
+            for (var i in this.$observed) {
+                // delete setter
+                delete _this[i];
+                _this[i] = this.$observed[i];
+                delete this.$observed[i];
+            }
+            
             this._super();
+                
             for (var i in this.$onNextPropertyChanges)
                 delete this.$onNextPropertyChanges[i];
         };

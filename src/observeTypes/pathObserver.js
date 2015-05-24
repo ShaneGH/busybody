@@ -2,12 +2,18 @@
 
 Class("busybody.observeTypes.pathObserver", function () {
         
-    var pathObserver = busybody.observeTypes.observeTypesBase.extend(function pathObserver (forObject, property) {
+    var pathObserver = busybody.observeTypes.observeTypesBase.extend(function pathObserver (forObject, property, options) {
         ///<summary>Observe a property path for change.</summary>
         ///<param name="forObject" type="busybody.observable" optional="false">The object to watch</param>
         ///<param name="property" type="String" optional="false">The property</param>
-		if (arguments.length > 2)debugger;
+		///<param name="options" type="Object" optional="true">Options on how the path observer is composed</param>
+		///<param name="options.trackPartialObservable" type="Boolean">Default: false. If set to true, will track observables at the end of a path, even if there are non observables before them.</param>
+		///<param name="options.forceObserve" type="Boolean">Default: false. If set to true, will make any no observables in the path into observables.</param>
+        
         this._super();
+        
+		///<summary type="Boolean">If set to true, will track observables at the end of a path, even if there are non observables before them.</summary>
+        this.trackPartialObservable = options && options.trackPartialObservable;
         
 		///<summary type="busybody.observable">The object to observe</summary>
         this.forObject = forObject;
@@ -70,11 +76,12 @@ Class("busybody.observeTypes.pathObserver", function () {
                     };
                 }(i))];
                 
-                if (isNaN(this.path[i])) {
+                if (isNaN(this.path[i]))
                     args.splice(1, 0, this.path[i]);
-                }
                 
                 this.__pathDisposables[i] = busybody.tryObserve.apply(null, args);
+            } else if (!this.trackPartialObservable) {
+                return;
             }
 
             current = current[this.path[i]];
