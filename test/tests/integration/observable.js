@@ -667,7 +667,21 @@ function testMe (moduleName, buildSubject) {
 
         stop();
     });
-
+    
+    testUtils.testWithUtils("isObserved", null, false, function(methods, classes, subject, invoker) {
+        
+        // arrange
+        // act
+        // assert
+        var subject = buildSubject();        
+        strictEqual(busybody.isObserved(subject), false);
+        
+        var disp = busybody.observe(subject, "XXX", function (){});        
+        strictEqual(busybody.isObserved(subject), true);
+        
+        disp.dispose();        
+        strictEqual(busybody.isObserved(subject), false);
+    });
 }
 
 testMe("busybody.observable, integration", function() { return new busybody.observable(); });

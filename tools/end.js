@@ -289,6 +289,15 @@
 		return busybody.tryBind(object1, property1, object2, property2, twoWay);
     };
 
+    busybody.isObserved = function (object) {
+		///<summary>Determine if any callbacks are currently monitoring this observable</summary>
+		///<param name="object" type="Object">The object</param>
+		///<returns type="Boolean">The result</returns>
+        
+        var observer;
+        return !!((observer = busybody.getObserver(object)) && observer.isObserved());
+    }; 
+
     busybody.canObserve = function (object) {
 		///<summary>Determine if an object can be observed. You can use busybody.makeObservable(...) to make objects observable</summary>
 		///<param name="object" type="Object">The object</param>

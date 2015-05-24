@@ -15,6 +15,9 @@ Class("busybody.observableBase", function () {
 		
         ///<summary type="Object">Dictionary of change callbacks</summary>
         this.$callbacks = {};
+        
+        ///<summary type="Number">Simple count of number of times any property on this object has been subscribed to.</summary>
+        this.$observes = 0;
     });
     
 	// this function is also used by arrayBase
@@ -187,8 +190,15 @@ Class("busybody.observableBase", function () {
                 d1 = null;
             }
         });
-    }
+    };
 
+    observableBase.prototype.isObserved = function () {
+		///<summary>Determine if any callbacks are currently monitoring this observable</summary>
+		///<returns type="Boolean"></returns>
+        
+        return !!this.$observes;
+    };
+    
     observableBase.prototype.observe = function (property, callback, options) {
 		///<summary>Observe changes to a property </summary>
 		///<param name="property" type="String">The property</param>
@@ -200,11 +210,15 @@ Class("busybody.observableBase", function () {
 		///<param name="options.evaluateIfValueHasNotChanged" type="Boolean">Default: false. Evaluate if the oldValue and the newValue are the same</param>
 		///<param name="options.activateImmediately" type="Boolean">Default: false. Activate the callback now, meaning it could get changes which were applied before the callback was created</param>
 		
+        this.$observes++;
+        
         if (/[\.\[]/.test(property)) {
             var pw = new busybody.observeTypes.pathObserver(this.$forObject || this, property);
-            if (callback)
-                pw.onValueChanged(callback.bind((options ? options.context : false) || pw.forObject), false);
+            pw.registerDisposeCallback((function () {
+                this.$observes--;
+            }).bind(this));
             
+            pw.onValueChanged(callback.bind((options ? options.context : false) || pw.forObject), false);
             this.registerDisposable(pw);
             return pw;
         }
@@ -227,6 +241,8 @@ Class("busybody.observableBase", function () {
 
                 if (!dispose) return;
                 dispose = null;
+                
+                this.$observes--;
                 
                 if (allowPendingChanges)
                     this.onNextPropertyChange(property, function (change) {
