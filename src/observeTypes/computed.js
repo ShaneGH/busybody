@@ -18,10 +18,18 @@ Class("busybody.observeTypes.computed", function () {
 		///<param name="options.observeArrayElements" type="Boolean">Default: false. If set to true, the computed will attempt to watch values within any array watch variables. This is useful if the computed is an aggregate function. The default is false because it is expensive computationally</param>
 		///<param name="options.allowWith" type="Boolean">Default: false. If set to true, "with (...)" statements are allowed in the computed function. Although variables accessed within the with statement cannot be observed</param>
 		///<param name="options.delayExecution" type="Boolean">Default: false. If set to true, the computed will not be activated until it's execute function is called or a value within the computed changes</param>
+		///<param name="options.trackPartialObservable" type="Boolean">Default: false. If set to true, will track observables at the end of a path, even if there are non observables before them.</param>
+		///<param name="options.forceObserve" type="Boolean">Default: false. If set to true, will make any un observables in the path into observables.</param>
         
         this._super();
         
         options = options || {};
+        
+		///<summary type="Object">Describes how paths within this computed will be watched.</summary>
+        this.pathObserverOptions = {
+            trackPartialObservable: options.trackPartialObservable,
+            forceObserve: options.forceObserve
+        };
 		
 		///<summary type="[Any]">A list of arguments to be applied to the callback function</summary>
         this.arguments = []; 
@@ -318,7 +326,7 @@ Class("busybody.observeTypes.computed", function () {
 		///<param name="path" type="String">The path</param>
 		///<returns type="String">A disposable key. The path can be disposed by calling this.disposeOf(key)</returns>
 		
-		var path = new busybody.observeTypes.pathObserver(variable, path);
+		var path = new busybody.observeTypes.pathObserver(variable, path, this.pathObserverOptions);
         path.onValueChanged(this.execute.bind(this), false);
 		
 		var dispose;

@@ -226,6 +226,8 @@ john.lastName = "Michaels";
 |[options => observeArrayElements](#computed-observables-with-arrays)|Boolean|Default: false. If set to true, the computed will attempt to watch values within any array watch variables. This is useful if the computed is an aggregate function. The default is false because it is expensive computationally|Yes|
 |options => allowWith|Boolean|Default: false. If set to true, `with (...)` statements are allowed in the computed function. Although variables accessed within the with statement cannot be observed|Yes|
 |options => delayExecution|Boolean|Default: false. If set to true, the computed will not be activated until it's `execute(...)` function is called or a value within the computed changes|Yes|
+|options => trackPartialObservable|Boolean|Default: false. If set to true, will track observables at the end of a path, even if there are non observables before them|Yes|
+|options => forceObserve|Boolean|Default: false. If set to true, will make any un observables in the path into observables.|Yes|
 |**returns**|**busybody.observeTypes .computed**|**Returns an object with a dispose function to cancel the computed**|
 
 ###busybody.computed functionality

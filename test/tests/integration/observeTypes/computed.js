@@ -654,3 +654,30 @@ testUtils.testWithUtils("integration test", "with args, arg not added as watched
         }, {context:subject}).bind(subject, "comp");
     });
 });
+
+testUtils.testWithUtils("forceObserve", "", false, function(methods, classes, subject, invoker) {
+    // arrange
+    subject = {
+        inner: {
+            val1: 22,
+            val2: 33
+        }
+    };
+    
+    var comp = busybody.computed(subject, "result", function () {
+        return this.inner.val1 + this.inner.val2;
+    }, {forceObserve: true});
+    
+    // assert
+    comp.onValueChanged(function (oldValue, newValue) {
+        strictEqual(oldValue, 55);
+        strictEqual(newValue, 77);
+        
+        comp.dispose();
+        start();
+    });
+    
+    // act
+    subject.inner.val1 = 44;
+    stop();
+});
