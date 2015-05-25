@@ -135,8 +135,8 @@ myArray.push(4);
 | --- | --- | --- | --- |
 |object|Object|The object which contains the property to observe|No|
 |callback|property|The callback to execute|No|
-|context|Function|The "this" in the callback|Yes|
 |options|Object|Options for the callback|Yes|
+|options => context|Object|Default: null. The "this" in the callback.|Yes|
 |options => useRawChanges|Boolean|Default: false. Use the change objects from the Array.observe as arguments|Yes|
 |options => evaluateOnEachChange|Boolean|Default: false. Evaluate once for each change rather than on an amalgamation of changes|Yes|
 |**returns**|**busybody.disposable**|**Returns an object with a dispose function to cancel the subscriptions**|
@@ -220,8 +220,8 @@ john.lastName = "Michaels";
 |Name|Type|Description|Optional |
 | --- | --- | --- | --- |
 |callback|Function|The logic which returns the computed value|No|
-|context|Object|The "this" value in the callback|No|
 |options|Object|Computed options|Yes|
+|options => context|Object|Default: null. The "this" value in the callback|Yes|
 |[options => watchVariables](#complex-computed-observables)|Object|Default: null. A dictionary of variables in the callback which are to be watched|Yes|
 |[options => observeArrayElements](#computed-observables-with-arrays)|Boolean|Default: false. If set to true, the computed will attempt to watch values within any array watch variables. This is useful if the computed is an aggregate function. The default is false because it is expensive computationally|Yes|
 |options => allowWith|Boolean|Default: false. If set to true, `with (...)` statements are allowed in the computed function. Although variables accessed within the with statement cannot be observed|Yes|
