@@ -24,6 +24,9 @@ Class("busybody.observeTypes.pathObserver", function () {
 		///<summary type="[String]">The path split into parts</summary>
         this.path = busybody.utils.obj.splitPropertyName(property);
         
+		///<summary type="Boolean">If an object in the path is not an observable, make it an observable.</summary>
+        this.forceObserve = options && options.forceObserve;
+        
 		///<summary type="[busybody.observable]">The subscriptions</summary>
         this.__pathDisposables = new Array(this.path.length);
         this.execute();
@@ -54,6 +57,7 @@ Class("busybody.observeTypes.pathObserver", function () {
         for (var i = begin; i < this.path.length; i++) {
             if (this.__pathDisposables[i]) {
                 this.__pathDisposables[i].dispose();
+                if (this.__pathDisposables[i].unmakeObservable) this.__pathDisposables[i].unmakeObservable();
                 this.__pathDisposables[i] = null;
             }
         }
@@ -66,12 +70,25 @@ Class("busybody.observeTypes.pathObserver", function () {
         }
         
         // get the last item in the path subscribing to changes along the way
-        for (; current && i < this.path.length - 1; i++) {
+        for (; current && i < this.path.length; i++) {
+            
+            if (this.forceObserve && !busybody.canObserve(current) && 
+                (busybody.makeObservable(current), busybody.canObserve(current))) {
+                
+                var unmakeObservable = (function (current) {
+                    return function () {
+                        if (!busybody.isObserved(current))
+                            busybody.tryRemoveObserver(current);
+                    };
+                }(current));
+            }
+            
             if (busybody.canObserve(current) || current instanceof busybody.array) {
                 
                 var args = [current, (function (i) {
                     return function(oldVal, newVal) {
-                        _this.buildObservableChain(i);
+                        if (i < _this.path.length - 1)
+                            _this.buildObservableChain(i);
 						_this.execute();
                     };
                 }(i))];
@@ -80,18 +97,13 @@ Class("busybody.observeTypes.pathObserver", function () {
                     args.splice(1, 0, this.path[i]);
                 
                 this.__pathDisposables[i] = busybody.tryObserve.apply(null, args);
+                this.__pathDisposables[i].unmakeObservable = unmakeObservable;
             } else if (!this.trackPartialObservable) {
                 return;
             }
 
             current = current[this.path[i]];
         }
-        
-        // observe last item in path
-        if (busybody.canObserve(current))
-            this.__pathDisposables[i] = busybody.tryObserve(current, this.path[i], function (oldVal, newVal) {
-                this.execute();
-            }, {context: this});
     };
         
     pathObserver.prototype.getValue = function() {
@@ -114,8 +126,10 @@ Class("busybody.observeTypes.pathObserver", function () {
         this._super();
         
         for (var i = 0, ii = this.__pathDisposables.length; i < ii && this.__pathDisposables[i]; i++)
-            if (this.__pathDisposables[i])
+            if (this.__pathDisposables[i]) {
                 this.__pathDisposables[i].dispose();
+                if (this.__pathDisposables[i].unmakeObservable) this.__pathDisposables[i].unmakeObservable();
+            }
 
         this.__pathDisposables.length = 0;
     };

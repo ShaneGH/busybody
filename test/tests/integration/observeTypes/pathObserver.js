@@ -225,3 +225,91 @@ testUtils.testWithUtils("observe", "trackPartialObservable", false, function(met
     stop();
     subject.aa.bb.cc = 33;
 });
+
+testUtils.testWithUtils("force observe", null, false, function(methods, classes, subject, invoker) {
+    // arrange
+    var subject = {
+        aa: {
+            bb: {
+                cc: 11
+            }
+        }
+    };
+    
+    var dispose = new pathObserver(subject, "aa.bb.cc", {forceObserve: true});
+    dispose.onValueChanged(function(oldVal, newVal) {
+        strictEqual(oldVal, 11);
+        strictEqual(newVal, 33);
+        dispose.dispose();
+        start();
+    });
+
+    // act
+    stop();
+    subject.aa.bb.cc = 33;
+});
+
+testUtils.testWithUtils("force observe", "with and without other observes, simple", false, function(methods, classes, subject, invoker) {
+    // arrange
+    var subject = {
+        aa: {
+            bb: {
+                cc: 11
+            }
+        }
+    };
+    
+    // act
+    var dispose = new pathObserver(subject, "aa.bb.cc", {forceObserve: true});
+    
+    ok(busybody.canObserve(subject));
+    ok(busybody.canObserve(subject.aa));
+    ok(busybody.canObserve(subject.aa.bb));
+    
+    busybody.tryObserve(subject.aa, "bb", function (){});
+    dispose.dispose();
+
+    // assert
+    ok(!busybody.canObserve(subject));
+    ok(busybody.canObserve(subject.aa));
+    ok(!busybody.canObserve(subject.aa.bb));
+});
+
+testUtils.testWithUtils("force observe", "with and without other observes, complex", false, function(methods, classes, subject, invoker) {
+    // arrange
+    var subject = {
+        aa: {
+            bb: {
+                cc: 11
+            }
+        }
+    }, aa = subject.aa;
+    
+    // act
+    var po = new pathObserver(subject, "aa.bb.cc", {forceObserve: true});
+    
+    ok(busybody.canObserve(subject));
+    ok(busybody.canObserve(subject.aa));
+    ok(busybody.canObserve(subject.aa.bb));
+    
+    busybody.tryObserve(aa.bb, "cc", function(){})
+    
+    po.onValueChanged(function (oldVal, newVal) {
+        
+        strictEqual(oldVal, 11);
+        strictEqual(newVal, 333);
+        
+        ok(busybody.canObserve(subject));
+        ok(busybody.canObserve(subject.aa));
+        ok(busybody.canObserve(subject.aa.bb));
+        
+        ok(!busybody.canObserve(aa));
+        ok(busybody.canObserve(aa.bb));
+        
+        po.dispose();
+        start();
+    });
+    
+    subject.aa = {bb:{cc:333}};
+    stop();
+});
