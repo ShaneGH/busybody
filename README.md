@@ -172,6 +172,8 @@ console.log(myArray2);
 |twoWay|Boolean|Bind the first array to the second array also|Yes|
 |**returns**|**busybody.disposable**|**If any subscriptions were made, this function returns an object with a dispose function to cancel the subscriptions**|
 
+[back to top ^](#busybody)
+
 
 
 ##Bind Properties
