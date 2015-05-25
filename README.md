@@ -24,6 +24,7 @@ busybody supports non Object.observe environments as far back as IE 9
 Busybody is a javascript library and just needs to be included on your wepage. Busybody releases are done through github, so you can see and download the latest [here](https://github.com/ShaneGH/busybody/releases). Releases contain a "busybody-{version}.js" and a "busybody-{version}.debug.js" file, and including either of these on your page will allow you to use busybody. The difference between these files is that one is [minified](http://en.wikipedia.org/wiki/Minification_%28programming%29) and the other is not.
 
 Alternatively, you can pull the source down using [bower](http://bower.io) (with the tag: ShaneGH/busybody#{version number}) and build using [grunt](http://gruntjs.com) and the DEV README.js file included in the project.
+
 [back to top ^](#busybody)
 
 
@@ -87,6 +88,7 @@ myObject.myProperty = false;
 ```
 ###busybody.tryObserve arguments
 busybody.tryObserve arguments are the same as [busybody.observe arguments](#busybodyobserve-arguments)
+
 [back to top ^](#busybody)
 
 
@@ -114,6 +116,7 @@ myObject.myProperty1.myProperty2 = false;
 * `property1["property2"]`
 * `property1[aValue]`
 * `property1.property2().property3`
+
 [back to top ^](#busybody)
 
 
@@ -146,6 +149,7 @@ busybody.arrays are almost the same as javascript Arrays with a few small except
 * There is a `remove(...)` function which removes the specified element from the array
 * You can use the following notation `myArray[2] = {};` but older browsers will not publish changes to the array. Use `myArray.replace(2, {});` instead.
 * Do not include the final argument of the callback (`indexes`) in the callback definition if it will not be used. This will give a small performance gain.
+
 [back to top ^](#busybody)
 
 
@@ -191,6 +195,7 @@ console.log(myObject2.myProperty);
 |twoWay|Boolean|Bind the first object to the object array also|Yes|
 |doNotSet|Boolean|If true, do not set the value of object2 to the value of object1 (mostly for internal use)|Yes|
 |**returns**|**busybody.disposable**|**Returns an object with a dispose function to cancel the subscriptions**|
+
 [back to top ^](#busybody)
 
 
@@ -233,6 +238,7 @@ john.lastName = "Michaels";
 
 ###busybody.computed functionality
 busybody.computeds are not complete as of v0.2.0, so go easy on them. Computeds work by code analysis, so make your code simple and try to avoid comments and strings.
+
 [back to top ^](#busybody)
 
 
@@ -259,6 +265,7 @@ busybody.computed(john, "barryAndI", function () {
 
 console.log(john.barryAndI);
 ```
+
 [back to top ^](#busybody)
 
 
@@ -293,6 +300,7 @@ busybody.computed(mike, "myFriends", function () {
 
 console.log(mike.myFriends);
 ```
+
 [back to top ^](#busybody)
 
 
@@ -315,6 +323,7 @@ myObject.observe("myProperty", function (oldValue, newValue) {
 
 myObject.myProperty = false;
 ```
+
 [back to top ^](#busybody)
 
 
@@ -341,6 +350,7 @@ This is a list of the functions exposed by busybody. If the function args are no
 |tryBindArrays|Bind two arrays together if possible|
 |tryObserve|Observe a property of an object if possible|
 |tryObserveArray|Observe an array property of an object if possible|
+
 [back to top ^](#busybody)
 
 
@@ -351,4 +361,5 @@ To support older browsers and the async nature of busybody, follow the following
 * Don't use `delete myObject.property`; use `busybody.del(myObject, "property")` instead.
 * Don't use `myArray[2] = "something"` for `busybody.array` objects; use `myArray.replace(2, "something")` instead.
 * To keep in line with [`Object.observe`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/observe) specs, and transition smoothly into it's usage, all observe callbacks are executed asynchronusly.
+
 [back to top ^](#busybody)
