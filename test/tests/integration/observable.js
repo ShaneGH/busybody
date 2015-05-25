@@ -335,7 +335,7 @@ function testMe (moduleName, buildSubject) {
             strictEqual(oldVal, "xxx");
             strictEqual(newVal, "yyy");
             start();
-        }, true);
+        });
         
         subject.val = "yyy"; 
         disp.dispose(true);
@@ -681,6 +681,26 @@ function testMe (moduleName, buildSubject) {
         
         disp.dispose();        
         strictEqual(busybody.isObserved(subject), false);
+    });
+    
+    testUtils.testWithUtils("forceObserve", null, false, function(methods, classes, subject, invoker) {
+        
+        // arrange
+        var subject = buildSubject();
+        subject.aa = buildSubject();
+        subject.aa.bb = 22;
+        
+        var disp = busybody.observe(subject, "aa.bb", function (oldVal, newVal) {
+            // assert
+            strictEqual(oldVal, 22);
+            strictEqual(newVal, 33);
+            start();
+            disp.dispose();
+        })
+        
+        // act
+        subject.aa.bb = 33;
+        stop();
     });
 }
 

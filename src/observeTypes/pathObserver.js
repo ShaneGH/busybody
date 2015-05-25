@@ -8,7 +8,7 @@ Class("busybody.observeTypes.pathObserver", function () {
         ///<param name="property" type="String" optional="false">The property</param>
 		///<param name="options" type="Object" optional="true">Options on how the path observer is composed</param>
 		///<param name="options.trackPartialObservable" type="Boolean">Default: false. If set to true, will track observables at the end of a path, even if there are non observables before them.</param>
-		///<param name="options.forceObserve" type="Boolean">Default: false. If set to true, will make any no observables in the path into observables.</param>
+		///<param name="options.forceObserve" type="Boolean">Default: false. If set to true, will make any un observables in the path into observables.</param>
         
         this._super();
         

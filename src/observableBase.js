@@ -209,11 +209,21 @@ Class("busybody.observableBase", function () {
 		///<param name="options.evaluateOnEachChange" type="Boolean">Default: false. Evaluate once for each change rather than on an amalgamation of changes</param>
 		///<param name="options.evaluateIfValueHasNotChanged" type="Boolean">Default: false. Evaluate if the oldValue and the newValue are the same</param>
 		///<param name="options.activateImmediately" type="Boolean">Default: false. Activate the callback now, meaning it could get changes which were applied before the callback was created</param>
+		///<param name="options.trackPartialObservable" type="Boolean">Default: false. Path only. If set to true, will track observables at the end of a path, even if there are non observables before them.</param>
+		///<param name="options.forceObserve" type="Boolean">Default: false. Path only. If set to true, will make any un observables in the path into observables.</param>
+		///<returns type="Object">An object with a dispose function to cancel the subscription.</returns>
 		
         this.$observes++;
         
         if (/[\.\[]/.test(property)) {
-            var pw = new busybody.observeTypes.pathObserver(this.$forObject || this, property);
+            if (options)
+                options = {
+                    context: options.context, 
+                    trackPartialObservable: options.trackPartialObservable, 
+                    forceObserve: options.forceObserve
+                };
+            
+            var pw = new busybody.observeTypes.pathObserver(this.$forObject || this, property, options);
             pw.registerDisposeCallback((function () {
                 this.$observes--;
             }).bind(this));

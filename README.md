@@ -45,12 +45,14 @@ myObject.myProperty = false;
 |object|Object|The object which contains the property to observe|No|
 |property|String|The property|No|
 |callback|Function|The callback to execute|No|
-|context|Object|The "this" in the callback|Yes|
 |options|Object|Options for the callback|Yes|
+|options => context|Object|Default: null. The "this" in the callback|Yes|
 |options => useRawChanges|Boolean|Default: false. Use the change objects from the Object.observe as arguments|Yes|
 |options => evaluateOnEachChange|Boolean|Default: false. Evaluate once for each change rather than on an amalgamation of changes|Yes|
 |options => evaluateIfValueHasNotChanged|Boolean|Default: false. Evaluate if the oldValue and the newValue are the same|Yes|
 |options => activateImmediately|Boolean|Default: false. Activate the callback now, meaning it could get changes which were applied before the callback was created|Yes|
+|options => trackPartialObservable|Boolean|Default: false. Path only. If set to true, will track observables at the end of a path, even if there are non observables before them|Yes|
+|options => forceObserve|Boolean|Default: false. If set to true, will make any un observables in the path into observables.|Yes|
 |**returns**|**busybody.disposable**|**Returns an object with a dispose function to cancel the subscriptions**|
 
 
@@ -92,12 +94,10 @@ busybody.tryObserve arguments are the same as [busybody.observe arguments](#busy
 Observing paths is the same as observing properties
 ```javascript
 
-// objects which are not observable in a path cannot be observed.
-// makeObservable(...) will make an object observable without altering it
 var myObject = {
-	myProperty1: busybody.makeObservable({
+	myProperty1: {
 		myProperty2: true
-	})
+	}
 };
 
 busybody.observe(myObject, "myProperty1.myProperty2", function (oldValue, newValue) {
@@ -106,14 +106,6 @@ busybody.observe(myObject, "myProperty1.myProperty2", function (oldValue, newVal
 
 myObject.myProperty1.myProperty2 = false;
 ```
-###busybody.observe path arguments
-|Name|Type|Description|Optional |
-| --- | --- | --- | --- |
-|object|Object|The root of the path|No|
-|property|String|The property|No|
-|callback|property|The callback to execute|No|
-|context|Object|The "this" in the callback|Yes|
-|**returns**|**busybody.disposable**|**Returns an object with a dispose function to cancel the subscriptions**|
 ###Valid paths:
 * `property1.property2`
 * `property1[3].property2`

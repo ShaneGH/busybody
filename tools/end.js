@@ -81,7 +81,11 @@
 		///<param name="callback" type="Function">The callback to execute</param>
 		///<param name="options" type="Object" optional="true">See busybody.observable.observe for options</param>
 		
-        busybody.makeObservable(object);
+        if (options)
+            options.forceObserve = true;
+        else
+            options = { forceObserve: true };
+        
         return busybody.tryObserve(object, property, callback, options);
     };
 
@@ -101,9 +105,9 @@
 			busybody.makeObservable(object);	//TODO: test
 		}
         
-        var target = busybody.getObserver(object);
-        
-        if (target)
+        var target;
+        if ((target = busybody.getObserver(object)) ||
+           (options && options.forceObserve && (target = busybody.getObserver(busybody.makeObservable(object)))))
             return target.observe(property, callback, options);
         
         return false;
