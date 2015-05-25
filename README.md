@@ -231,7 +231,7 @@ john.lastName = "Michaels";
 |**returns**|**busybody.observeTypes .computed**|**Returns an object with a dispose function to cancel the computed**|
 
 ###busybody.computed functionality
-busybody.computeds are not complete as of v0.1.0, so go easy on them. Computeds work by code analysis, so make your code simple and try to avoid comments and strings.
+busybody.computeds are not complete as of v0.2.0, so go easy on them. Computeds work by code analysis, so make your code simple and try to avoid comments and strings.
 
 
 
@@ -329,6 +329,7 @@ This is a list of the functions exposed by busybody. If the function args are no
 |dispose|dispose of an object|
 |getObserver|Gets the observer object for an object or return null. The observer is either: The object itself if the object is a busybody.observable or the non enumerable $observer property of the object, if it is a busybody.observable|
 |makeObservable|Make an object observable|
+|isObserved|Determine if there are any subscriptions to any of the properties on this object|
 |observe|Observe a property of an object|
 |observeArray|Observe an array property of an object|
 |tryBind|Bind two properties together if possible|

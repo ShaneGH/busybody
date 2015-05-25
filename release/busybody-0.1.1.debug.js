@@ -586,6 +586,9 @@ Class("busybody.observableBase", function () {
 		
         ///<summary type="Object">Dictionary of change callbacks</summary>
         this.$callbacks = {};
+        
+        ///<summary type="Number">Simple count of number of times any property on this object has been subscribed to.</summary>
+        this.$observes = 0;
     });
     
 	// this function is also used by arrayBase
@@ -709,11 +712,10 @@ Class("busybody.observableBase", function () {
 		return busybody.bind(this, property, otherObject, otherProperty);
     };
 
-    observableBase.prototype.observeArray = function (property, callback, context, options) {
+    observableBase.prototype.observeArray = function (property, callback, options) {
 		///<summary>Observe an array property for changes</summary>
 		///<param name="property" type="String">The property</param>
 		///<param name="callback" type="Function">The callback</param>
-		///<param name="context" type="Any">The "this" value in the callback</param>
 		///<param name="options" type="Object" optional="true">See busybody.array.observe for options</param>
 		///<returns type="busybody.disposable">A disposable</returns>
 		
@@ -734,19 +736,19 @@ Class("busybody.observableBase", function () {
             
             //TODO: duplication of logic
             if (options && options.evaluateOnEachChange) {
-                callback.call(context, change);
+                callback.call(options.context, change);
             } else {
                 var cec = new busybody.utils.compiledArrayChange([change], 0, 1);
-                callback.call(context, cec.getRemoved(), cec.getAdded(), cec.getIndexes());
+                callback.call(options ? options.context : null, cec.getRemoved(), cec.getAdded(), cec.getIndexes());
             }
             
             if (newValue instanceof busybody.array)
-                d2 = this.registerDisposable(newValue.observe(callback, context, options));
-        }, this);
+                d2 = this.registerDisposable(newValue.observe(callback, options));
+        }, {context: this});
         
         var tmp;
         if ((tmp = busybody.utils.obj.getObject(property, this.$forObject || this)) instanceof busybody.array)
-            d2 = this.registerDisposable(tmp.observe(callback, context, options));
+            d2 = this.registerDisposable(tmp.observe(callback, options));
         
         return new busybody.disposable(function () {
             if (d2) {
@@ -759,28 +761,52 @@ Class("busybody.observableBase", function () {
                 d1 = null;
             }
         });
-    }
+    };
 
-    observableBase.prototype.observe = function (property, callback, context, options) {
+    observableBase.prototype.isObserved = function () {
+		///<summary>Determine if any callbacks are currently monitoring this observable</summary>
+		///<returns type="Boolean"></returns>
+        
+        return !!this.$observes;
+    };
+    
+    observableBase.prototype.observe = function (property, callback, options) {
 		///<summary>Observe changes to a property </summary>
 		///<param name="property" type="String">The property</param>
 		///<param name="callback" type="Function">The callback to execute</param>
-		///<param name="context" type="Any" optional="true">The "this" in the callback</param>
 		///<param name="options" type="Object" optional="true">Options for the callback</param>
+		///<param name="options.context" type="Any" optional="true">Default: null. The "this" in the callback</param>
 		///<param name="options.useRawChanges" type="Boolean">Default: false. Use the change objects from the Object.observe as arguments</param>
 		///<param name="options.evaluateOnEachChange" type="Boolean">Default: false. Evaluate once for each change rather than on an amalgamation of changes</param>
 		///<param name="options.evaluateIfValueHasNotChanged" type="Boolean">Default: false. Evaluate if the oldValue and the newValue are the same</param>
 		///<param name="options.activateImmediately" type="Boolean">Default: false. Activate the callback now, meaning it could get changes which were applied before the callback was created</param>
+		///<param name="options.trackPartialObservable" type="Boolean">Default: false. Path only. If set to true, will track observables at the end of a path, even if there are non observables before them.</param>
+		///<param name="options.forceObserve" type="Boolean">Default: false. Path only. If set to true, will make any un observables in the path into observables.</param>
+		///<returns type="Object">An object with a dispose function to cancel the subscription.</returns>
 		
+        this.$observes++;
+        
         if (/[\.\[]/.test(property)) {
-            var pw = new busybody.observeTypes.pathObserver(this.$forObject || this, property, callback, context);
+            if (options)
+                options = {
+                    context: options.context, 
+                    trackPartialObservable: options.trackPartialObservable, 
+                    forceObserve: options.forceObserve
+                };
+            
+            var pw = new busybody.observeTypes.pathObserver(this.$forObject || this, property, options);
+            pw.registerDisposeCallback((function () {
+                this.$observes--;
+            }).bind(this));
+            
+            pw.onValueChanged(callback.bind((options ? options.context : false) || pw.forObject), false);
             this.registerDisposable(pw);
             return pw;
         }
         
         this._init(property);
 
-        var cb = new busybody.callbacks.propertyCallback(callback, context, options);
+        var cb = new busybody.callbacks.propertyCallback(callback, options);
         if (!this.$callbacks[property]) this.$callbacks[property] = [];
         this.$callbacks[property].push(cb);
 
@@ -796,6 +822,8 @@ Class("busybody.observableBase", function () {
 
                 if (!dispose) return;
                 dispose = null;
+                
+                this.$observes--;
                 
                 if (allowPendingChanges)
                     this.onNextPropertyChange(property, function (change) {
@@ -829,13 +857,18 @@ Class("busybody.observableBase", function () {
     };
     
     observableBase.prototype.computed = function (property, callback, options) {
-		///<summary>Create a computed which bind's to a property. The context of the callback will be this observable.</summary>
+		///<summary>Create a computed which bind's to a property. The context of the callback will be this observable unless there is a context option.</summary>
 		///<param name="property" type="String">The property</param>
 		///<param name="callback" type="Function">The computed logic.</param>
 		///<param name="options" type="Object" optional="true">See busybody.observeTypes.computed for options</param>
 		///<returns type="busybody.observeTypes.computed">The computed</returns>
         
-        var computed = new busybody.observeTypes.computed(callback, this.$forObject || this, options);
+        if (!options)
+            options = {context: this.$forObject || this};
+        else if (!options.hasOwnProperty("context"))
+            options.context = this.$forObject || this;
+        
+        var computed = new busybody.observeTypes.computed(callback, options);
         computed.bind(this.$forObject || this, property);
         this.registerDisposable(computed);
         return computed;        
@@ -1148,11 +1181,11 @@ Class("busybody.arrayBase", function () {
         throw "Abstract methods must be implemented";
     };
     
-    arrayBase.prototype.observe = function (callback, context, options) {
+    arrayBase.prototype.observe = function (callback, options) {
 		///<summary>Observe for array changes</summary>
 		///<param name="callback" type="Function">The callback</param>
-		///<param name="context" type="Any">The "this" value in the callback</param>
 		///<param name="options" type="Object" optional="true">Options on when the callback is executed and what it's args will be</param>
+		///<param name="options.context" type="Any">Default: null. The "this" value in the callback</param>
 		///<param name="options.useRawChanges" type="Boolean">Default: false. Use the change objects from the Array.observe as arguments</param>
 		///<param name="options.evaluateOnEachChange" type="Boolean">Default: false. Evaluate once for each change rather than on an amalgamation of changes</param>
 		///<returns type="busybody.disposable">A disposable</returns>
@@ -1163,7 +1196,7 @@ Class("busybody.arrayBase", function () {
             return busybody.observe.apply(null, args);
         }
 		
-		return this.addCallback(new busybody.callbacks.arrayCallback(callback, context, options));
+		return this.addCallback(new busybody.callbacks.arrayCallback(callback, options));
     };
 	
 	arrayBase.prototype.disposableFor = function (changeCallback) {
@@ -1617,11 +1650,11 @@ Class("busybody.array", function () {
 
 Class("busybody.callbacks.arrayCallback", function () {
         
-    var arrayCallback = busybody.callbacks.changeCallback.extend(function arrayCallback(callback, context, options) {
+    var arrayCallback = busybody.callbacks.changeCallback.extend(function arrayCallback(callback, options) {
 		///<summary>Evaluate array changes</summary>
 		///<param name="callback" type="Function">The callback to execute</param>
-		///<param name="context" type="Any" optional="true">The "this" in the callback</param>
 		///<param name="options" type="Object" optional="true">Options for the callback</param>
+		///<param name="options.context" type="Any">Default: null. The "this" value in the callback</param>
 		///<param name="options.useRawChanges" type="Boolean">Default: false. Use the change objects from the Array.observe as arguments</param>
 		///<param name="options.evaluateOnEachChange" type="Boolean">Default: false. Evaluate once for each change rather than on an amalgamation of changes</param>
 		
@@ -1634,7 +1667,7 @@ Class("busybody.callbacks.arrayCallback", function () {
         this.callback = callback;
 		
 		///<summary type="Any" optional="true">The "this" in the callback</summary>
-        this.context = context;
+        this.context = options ? options.context : null;
     });
 
     arrayCallback.prototype._evaluateSingle = function (changes, index) {
@@ -1689,11 +1722,11 @@ Class("busybody.callbacks.arrayCallback", function () {
 
 Class("busybody.callbacks.propertyCallback", function () {
         
-    var propertyCallback = busybody.callbacks.changeCallback.extend(function propertyCallback(callback, context, options) {
+    var propertyCallback = busybody.callbacks.changeCallback.extend(function propertyCallback(callback, options) {
 		///<summary>Evaluate property changes</summary>
 		///<param name="callback" type="Function">The callback to execute</param>
-		///<param name="context" type="Any" optional="true">The "this" in the callback</param>
 		///<param name="options" type="Object" optional="true">Options for the callback</param>
+		///<param name="options.context" type="Any" optional="true">Default: null. The "this" in the callback</param>
 		///<param name="options.useRawChanges" type="Boolean">Default: false. Use the change objects from the Array.observe as arguments</param>
 		///<param name="options.evaluateOnEachChange" type="Boolean">Default: false. Evaluate once for each change rather than on an amalgamation of changes</param>
 		///<param name="options.evaluateIfValueHasNotChanged" type="Boolean">Default: false. Evaluate if the oldValue and the newValue are the same</param>
@@ -1704,7 +1737,7 @@ Class("busybody.callbacks.propertyCallback", function () {
         this.callback = callback;
 		
 		///<summary type="Any">The "this" in the callback</summary>
-        this.context = context;
+        this.context = options ? options.context : null;
 		
 		///<summary type="Boolean">Default: false. Evaluate if the oldValue and the newValue are the same</summary>
         this.evaluateIfValueHasNotChanged = options && options.evaluateIfValueHasNotChanged;
@@ -1851,9 +1884,7 @@ var observable = useObjectObserve ?
 
             if (this.$observed.hasOwnProperty(forProperty)) return;
 
-            if ((this.$forObject || this).hasOwnProperty(forProperty))
-                this.$observed[forProperty] = (this.$forObject || this)[forProperty];
-
+            this.$observed[forProperty] = (this.$forObject || this)[forProperty];
             Object.defineProperty(this.$forObject || this, forProperty, {
                 get: function() {
                     return getObserver(this).$observed[forProperty];
@@ -1916,7 +1947,16 @@ var observable = useObjectObserve ?
         observable.prototype.dispose = function () {
 			///<summary>Dispose.</summary>
 			
+            var _this = this.$forObject || this;
+            for (var i in this.$observed) {
+                // delete setter
+                delete _this[i];
+                _this[i] = this.$observed[i];
+                delete this.$observed[i];
+            }
+            
             this._super();
+                
             for (var i in this.$onNextPropertyChanges)
                 delete this.$onNextPropertyChanges[i];
         };
@@ -1935,19 +1975,27 @@ Class("busybody.observeTypes.computed", function () {
     var GET_ITEMS = "((\\s*\\.\\s*([\\w\\$]*))|(\\s*\\[\\s*\\d\\s*\\]))+"; // ".propertyName" -or- "[2]"
     var completeArg = {};
 	
-    var computed = busybody.observeTypes.observeTypesBase.extend(function computed(callback, context, options) {
+    var computed = busybody.observeTypes.observeTypesBase.extend(function computed(callback, options) {
 		///<summary>A value defined by the return value of a function. If configured correctly, a change in a value within the function will trigger a re-execution of the function</summary>
 		///<param name="callback" type="Function">The logic which returns the computed value</param>
-		///<param name="context" type="Any">The "this" value in the callback</param>
 		///<param name="options" type="Object" optional="true">Options on how the computed is composed</param>
+		///<param name="options.context" type="Any">Default: null. The "this" value in the callback</param>
 		///<param name="options.watchVariables" type="Object">Default: null. A dictionary of variables in the callback which are to be watched</param>
 		///<param name="options.observeArrayElements" type="Boolean">Default: false. If set to true, the computed will attempt to watch values within any array watch variables. This is useful if the computed is an aggregate function. The default is false because it is expensive computationally</param>
 		///<param name="options.allowWith" type="Boolean">Default: false. If set to true, "with (...)" statements are allowed in the computed function. Although variables accessed within the with statement cannot be observed</param>
 		///<param name="options.delayExecution" type="Boolean">Default: false. If set to true, the computed will not be activated until it's execute function is called or a value within the computed changes</param>
+		///<param name="options.trackPartialObservable" type="Boolean">Default: false. If set to true, will track observables at the end of a path, even if there are non observables before them.</param>
+		///<param name="options.forceObserve" type="Boolean">Default: false. If set to true, will make any un observables in the path into observables.</param>
         
         this._super();
         
         options = options || {};
+        
+		///<summary type="Object">Describes how paths within this computed will be watched.</summary>
+        this.pathObserverOptions = {
+            trackPartialObservable: options.trackPartialObservable,
+            forceObserve: options.forceObserve
+        };
 		
 		///<summary type="[Any]">A list of arguments to be applied to the callback function</summary>
         this.arguments = []; 
@@ -1964,7 +2012,7 @@ Class("busybody.observeTypes.computed", function () {
         this.callbackFunction = callback;
 		
 		///<summary type="Any">The "this" in the computed logic</summary>
-        this.context = context;
+        this.context = options.context;
         
         if (!options.allowWith && computed.testForWith(this.callbackString))
                 throw "You cannot use the \"with\" keyword in computed functions by default. To allow \"with\", use the allowWith flag on the options argument of the constructor, however, properties of the variable within the \"with\" statement cannot be monitored for change.";
@@ -1991,8 +2039,11 @@ Class("busybody.observeTypes.computed", function () {
                 throw "Argument \"" + arg + "\" must be added as a watch variable.";
         });
         
+        // watch this
+        if (this.context)
+            this.watchVariable("this", this.context, options.observeArrayElements);
+        
         // watch each watch variable
-        this.watchVariable("this", context, options.observeArrayElements);
         if (options.watchVariables) {
             for (var i in options.watchVariables) {                
                 this.watchVariable(i, options.watchVariables[i], options.observeArrayElements);
@@ -2241,7 +2292,8 @@ Class("busybody.observeTypes.computed", function () {
 		///<param name="path" type="String">The path</param>
 		///<returns type="String">A disposable key. The path can be disposed by calling this.disposeOf(key)</returns>
 		
-		var path = new busybody.observeTypes.pathObserver(variable, path, this.execute, this);
+		var path = new busybody.observeTypes.pathObserver(variable, path, this.pathObserverOptions);
+        path.onValueChanged(this.execute.bind(this), false);
 		
 		var dispose;
 		var te = this.execute.bind(this);
@@ -2296,14 +2348,18 @@ Class("busybody.observeTypes.computed", function () {
 
 Class("busybody.observeTypes.pathObserver", function () {
         
-    var pathObserver = busybody.observeTypes.observeTypesBase.extend(function pathObserver (forObject, property, callback, context) {
+    var pathObserver = busybody.observeTypes.observeTypesBase.extend(function pathObserver (forObject, property, options) {
         ///<summary>Observe a property path for change.</summary>
         ///<param name="forObject" type="busybody.observable" optional="false">The object to watch</param>
         ///<param name="property" type="String" optional="false">The property</param>
-        ///<param name="callback" type="Function" optional="true">A callback for property change</param>
-        ///<param name="context" type="Any" optional="true">The context of the callback</param>
-		
+		///<param name="options" type="Object" optional="true">Options on how the path observer is composed</param>
+		///<param name="options.trackPartialObservable" type="Boolean">Default: false. If set to true, will track observables at the end of a path, even if there are non observables before them.</param>
+		///<param name="options.forceObserve" type="Boolean">Default: false. If set to true, will make any un observables in the path into observables.</param>
+        
         this._super();
+        
+		///<summary type="Boolean">If set to true, will track observables at the end of a path, even if there are non observables before them.</summary>
+        this.trackPartialObservable = options && options.trackPartialObservable;
         
 		///<summary type="busybody.observable">The object to observe</summary>
         this.forObject = forObject;
@@ -2314,14 +2370,14 @@ Class("busybody.observeTypes.pathObserver", function () {
 		///<summary type="[String]">The path split into parts</summary>
         this.path = busybody.utils.obj.splitPropertyName(property);
         
+		///<summary type="Boolean">If an object in the path is not an observable, make it an observable.</summary>
+        this.forceObserve = options && options.forceObserve;
+        
 		///<summary type="[busybody.observable]">The subscriptions</summary>
         this.__pathDisposables = new Array(this.path.length);
         this.execute();
         
         this.buildObservableChain();
-		
-		if (callback)
-			this.onValueChanged(callback.bind(context || forObject), false);
     });
     
     pathObserver.prototype.onValueChanged = function (callback, evaluateImmediately) {
@@ -2347,6 +2403,7 @@ Class("busybody.observeTypes.pathObserver", function () {
         for (var i = begin; i < this.path.length; i++) {
             if (this.__pathDisposables[i]) {
                 this.__pathDisposables[i].dispose();
+                if (this.__pathDisposables[i].unmakeObservable) this.__pathDisposables[i].unmakeObservable();
                 this.__pathDisposables[i] = null;
             }
         }
@@ -2359,31 +2416,40 @@ Class("busybody.observeTypes.pathObserver", function () {
         }
         
         // get the last item in the path subscribing to changes along the way
-        for (; current && i < this.path.length - 1; i++) {
+        for (; current && i < this.path.length; i++) {
+            
+            if (this.forceObserve && !busybody.canObserve(current) && 
+                (busybody.makeObservable(current), busybody.canObserve(current))) {
+                
+                var unmakeObservable = (function (current) {
+                    return function () {
+                        if (!busybody.isObserved(current))
+                            busybody.tryRemoveObserver(current);
+                    };
+                }(current));
+            }
+            
             if (busybody.canObserve(current) || current instanceof busybody.array) {
                 
                 var args = [current, (function (i) {
                     return function(oldVal, newVal) {
-                        _this.buildObservableChain(i);
+                        if (i < _this.path.length - 1)
+                            _this.buildObservableChain(i);
 						_this.execute();
                     };
                 }(i))];
                 
-                if (isNaN(this.path[i])) {
+                if (isNaN(this.path[i]))
                     args.splice(1, 0, this.path[i]);
-                }
                 
                 this.__pathDisposables[i] = busybody.tryObserve.apply(null, args);
+                this.__pathDisposables[i].unmakeObservable = unmakeObservable;
+            } else if (!this.trackPartialObservable) {
+                return;
             }
 
             current = current[this.path[i]];
         }
-        
-        // observe last item in path
-        if (busybody.canObserve(current))
-            this.__pathDisposables[i] = busybody.tryObserve(current, this.path[i], function (oldVal, newVal) {
-                this.execute();
-            }, this);
     };
         
     pathObserver.prototype.getValue = function() {
@@ -2406,8 +2472,10 @@ Class("busybody.observeTypes.pathObserver", function () {
         this._super();
         
         for (var i = 0, ii = this.__pathDisposables.length; i < ii && this.__pathDisposables[i]; i++)
-            if (this.__pathDisposables[i])
+            if (this.__pathDisposables[i]) {
                 this.__pathDisposables[i].dispose();
+                if (this.__pathDisposables[i].unmakeObservable) this.__pathDisposables[i].unmakeObservable();
+            }
 
         this.__pathDisposables.length = 0;
     };
@@ -2632,7 +2700,8 @@ Class("busybody.utils.observeCycleHandler", function () {
         this.observe("length", function (oldVal, newVal) {
             if (newVal === 0)
                 enumerateArr(this.$afterObserveCycles.slice(), ex);
-        }, this, {
+        }, {
+            context: this,
 			evaluateOnEachChange: false, 
 			evaluateIfValueHasNotChanged: true
 		});
@@ -2719,6 +2788,17 @@ Class("busybody.utils.observeCycleHandler", function () {
             object :
             (object.$observer instanceof busybody.observableBase ? object.$observer : null);
     };
+
+    busybody.tryRemoveObserver = function (object) {
+		///<summary>Remove the observer from an object, if possible. If there is no observer, or the object is it's own observer, do nothing</summary>
+		///<param name="object" type="Object">The object</param>
+		///<returns type="Boolean">Whether an observer was removed or not</returns>
+        
+        return object && 
+            !(object instanceof busybody.observableBase) &&
+            object.$observer instanceof busybody.observableBase &&
+            (object.$observer.dispose(), delete object.$observer);
+    };
     
     busybody.captureArrayChanges = function (forObject, logic, callback) {
 		///<summary>Capture all of the changes to an array perpetrated by the logic</summary>
@@ -2766,7 +2846,7 @@ Class("busybody.utils.observeCycleHandler", function () {
 
         Object.defineProperty(object, "$observer", {
             enumerable: false,
-            configurable: false,
+            configurable: true,
             value: new busybody.observable(object),
             writable: false
         });
@@ -2774,24 +2854,26 @@ Class("busybody.utils.observeCycleHandler", function () {
         return object;
     };
 
-    busybody.observe = function (object, property, callback, context, options) {
+    busybody.observe = function (object, property, callback, options) {
 		///<summary>Observe changes to a property </summary>
 		///<param name="object" type="Object">The object</param>
 		///<param name="property" type="String">The property</param>
 		///<param name="callback" type="Function">The callback to execute</param>
-		///<param name="context" type="Any" optional="true">The "this" in the callback</param>
 		///<param name="options" type="Object" optional="true">See busybody.observable.observe for options</param>
 		
-        busybody.makeObservable(object);
-        return busybody.tryObserve(object, property, callback, context, options);
+        if (options)
+            options.forceObserve = true;
+        else
+            options = { forceObserve: true };
+        
+        return busybody.tryObserve(object, property, callback, options);
     };
 
-    busybody.tryObserve = function (object, property, callback, context, options) {
+    busybody.tryObserve = function (object, property, callback, options) {
 		///<summary>Observe changes to a property if possible. If "object" is not observable, return</summary>
 		///<param name="object" type="Object">The object</param>
 		///<param name="property" type="String">The property</param>
 		///<param name="callback" type="Function">The callback to execute</param>
-		///<param name="context" type="Any" optional="true">The "this" in the callback</param>
 		///<param name="options" type="Object" optional="true">See busybody.observable.observe for options</param>
         
         if (object instanceof busybody.array) {
@@ -2803,10 +2885,10 @@ Class("busybody.utils.observeCycleHandler", function () {
 			busybody.makeObservable(object);	//TODO: test
 		}
         
-        var target = busybody.getObserver(object);
-        
-        if (target)
-            return target.observe(property, callback, context, options);
+        var target;
+        if ((target = busybody.getObserver(object)) ||
+           (options && options.forceObserve && (target = busybody.getObserver(busybody.makeObservable(object)))))
+            return target.observe(property, callback, options);
         
         return false;
     };
@@ -2822,32 +2904,30 @@ Class("busybody.utils.observeCycleHandler", function () {
 		return busybody.getObserver(busybody.makeObservable(object)).computed(property, callback, options);
     };
 
-    busybody.observeArray = function (object, property, callback, context, options) {
+    busybody.observeArray = function (object, property, callback, options) {
 		///<summary>Observe an array property of an object for changes</summary>
 		///<param name="object" type="Object">The object</param>
 		///<param name="property" type="String">The property</param>
 		///<param name="callback" type="Function">The callback</param>
-		///<param name="context" type="Any">The "this" value in the callback</param>
 		///<param name="options" type="Object" optional="true">See busybody.array.observe for options</param>
 		///<returns type="busybody.disposable">A disposable</returns>
 		
         busybody.makeObservable(object);
-        return busybody.tryObserveArray(object, property, callback, context, options);
+        return busybody.tryObserveArray(object, property, callback, options);
     };
     
-    busybody.tryObserveArray = function (object, property, callback, context, options) {
+    busybody.tryObserveArray = function (object, property, callback, options) {
 		///<summary>Observe an array property of an object for changes if possible. If "object" is not observable, return</summary>
 		///<param name="object" type="Object">The object</param>
 		///<param name="property" type="String">The property</param>
 		///<param name="callback" type="Function">The callback</param>
-		///<param name="context" type="Any">The "this" value in the callback</param>
 		///<param name="options" type="Object" optional="true">See busybody.array.observe for options</param>
 		///<returns type="busybody.disposable">A disposable</returns>
                 
         var target = busybody.getObserver(object);
         
         if (target)
-            return target.observeArray(property, callback, context, options);
+            return target.observeArray(property, callback, options);
         
         return false;
     };
@@ -2968,7 +3048,7 @@ Class("busybody.utils.observeCycleHandler", function () {
 			}
 		}
 		
-		disposable.registerDisposable(busybody.tryObserve(object1, property1, ev, null, {useRawChanges: true}));
+		disposable.registerDisposable(busybody.tryObserve(object1, property1, ev, {useRawChanges: true}));
 		
 		ev();
 		
@@ -2992,6 +3072,15 @@ Class("busybody.utils.observeCycleHandler", function () {
 		
 		return busybody.tryBind(object1, property1, object2, property2, twoWay);
     };
+
+    busybody.isObserved = function (object) {
+		///<summary>Determine if any callbacks are currently monitoring this observable</summary>
+		///<param name="object" type="Object">The object</param>
+		///<returns type="Boolean">The result</returns>
+        
+        var observer;
+        return !!((observer = busybody.getObserver(object)) && observer.isObserved());
+    }; 
 
     busybody.canObserve = function (object) {
 		///<summary>Determine if an object can be observed. You can use busybody.makeObservable(...) to make objects observable</summary>
@@ -3019,10 +3108,8 @@ Class("busybody.utils.observeCycleHandler", function () {
 		///<summary>Dispose of an object which is observable</summary>
 		///<param name="object" type="Object">The object</param>
 		
-        var target = busybody.getObserver(object);
-        
-        if (target)
-            return target.dispose();
+        if (!busybody.tryRemoveObserver(object) && object instanceof busybody.disposable)
+            object.dispose();
     };
 
     window.busybody = busybody;
