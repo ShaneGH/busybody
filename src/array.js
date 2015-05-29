@@ -5,7 +5,7 @@ Class("busybody.array", function () {
 		///<summary>An observable array</summary>
 		///<param name="initialValues" type="[Any]">Initial values for the array</param>
 		
-		if (this === busybody)
+		if (!(this instanceof array))
 			return new array(initialValues);
 		
         this._super.apply(this, arguments);
@@ -80,7 +80,7 @@ Class("busybody.array", function () {
 		///<summary>An observable array</summary>
 		///<param name="initialValues" type="[Any]">Initial values for the array</param>
 		
-		if (this === busybody)
+		if (!(this instanceof array))
 			return new array(initialValues);
         
         this._super.apply(this, arguments);

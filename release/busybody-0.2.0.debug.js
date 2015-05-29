@@ -1337,7 +1337,7 @@ Class("busybody.array", function () {
 		///<summary>An observable array</summary>
 		///<param name="initialValues" type="[Any]">Initial values for the array</param>
 		
-		if (this === busybody)
+		if (!(this instanceof array))
 			return new array(initialValues);
 		
         this._super.apply(this, arguments);
@@ -1412,7 +1412,7 @@ Class("busybody.array", function () {
 		///<summary>An observable array</summary>
 		///<param name="initialValues" type="[Any]">Initial values for the array</param>
 		
-		if (this === busybody)
+		if (!(this instanceof array))
 			return new array(initialValues);
         
         this._super.apply(this, arguments);
@@ -2834,6 +2834,8 @@ Class("busybody.utils.observeCycleHandler", function () {
 		
         if (!arguments.length)
             object = {};
+        else if (!object)
+            return object;
         
 		if (object instanceof busybody.array) {
 			if (busybody.getObserver(object)) 
@@ -2875,6 +2877,8 @@ Class("busybody.utils.observeCycleHandler", function () {
 		///<param name="property" type="String">The property</param>
 		///<param name="callback" type="Function">The callback to execute</param>
 		///<param name="options" type="Object" optional="true">See busybody.observable.observe for options</param>
+        
+        if (!object) return false;
         
         if (object instanceof busybody.array) {
 			if (property instanceof Function)

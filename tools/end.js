@@ -54,6 +54,8 @@
 		
         if (!arguments.length)
             object = {};
+        else if (!object)
+            return object;
         
 		if (object instanceof busybody.array) {
 			if (busybody.getObserver(object)) 
@@ -95,6 +97,8 @@
 		///<param name="property" type="String">The property</param>
 		///<param name="callback" type="Function">The callback to execute</param>
 		///<param name="options" type="Object" optional="true">See busybody.observable.observe for options</param>
+        
+        if (!object) return false;
         
         if (object instanceof busybody.array) {
 			if (property instanceof Function)
