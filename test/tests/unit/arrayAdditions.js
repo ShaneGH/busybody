@@ -209,7 +209,8 @@ testUtils.testWithUtils("reverse", "even number", false, function(methods, class
 	strictEqual(subject[3], 1);
 });
 
-testUtils.testWithUtils("sort", "cannot test this to0 rigourously. Observe and non observe implementations will differ slightly", false, function(methods, classes, subject, invoker) {
+testUtils.testWithUtils("sort", "cannot test this too rigourously. Observe and non observe implementations will differ slightly", false, function(methods, classes, subject, invoker) {
+    
 	// arrange
 	var subject = new busybody.array([1,3,2]);
 	subject.observe(function (changes) {
@@ -225,7 +226,7 @@ testUtils.testWithUtils("sort", "cannot test this to0 rigourously. Observe and n
 	}, { useRawChanges: true });
 	
 	// act
-	subject.sort(function (a, b) { return a > b; });
+	subject.sort(function (a, b) { return a > b ? 1 : -1; });
 	stop();
 	
 	// assert

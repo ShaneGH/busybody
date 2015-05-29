@@ -702,6 +702,45 @@ function testMe (moduleName, buildSubject) {
         subject.aa.bb = 33;
         stop();
     });
+    
+    testUtils.testWithUtils("array length", null, false, function(methods, classes, subject, invoker) {
+        
+        // arrange
+        var subject = buildSubject();
+        subject.aa = buildSubject();
+        subject.aa.bb = [22];
+        
+        var disp = busybody.observe(subject, "aa.bb.length", function (oldVal, newVal) {
+            // cannot observe the length of an array
+            ok(false);
+        })
+        
+        // act
+        // assert
+        subject.aa.bb.push(33);
+        
+        ok(true);
+    });
+    
+    testUtils.testWithUtils("observable array length", null, false, function(methods, classes, subject, invoker) {
+        
+        // arrange
+        var subject = buildSubject();
+        subject.aa = buildSubject();
+        subject.aa.bb = busybody.array([22]);
+        
+        var disp = busybody.observe(subject, "aa.bb.length", function (oldVal, newVal) {
+            // assert
+            strictEqual(oldVal, 1);
+            strictEqual(newVal, 2);
+            start();
+            disp.dispose();
+        })
+        
+        // act
+        subject.aa.bb.push(33);
+        stop();
+    });
 }
 
 testMe("busybody.observable, integration", function() { return new busybody.observable(); });
