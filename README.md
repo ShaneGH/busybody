@@ -227,9 +227,11 @@ john.lastName = "Michaels";
 ###busybody.computed arguments
 |Name|Type|Description|Optional |
 | --- | --- | --- | --- |
+|owner|Object|The object to set the computed propery on|No|
+|property|String|The property name|No|
 |callback|Function|The logic which returns the computed value|No|
 |options|Object|Computed options|Yes|
-|options => context|Object|Default: null. The "this" value in the callback|Yes|
+|options => context|Object|Default: owner. The "this" value in the callback|Yes|
 |[options => watchVariables](#complex-computed-observables)|Object|Default: null. A dictionary of variables in the callback which are to be watched|Yes|
 |[options => observeArrayElements](#computed-observables-with-arrays)|Boolean|Default: false. If set to true, the computed will attempt to watch values within any array watch variables. This is useful if the computed is an aggregate function. The default is false because it is expensive computationally|Yes|
 |options => allowWith|Boolean|Default: false. If set to true, `with (...)` statements are allowed in the computed function. Although variables accessed within the with statement cannot be observed|Yes|
