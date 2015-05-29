@@ -241,7 +241,7 @@ john.lastName = "Michaels";
 |**returns**|**busybody.observeTypes .computed**|**Returns an object with a dispose function to cancel the computed**|
 
 ###busybody.computed functionality
-busybody.computeds are not complete as of v0.2.0, so go easy on them. Computeds work by code analysis, so make your code simple and try to avoid comments and strings.
+busybody.computeds are not complete as of v0.2.1, so go easy on them. Computeds work by code analysis, so make your code simple and try to avoid comments and strings.
 
 [back to top ^](#busybody)
 

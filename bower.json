@@ -1,12 +1,12 @@
 {
   "name": "busybody",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "homepage": "https://github.com/ShaneGH/busybody",
   "authors": [
     "Shane Connon <shane.connon@gmail.com>"
   ],
   "description": "Object observe functionality, polyfills and enhancements",
-  "main": ["release/busybody-0.2.0.debug.js", "release/busybody-0.2.0.js"],
+  "main": ["release/busybody-0.2.1.debug.js", "release/busybody-0.2.1.js"],
   "license": "MIT",
   "private": true,
   "ignore": [
