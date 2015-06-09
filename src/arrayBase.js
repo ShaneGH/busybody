@@ -158,7 +158,7 @@ Class("busybody.arrayBase", function () {
 		return dispose;
 	};
     
-	var boundArrayStopKey = "busybody-do-not-apply-to";
+	var iInvokedThisChange = "busybody-do-not-apply-to";
     arrayBase.prototype.alteringArray = function(method, args) {
 		///<summary>Execute logic which will alter this array. Apply changes to any bound arrays.</summary>
 		///<param name="method" type="String">A method pointer which will alter the array</param>
@@ -171,12 +171,12 @@ Class("busybody.arrayBase", function () {
 			this.__alteringArray = true;
 			
 			enumerateArr(this.$boundArrays, function (array) {
-				if (array[boundArrayStopKey])
+				if (this[iInvokedThisChange] === array) return;
+                
+				if (array[iInvokedThisChange])
 					throw "Circular reference in array bindings found";
-				
-				if (this[boundArrayStopKey] === array) return;
-								
-				array[boundArrayStopKey] = this;
+												
+				array[iInvokedThisChange] = this;
 				array[method].apply(array, args);
 			}, this);
 			
@@ -184,7 +184,7 @@ Class("busybody.arrayBase", function () {
 		} finally {
 			this.__alteringArray = false;
 			enumerateArr(this.$boundArrays, function (array) {
-				delete array[boundArrayStopKey];
+				delete array[iInvokedThisChange];
 			});
 		}
     };
